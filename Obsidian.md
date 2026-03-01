@@ -10,7 +10,11 @@
 默认图片保存的目录和笔记同级，图片多了显得凌乱
 ![](Pasted%20image%2020260301163547.png)
 社区插件市场-->浏览-->搜索Cunstom Attachment Location
-
+按如下配置：
+生成的附件文件填写：file-${date:{momentJsFormat:'YYYYMMDDHHmmssSSS'}}
+附件全命名模式：全部
+是否重命名附件文件：是
+![](assets/Obsidian/file-20260301164157035.png)
 ### 同步Github
 
 选择左下角管理仓库，打开本地仓库，选择Github克隆的本地仓库地址
