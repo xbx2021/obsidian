@@ -8,4 +8,6 @@
 ![](assets/Obsidian/file-20260301145310050.png)
 ### 同步github
 
-社区
+社区插件市场-->浏览-->搜索Git 安装
+勾选自动提交，
+![](assets/Obsidian/file-20260301150942508.png)
