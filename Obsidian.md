@@ -2,15 +2,16 @@
 下载安装包
 或通过官网下载[https://obsidian.md]()
 
+
 # 插件使用
 安装第三方插件前，先将安全模式关闭
 ![](assets/Obsidian/file-20260301145310050.png)
 
 ### 图片保存
-默认图片保存的目录和笔记同级，图片多了显得凌乱
-![](Pasted%20image%2020260301163547.png)
+默认图片保存的目录和笔记同级，图片多了显得混乱，
 社区插件市场-->浏览-->搜索Cunstom Attachment Location
-按如下配置：
+按如下配置，图片保存统一归集到指定目录下
+
 生成的附件文件填写：file-${date:{momentJsFormat:'YYYYMMDDHHmmssSSS'}}
 附件全命名模式：全部
 是否重命名附件文件：是
