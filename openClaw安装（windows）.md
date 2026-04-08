@@ -15,3 +15,9 @@ npm install -g openclaw@latest
 ```
 openclaw onboard
 ```
+
+- OpenClaw 自带诊断工具，自动检测问题：
+```
+openclaw doctor
+```
+
