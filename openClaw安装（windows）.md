@@ -1,4 +1,4 @@
-- 下载并安装Node.js  22.x 或更高版本
+- 下载并安装Node.js  22.x 或更高版本 https://nodejs.org/
 
 - 国内网络慢，安装前务必设置镜像源
 ```
@@ -25,7 +25,7 @@ openclaw doctor
 
 
 
-碰到如下缺包的问题时，
+碰到如下丢包问题时
 ```
 Error: Cannot find module '@buape/carbon'
 Require stack:
