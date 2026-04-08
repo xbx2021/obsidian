@@ -21,3 +21,13 @@ openclaw onboard
 openclaw doctor
 ```
 
+
+
+
+
+碰到的问题：
+```
+Error: Cannot find module '@buape/carbon'
+Require stack:
+C:\Users\54310\AppData\Roaming\npm\node_modules\openclaw\dist\ui-7MjYF8PY.js
+```
