@@ -48,3 +48,10 @@ Remove-Item -Recurse -Force $env:APPDATA\npm\node_modules\@buape
 # 清理 npm 缓存（防止缓存损坏）
 npm cache clean --force
 ```
+
+或安装缺失的包
+```
+# 进入 OpenClaw 全局安装目录
+cd C:\Users\54310\AppData\Roaming\npm\node_modules\openclaw
+npm install @larksuiteoapi/node-sdk
+```
