@@ -25,9 +25,26 @@ openclaw doctor
 
 
 
-碰到的问题：
+碰到如下缺包的问题时，
 ```
 Error: Cannot find module '@buape/carbon'
 Require stack:
 C:\Users\54310\AppData\Roaming\npm\node_modules\openclaw\dist\ui-7MjYF8PY.js
+```
+
+先卸载再重装
+```
+# 卸载所有相关全局包 
+npm uninstall -g openclaw @buape/carbon @larksuiteoapi/node-sdk
+
+# 删除用户配置缓存 
+Remove-Item -Recurse -Force $env:USERPROFILE\.openclaw 
+
+# 删除npm全局安装残留 
+Remove-Item -Recurse -Force $env:APPDATA\npm\node_modules\openclaw 
+Remove-Item -Recurse -Force $env:APPDATA\npm\node_modules\@larksuiteoapi 
+Remove-Item -Recurse -Force $env:APPDATA\npm\node_modules\@buape
+
+# 清理 npm 缓存（防止缓存损坏）
+npm cache clean --force
 ```
