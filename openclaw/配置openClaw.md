@@ -7,3 +7,4 @@ USER.md：对用户的认知
 TOOL.md：工具调用知识
 MEMORY.md 长期记忆
 memory/ 短期记忆
+HEARTBEAT.md 心跳机制
