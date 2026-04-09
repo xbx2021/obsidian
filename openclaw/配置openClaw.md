@@ -17,4 +17,5 @@ curl -fsSL [https://skillhub-1388575217.cos.ap-guangzhou.myqcloud.com/install/in
 
 - 通过对话方式：安装openclaw-tavily-search技能
 - tavily登录github账号获取apiKey
-- 通过对话方式：配置API Key，
+- 通过对话方式：配置API Key
+- workspace TOOL.md添加提示词
