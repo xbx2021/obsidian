@@ -21,8 +21,15 @@ openclaw onboard
 openclaw doctor
 ```
 
+- 启动网关
+```
+openclaw gateway run
+```
 
-
+- 打开控制面板
+```
+openclaw dashboard
+```
 
 
 碰到如下丢包问题时
