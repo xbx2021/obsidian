@@ -13,3 +13,4 @@ HEARTBEAT.md 心跳机制
 git bash执行如下命令，安装skillhub
 `curl -fsSL [https://skillhub-1388575217.cos.ap-guangzhou.myqcloud.com/install/install.sh](https://skillhub-1388575217.cos.ap-guangzhou.myqcloud.com/install/install.sh) | bash`
 
+通过对话方式：安装openclaw-tavily-search技能
