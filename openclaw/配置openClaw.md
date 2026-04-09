@@ -8,3 +8,5 @@ TOOL.md：工具调用知识
 MEMORY.md 长期记忆
 memory/ 短期记忆
 HEARTBEAT.md 心跳机制
+
+- 配置搜索功能
