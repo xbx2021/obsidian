@@ -21,3 +21,4 @@ npm install -g @musistudio/claude-code-router
 ```
 ccr code
 ```
+- 配置其他模型，需要获取base_url和api_key
