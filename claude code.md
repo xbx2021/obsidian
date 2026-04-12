@@ -30,7 +30,10 @@ ccr code
 `/compact` 压缩上下文，减少token消耗
 
 `/clear` 清楚上下文，新任务不受上下文影响
+
 `shift+tab` 切换模式，默认普通模式修改代码需要人工审核，auto-accept模式不需要审核，
 plan mode只提出想法，不修改代码
+
+`/ide`  
 # 其他
 接入Gemini，Gemini负载均衡
