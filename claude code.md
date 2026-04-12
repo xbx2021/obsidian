@@ -6,4 +6,6 @@
 ```
 npm install -g @anthropic-ai/claude-code
 ```
-github开源项目 Claude Code Router将开源模型接入claude code
+github开源项目 
+https://github.com/musistudio/claude-code-router
+将开源模型接入claude code
