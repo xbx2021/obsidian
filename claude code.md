@@ -27,8 +27,8 @@ ccr code
 
 `/init` 通读项目，保存到CLAUDE.md文件，cc执行任务前先读取文件来了解项目
 
-`/compact` 压缩上下文
+`/compact` 压缩上下文，减少token消耗
 
-`/clear` 清楚上下文
+`/clear` 清楚上下文，新任务不受上下文影响
 # 其他
 接入Gemini，Gemini负载均衡
