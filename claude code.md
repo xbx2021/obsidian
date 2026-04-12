@@ -25,6 +25,8 @@ ccr code
 
 # 用法
 
-/init
+`/init`
+通读项目，保存到CLAUDE.md文件
+``
 # 其他
 接入Gemini，Gemini负载均衡
