@@ -17,3 +17,4 @@ npm install -g @musistudio/claude-code-router
 - 创建配置文件
 `~/.claude-code-router/config.json`
 
+- 配置文件设置provider为Qwen模型
