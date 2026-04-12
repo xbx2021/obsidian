@@ -19,3 +19,7 @@ npm install -g @musistudio/claude-code-router
 
 - 配置文件设置provider为Qwen模型
 - 魔塔社区 https://modelscope.cn/my/access/token 获取访问令牌，复制到配置文件api_key
+- 启动claude code
+```
+ccr code
+```
