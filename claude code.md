@@ -35,7 +35,7 @@ ccr code
 `shift+tab` 切换模式，默认普通模式修改代码需要人工审核，auto-accept模式不需要审核，
 plan mode只提出想法，不修改代码
 
-`/ide`  
+`/ide`  先安装claude code 插件，再执行命令
 # 其他
 接入Gemini，Gemini负载均衡
 如果启动不了，配置文件加端口配置
