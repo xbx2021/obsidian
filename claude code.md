@@ -36,6 +36,8 @@ ccr code
 plan mode只提出想法，不修改代码
 
 `/ide`  先安装claude code 插件，再执行命令
+
+`/cost` 查看token消耗
 # 其他
 接入Gemini，Gemini负载均衡
 如果启动不了，配置文件加端口配置
