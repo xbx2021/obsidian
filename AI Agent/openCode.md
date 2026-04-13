@@ -18,3 +18,4 @@ npm i -g opencode-ai
  - `/connect` 通过openrouter连接各类大模型
  - `/new` 创建新对话
  - `/sessions` 展示对话列表
+ - `/share` 分享对话记录
