@@ -32,4 +32,5 @@ npm i -g opencode-ai
 ### MPC
 
 ### 插件
-oh-my-openagent
+oh-my-openagent集成多个智能体，通过@呼出智能体
+魔法词语 ：ulw，使出浑身解数执行任务 
