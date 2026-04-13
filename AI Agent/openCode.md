@@ -30,3 +30,6 @@ npm i -g opencode-ai
 新建.opencode-skills文件夹，迁移.claude的skill，过来即可
 
 ### MPC
+
+### 插件
+oh-my-opencode
