@@ -19,3 +19,5 @@ npm i -g opencode-ai
  - `/new` 创建新对话
  - `/sessions` 展示对话列表
  - `/share` 分享对话记录
+ - `/unshare` 取消分享
+ - `/export` 导出对话
