@@ -6,12 +6,13 @@
 ```
 npm install -g @anthropic-ai/claude-code
 ```
-github https://github.com/musistudio/claude-code-router 将开源模型接入claude code
 
+github https://github.com/musistudio/claude-code-router 将开源模型接入claude code
 - 安装claude-code-router
 ```
 npm install -g @musistudio/claude-code-router
 ```
+
 - 创建配置文件
 `~/.claude-code-router/config.json`
 
@@ -37,3 +38,4 @@ plan mode只提出想法，不修改代码
 `/ide`  
 # 其他
 接入Gemini，Gemini负载均衡
+如果启动不了，配置文件加端口配置
