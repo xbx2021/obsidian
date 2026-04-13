@@ -16,3 +16,5 @@ npm i -g opencode-ai
 - 使用/NoeFabris/opencode-antigravity-auth 配合google账户，可以免费使用`gemini-3.1-pro` 和 `claude-opus-4-6-thinking` 模型
 
  - `/connect` 通过openrouter连接各类大模型
+ - `/new` 创建新对话
+ - `/sessions` 展示对话列表
