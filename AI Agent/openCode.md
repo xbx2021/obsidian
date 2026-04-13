@@ -32,4 +32,4 @@ npm i -g opencode-ai
 ### MPC
 
 ### 插件
-oh-my-opencode
+oh-my-openagent
