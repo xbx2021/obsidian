@@ -10,3 +10,4 @@ pip install graphifyy && graphify install
 
 `/graphify --update` 更新图谱
 
+`/graphify add` +链接地址， 
