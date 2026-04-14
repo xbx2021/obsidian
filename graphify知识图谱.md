@@ -10,4 +10,8 @@ pip install graphifyy && graphify install
 
 `/graphify --update` 更新图谱
 
-`/graphify add` +链接地址， 
+`/graphify add` +链接地址，获取内容，更新图谱
+
+`/graphify path` 追踪节点和代码实现之间的图谱路径
+
+`/graphify --obsidian` 生成笔记
