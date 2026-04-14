@@ -8,5 +8,5 @@ pip install graphifyy && graphify install
 
 `/graphify explain`  解释实现
 
-
+`/graphify `
 
