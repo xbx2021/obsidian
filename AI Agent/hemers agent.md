@@ -1,5 +1,5 @@
-要先安装WLS2（Windows Subsystem for Linux 2，Windows 下的 Linux 子系统（第二代））
-## 什么是WLS2？
+要先安装WSL2（Windows Subsystem for Linux 2，Windows 下的 Linux 子系统（第二代））
+## 什么是WSL2？
 
 - 以前 Windows 想用 Linux 命令（`git`、`curl`、`apt`、`bash`）很麻烦
 - WSL2 就是微软官方做的一个**轻量级 Linux 环境**
