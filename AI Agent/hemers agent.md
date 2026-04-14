@@ -1,1 +1,1 @@
-通过对话openclaw，发送https://github.com/NousResearch/hermes-agent安装
+通过对话openclaw，发送https://github.com/NousResearch/hermes-agent安装，并能迁移相关技能
