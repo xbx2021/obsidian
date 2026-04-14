@@ -3,6 +3,12 @@
 pip install graphifyy && graphify install
 ```
 
+生成的graphify-out文件：
+- graph.html - 交互式图形
+- graph.json - 原始图形数据
+- GRAPH_REPORT.md - 审计报告
+- cost.json - 令牌使用情况                          
+- manifest.json - 清单文件 
 ## 使用
 
 `/graphify` 在项目目录下，cc或openCode输入命令生成知识图谱
