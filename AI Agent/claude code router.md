@@ -22,6 +22,12 @@ npm install -g @musistudio/claude-code-router
 ```
 ccr code
 ```
+
+```
+# 跳过权限确认
+ccr code --dangerously-skip-permissions
+```
+
 - 配置其他模型，需要获取base_url和api_key
 
 # 用法
