@@ -1,0 +1,1 @@
+配合google账户，可以免费使用`gemini-3.1-pro` 和 `claude-opus-4-6-thinking` 模型
