@@ -26,5 +26,7 @@ npm install -g mcp-chrome-bridge
  4. 点击扩展插件连接
 
 其他
+需要在管理员命令窗口使用这个MCP
+
 需要安装 Visual Studio C++ 工具链。错误显示需要 Visual Studio 2017 或更高版本，包括"Desktop development with C++"工作负载。
 安装[Visual Studio](https://visualstudio.microsoft.com/zh-hans/vs)
