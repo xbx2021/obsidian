@@ -5,60 +5,70 @@
 
 ```mermaid
 graph TB
+    %% 原生功能
     subgraph native["原生功能"]
-        MDT[Markdown 语法<br/>粗体 *斜块* 代码]
-        LV[链接和嵌入<br/>[[链接]] ![]()]
-        BKM[双向链接和图谱<br/>🔗 反向链接]
-        CV[Canvas 白板<br/>📝 自由布局]
-        DT[Dataview 表格<br/>📊 动态查询]
-        TP[模板片段<br/>📋 快速插入]
-        BT[块级引用<br/>^(块引用)]
+        direction TB
+        MDT(("Markdown 语法<br/>粗体 *斜块* 代码"))
+        LV(("链接和嵌入<br/>[[链接]] ![]()"))
+        BKM(("双向链接和图谱<br/>🔗 反向链接"))
+        CV(("Canvas 白板<br/>📝 自由布局"))
+        DT(("Dataview 表格<br/>📊 动态查询"))
+        TP(("模板片段<br/>📋 快速插入"))
+        BT(("块级引用<br/>^(块引用)"))
     end
 
+    %% 插件生态
     subgraph plugins["插件生态"]
-        CT[Chart.js<br/>📈 图表生成]
-        GP[Graphviz<br/>🔗 拓扑图]
-        MP[MindMap<br/>🧠 思维导图]
-        BPC[BP 矩阵<br/>⚡ 四象限]
-        GP2[Grid 渲染<br/>⚡ 表格视图]
-        Ex[Excalidraw<br/>🎨 手绘图表]
-        MP2[Marp Slides<br/>📼 幻灯片]
-        R[Rollbar<br/>📜 轮播代码]
+        direction TB
+        CT(("Chart.js<br/>📈 图表生成"))
+        GP(("Graphviz<br/>🔗 拓扑图"))
+        MP(("MindMap<br/>🧠 思维导图"))
+        BPC(("BP 矩阵<br/>⚡ 四象限"))
+        GP2(("Grid 渲染<br/>⚡ 表格视图"))
+        Ex(("Excalidraw<br/>🎨 手绘图表"))
+        MP2(("Marp Slides<br/>📼 幻灯片"))
+        R(("Rollbar<br/>📜 轮播代码"))
     end
 
+    %% AI 工具
     subgraph ai["AI 工具"]
-        GPT[ChatGPT 集成<br/>💬 对话式]
-        MH[Mermaid Helper<br/>📝 自动生成]
-        CA[Canvas AI<br/>🤖 智能布局]
-        KH[Khoj 搜索<br/>🔍 智能检索]
-        G[Gemini Pro<br/>🌟 多模态]
-        M[Claude 填充<br/>✨ 内容扩展]
+        direction TB
+        GPT(("ChatGPT 集成<br/>💬 对话式"))
+        MH(("Mermaid Helper<br/>📝 自动生成"))
+        CA(("Canvas AI<br/>🤖 智能布局"))
+        KH(("Khoj 搜索<br/>🔍 智能检索"))
+        G(("Gemini Pro<br/>🌟 多模态"))
+        M(("Claude 填充<br/>✨ 内容扩展"))
     end
 
+    %% 核心可视化能力
     subgraph core["核心可视化能力"]
-        OT[文本输出<br/>📄 文档]
-        IR[图像渲染<br/>🖼️ 图片]
-        IC[交互组件<br/>🎮 表单]
-        SG[结构化数据<br/>📊 表格]
-        N[网络图<br/>🕸️ 关系]
-        T[时间轴<br/>⏰ 序列]
-        R3D[3D 可视化<br/>🎲 立体]
+        direction TB
+        OT(("文本输出<br/>📄 文档"))
+        IR(("图像渲染<br/>🖼️ 图片"))
+        IC(("交互组件<br/>🎮 表单"))
+        SG(("结构化数据<br/>📊 表格"))
+        N(("网络图<br/>🕸️ 关系"))
+        T(("时间轴<br/>⏰ 序列"))
+        R3D(("3D 可视化<br/>🎲 立体"))
     end
 
+    %% 输入源
     subgraph input["输入源"]
-        MD[Markdown 文档]
-        MD2[CSV/TXT 数据]
-        MD3[代码文件]
-        MD4[网页内容]
-        MD5[图片资源]
+        MD(("Markdown 文档"))
+        MD2(("CSV/TXT 数据"))
+        MD3(("代码文件"))
+        MD4(("网页内容"))
+        MD5(("图片资源"))
     end
 
+    %% 输出方式
     subgraph output["输出方式"]
-        VP[可视化预览]
-        EP[导出图片]
-        SP[分享链接]
-        EP2[PDF/HTML]
-        VP2[演示模式]
+        VP(("可视化预览"))
+        EP(("导出图片"))
+        SP(("分享链接"))
+        EP2(("PDF/HTML"))
+        VP2(("演示模式"))
     end
 
     %% 连接关系
