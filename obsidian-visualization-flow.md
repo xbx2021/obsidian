@@ -6,7 +6,6 @@
 ```mermaid
 graph TB
     subgraph native["原生功能"]
-        direction TB
         MDT[Markdown 语法<br/>粗体 *斜块* 代码]
         LV[链接和嵌入<br/>[[链接]] ![]()]
         BKM[双向链接和图谱<br/>🔗 反向链接]
@@ -17,7 +16,6 @@ graph TB
     end
 
     subgraph plugins["插件生态"]
-        direction TB
         CT[Chart.js<br/>📈 图表生成]
         GP[Graphviz<br/>🔗 拓扑图]
         MP[MindMap<br/>🧠 思维导图]
@@ -29,7 +27,6 @@ graph TB
     end
 
     subgraph ai["AI 工具"]
-        direction TB
         GPT[ChatGPT 集成<br/>💬 对话式]
         MH[Mermaid Helper<br/>📝 自动生成]
         CA[Canvas AI<br/>🤖 智能布局]
@@ -39,7 +36,6 @@ graph TB
     end
 
     subgraph core["核心可视化能力"]
-        direction TB
         OT[文本输出<br/>📄 文档]
         IR[图像渲染<br/>🖼️ 图片]
         IC[交互组件<br/>🎮 表单]
