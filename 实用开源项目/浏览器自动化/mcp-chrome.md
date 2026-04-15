@@ -19,3 +19,9 @@ https://github.com/hangwin/mcp-chrome
 ```shell
 npm install -g mcp-chrome-bridge
 ```
+如果上述安装报错
+```shell
+npm install -g mcp-chrome-bridge --ignore-scripts
+```
+ 3. claude code 安装MCP
+ 
