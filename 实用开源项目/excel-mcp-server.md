@@ -20,5 +20,5 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 claude code 安装MCP
 ```
-
+claude mcp add excel -- uvx excel-mcp-server stdio
 ```
