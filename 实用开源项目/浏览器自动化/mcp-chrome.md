@@ -23,7 +23,7 @@ npm install -g mcp-chrome-bridge
 ```shell
 npm install -g mcp-chrome-bridge --ignore-scripts
 ```
- 3. claude code 安装MCP，与扩展插件连接
+ 3. claude code 安装MCP（只在这个目录下使用生效），与扩展插件连接
  ```shell
   claude mcp add --transport http chrome-mcp-server http://127.0.0.1:12306/mcp
  ```
