@@ -19,9 +19,12 @@ https://github.com/hangwin/mcp-chrome
 ```shell
 npm install -g mcp-chrome-bridge
 ```
-如果上述安装报错
+如果上述安装报错执行下面的命令
 ```shell
 npm install -g mcp-chrome-bridge --ignore-scripts
 ```
  3. claude code 安装MCP
+ ```shell
+  claude mcp add --transport http chrome-mcp-server http://127.0.0.1:12306/mcp
+ ```
  
