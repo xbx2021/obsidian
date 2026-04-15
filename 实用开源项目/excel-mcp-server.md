@@ -17,3 +17,8 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 - **uv**
     极速 Python 包管理器与环境管理器，替代 pip、pip-tools、venv 等。
 
+
+claude code 安装MPC
+```
+
+```
