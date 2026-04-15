@@ -10,3 +10,12 @@ https://github.com/hangwin/mcp-chrome
 | **安装 / 启动** | `npx chrome-devtools-mcp@latest` 直接运行                                        | 装 Chrome 扩展 + 启动本地 MCP 服务      | `npm init playwright@latest` 或 `npx @playwright/mcp` |
 | **适用场景**    | 前端 Bug 定位、性能优化、网络分析、Lighthouse 审计                                            | AI 辅助浏览、批量操作、内容抓取、保留登录的自动化     | E2E 测试、稳定自动化、跨浏览器验证、CI 流水线                           |
 | **跨浏览器**    | ❌ 仅 Chrome/Chromium                                                          | ❌ 仅 Chrome                     | ✅ Chrome/Firefox/Safari/Edge                         |
+
+安装
+1. **从github上下载最新的chrome扩展**
+下载地址：[https://github.com/hangwin/mcp-chrome/releases](https://github.com/hangwin/mcp-chrome/releases)
+
+2. **全局安装mcp-chrome-bridge**
+```shell
+npm install -g mcp-chrome-bridge
+```
