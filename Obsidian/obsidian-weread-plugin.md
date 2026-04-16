@@ -1,0 +1,1 @@
+https://github.com/zhaohongxuan/obsidian-weread-plugin
