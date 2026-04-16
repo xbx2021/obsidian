@@ -15,4 +15,4 @@ https://github.com/kepano/obsidian-skills
 #### obsidian-cli
 
 #### defuddle
-使用这个skill，提供网页链接，把内容翻译成中文，生成干净的markdown文件，保存到指定位置
+使用这个skill，提供网页链接，把内容翻译成中文，生成干净的markdown文件，保存到指定位置（相比使用插件，skill可以直接翻译文本）
