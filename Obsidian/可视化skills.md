@@ -1,4 +1,4 @@
-https://github.com/axtonliu/axton-obsidian-visual-skills
+https://github.com/axtonliu/axton-obsidian-visual-skills/blob/main/README_CN.md
 让 Claude Code 在 Obsidian 里生成 Canvas / Excalidraw / Mermaid 的可视化三件套。
 
 ### 安装步骤（Windows）
