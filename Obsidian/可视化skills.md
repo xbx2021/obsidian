@@ -16,3 +16,21 @@ cp -r axton-obsidian-visual-skills/mermaid-visualizer ~/.claude/skills/
 cp -r axton-obsidian-visual-skills/obsidian-canvas-creator ~/.claude/skills/
 ```
 4. 重启 Claude Code，触发关键词：`Canvas`、`mind map`、`Excalidraw`、`Mermaid`、`visual diagram`
+
+### 使用方法
+```
+# Excalidraw
+"创建一个展示 CI/CD 流程的 Excalidraw 流程图"
+"画一个关于机器学习概念的思维导图"
+"用 Excalidraw 画一个商业模式关系图"
+
+# Mermaid
+"用 Mermaid 图表可视化这个流程"
+"为 API 认证流程创建时序图"
+"把这个工作流程转成 Mermaid 图表"
+
+# Canvas
+"把这篇文章转换成 Obsidian Canvas"
+"创建一个项目规划的思维导图 Canvas"
+"把这篇文章整理成 Canvas 思维导图"
+```
