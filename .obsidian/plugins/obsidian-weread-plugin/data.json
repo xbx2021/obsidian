@@ -26,7 +26,7 @@
       "value": "279354878"
     }
   ],
-  "noteLocation": "/",
+  "noteLocation": "weread",
   "dailyNotesLocation": "/",
   "insertAfter": "<!-- start of weread -->",
   "insertBefore": "<!-- end of weread -->",
@@ -45,7 +45,7 @@
   "dailyNotesToggle": false,
   "notesBlacklist": "",
   "notesWhitelist": "",
-  "syncMode": "blacklist",
+  "syncMode": "whitelist",
   "showEmptyChapterTitleToggle": false,
   "convertTags": false,
   "saveArticleToggle": true,
