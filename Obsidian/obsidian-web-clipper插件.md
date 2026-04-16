@@ -1,0 +1,1 @@
+https://github.com/obsidianmd/obsidian-clipper/releases
