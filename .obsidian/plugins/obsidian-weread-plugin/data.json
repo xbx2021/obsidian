@@ -61,10 +61,67 @@
   "cookieRefreshInterval": 12,
   "scheduledSyncToggle": true,
   "scheduledSyncInterval": 5,
-  "lastSyncTime": 0,
-  "lastSyncBookCount": 0,
+  "lastSyncTime": 1776319049943,
+  "lastSyncBookCount": 9,
   "lastSyncBookTitles": [],
-  "syncLogs": [],
+  "syncLogs": [
+    {
+      "id": "sync-1776319043447",
+      "timestamp": 1776319043447,
+      "totalBooks": 9,
+      "syncedBooks": 9,
+      "skippedBooks": 0,
+      "duration": 6.495,
+      "notes": [
+        {
+          "bookId": "522205",
+          "title": "人性的弱点（果麦经典）",
+          "filePath": "weread/人性的弱点（果麦经典）.md"
+        },
+        {
+          "bookId": "843544",
+          "title": "别独自用餐：85%的成功来自高效的社交能力",
+          "filePath": "weread/别独自用餐：85%的成功来自高效的社交能力.md"
+        },
+        {
+          "bookId": "33628204",
+          "title": "认知觉醒：开启自我改变的原动力",
+          "filePath": "weread/认知觉醒：开启自我改变的原动力.md"
+        },
+        {
+          "bookId": "3300020868",
+          "title": "股票投资入门、进阶与实战",
+          "filePath": "weread/股票投资入门、进阶与实战.md"
+        },
+        {
+          "bookId": "CB_AeABhg5dI9Fq7qR6x3BSn514",
+          "title": "小狗钱钱",
+          "filePath": "weread/小狗钱钱.md"
+        },
+        {
+          "bookId": "23601930",
+          "title": "富爸爸穷爸爸",
+          "filePath": "weread/富爸爸穷爸爸.md"
+        },
+        {
+          "bookId": "35147196",
+          "title": "像高手一样发言：七种常见工作场景的说话之道",
+          "filePath": "weread/像高手一样发言：七种常见工作场景的说话之道.md"
+        },
+        {
+          "bookId": "674073",
+          "title": "沧浪之水",
+          "filePath": "weread/沧浪之水.md"
+        },
+        {
+          "bookId": "33810600",
+          "title": "高效能人士的七个习惯（30周年纪念版）（全新增订版）",
+          "filePath": "weread/高效能人士的七个习惯（30周年纪念版）（全新增订版）.md"
+        }
+      ],
+      "success": true
+    }
+  ],
   "bookshelfSortMode": "recent",
   "bookshelfGroupByYear": true
 }
