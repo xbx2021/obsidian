@@ -1,0 +1,24 @@
+{
+  "id": "conv-1776326422745-g2v1smujn",
+  "providerId": "claude",
+  "title": "Translate Chinese greeting to English",
+  "titleGenerationStatus": "success",
+  "createdAt": 1776326422745,
+  "updatedAt": 1776326554605,
+  "lastResponseAt": 1776326554605,
+  "sessionId": "b4c3c702-98ac-4b96-a294-4a415696ec5b",
+  "providerState": {
+    "providerSessionId": "b4c3c702-98ac-4b96-a294-4a415696ec5b"
+  },
+  "currentNote": "Obsidian/obsidian-agent-client.md",
+  "usage": {
+    "model": "glm-4.5-air",
+    "inputTokens": 0,
+    "cacheCreationInputTokens": 0,
+    "cacheReadInputTokens": 0,
+    "contextWindow": 200000,
+    "contextTokens": 0,
+    "percentage": 0,
+    "contextWindowIsAuthoritative": true
+  }
+}
