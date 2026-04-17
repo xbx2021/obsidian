@@ -4,18 +4,18 @@
 
 # 使用
 ## 设置语言
-![](assets/obsidian安装配置/file-20260416133748353.png)
+![](assets/Obsidian安装配置/file-20260417101402673.png)
 
 ## 双向链接
 可通过输入“[[]]“唤出要链接的笔记[被链接的笔记](被链接的笔记.md)，形成笔记间的链接关系，在侧边栏”查看关系图谱“查看全局链接关系
-![](assets/obsidian安装配置/file-20260416133748356.png)
+![](assets/Obsidian安装配置/file-20260417101402674.png)
 
 ## Gemini辅助构建知识网络
 如没有安装Gemini，参考文档安装：
 
 # 插件
 安装第三方插件前，先将安全模式关闭
-![](assets/obsidian安装配置/file-20260416133748375.png)
+![](assets/Obsidian安装配置/file-20260417101402688.png)
 
 ### 图片保存
 默认图片保存的目录和笔记同级，图片多了显得混乱，
@@ -25,15 +25,15 @@
 生成的附件文件填写：file-${date:{momentJsFormat:'YYYYMMDDHHmmssSSS'}}
 附件全命名模式：全部
 是否重命名附件文件：是
-![](assets/obsidian安装配置/file-20260416133748359.png)
+![](assets/Obsidian安装配置/file-20260417101402677.png)
 ### 同步Github
 
 选择左下角管理仓库，打开本地仓库，选择Github克隆的本地仓库地址
-![](assets/obsidian安装配置/file-20260416133748362.png)
+![](assets/Obsidian安装配置/file-20260417101402680.png)
 
 社区插件市场-->浏览-->搜索Git 安装
 勾选自动提交，填写提交间隔时间，自动同步到Github
-![](assets/obsidian安装配置/file-20260416133748371.png)
+![](assets/Obsidian安装配置/file-20260417101402685.png)
 
 勾选 Pull On startup 在启动笔记时自动拉取远端文件
-![](assets/obsidian安装配置/file-20260416133748360.png)
+![](assets/Obsidian安装配置/file-20260417101402679.png)
