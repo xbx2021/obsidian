@@ -41,3 +41,9 @@ hermes config       查看 / 编辑配置
 hermes gateway install 安装网关服务
 ```
 
+Hermes Path
+```bash
+Config:       /home/xiebx/.hermes/config.yaml
+Secrets:      /home/xiebx/.hermes/.env
+Install:      /home/xiebx/.hermes/hermes-agent
+```
