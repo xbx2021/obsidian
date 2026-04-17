@@ -49,8 +49,11 @@ Install:      /home/xiebx/.hermes/hermes-agent
 ```
 
 # 连接微信
-通过 `hermes setup` 设置连接微信，扫码配对后，微信会接收到如下配对信息：
+通过 `hermes setup` 设置连接微信，扫码配对后，微信会接收到如下配对信息，将信息在终端发送给Hermes即完成配置
 ```bash
 hermes pairing approve weixin ABC123
 ```
-将信息在终端发送给Hermes即完成配置
+需要启动网关才能继续通信
+```bash
+hermes gateway start
+```
