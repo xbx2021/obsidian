@@ -4,13 +4,15 @@
 
 ## [Hemers Agent](Hemers%20Agent.md)
 
-## [claude code](claude%20code.md)
+## [Claude Code](Claude%20Code.md)
 
-## [claude code router](claude%20code%20router.md)
+## [Claude Code Router](Claude%20Code%20Router.md)
 
 ## [openCode](openCode.md)
 
-## [codex](codex.md)
+## [Codex](Codex.md)
+
+## [Cursor](Cursor.md)
 
 ## [Trae](Trae.md)
 
