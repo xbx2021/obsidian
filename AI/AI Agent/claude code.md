@@ -73,3 +73,11 @@ your-project/
     ├── debug/
     └── cache/
 ```
+
+
+# 使用
+## 权限模式
+通过 `Shift+Tab` 键来切换权限模式
+- 默认权限模式（? for shortcuts）
+- 编辑模式 (accept edits on)
+- 计划模式 (plan mode on)
