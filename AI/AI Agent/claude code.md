@@ -131,6 +131,6 @@ claude -c
 
 - `/memory` 查看编辑 `CLAUDE.md` 文件，可选用户或项目级别
 
-- `!命令` 进入 Shell 模式。在 Shell 模式下，可以直接输入 Bash 命令
+- `!` 进入 Shell 模式。在 Shell 模式下，可以直接输入 Bash 命令
 
 - 
