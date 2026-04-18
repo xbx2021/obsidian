@@ -78,6 +78,30 @@ your-project/
 # 使用
 ## 权限模式
 通过 `Shift+Tab` 键来切换权限模式
-- 默认权限模式（? for shortcuts）
-- 编辑模式 (accept edits on)
-- 计划模式 (plan mode on)
+- **默认权限模式（? for shortcuts）**
+编辑文件时需确认权限
+
+- **编辑模式 (accept edits on)**
+整个会话期间自动接受所有后续的文件编辑，不再询问。如果执行 Shell 命令，会询再次询问是否允许操作。
+
+想让 Claude Code 自动执行所有操作，在启动 时，加上
+`--dangerously-skip-permissions` 
+
+- **计划模式 (plan mode on)**
+如果任务复杂，无法确定 Claude Code 是否符合你的要求，那么可以进入计划模式。计划模式下，它会先读取和分析你的代码，它不会修改文件。
+
+规划任务完成后，Claude Code 会给出 4 个选择：
+1. "Yes, clear context and auto-accept edits (shift+tab)"：它会清除没有必要的上下文，并自动接受所有后续的文件编辑，不再询问。如果选择这个选项，就会进入编辑模式。
+
+2. "Yes,auto-accept edits"：和上面选项一样，但不会清除上下文。
+
+3. "Yes, manually approve edits"：和上面选项一样，但每次都要手动批准文件编辑。
+
+4. 最后，一个是输入框，如果你对它给出的建议不满意，可以在这里和它继续对话，让它重新规划任务。
+
+如果你觉得 Claude Code 的规划不太合理了，按 "Esc" 键中断当前任务，然后规划任务。
+
+如果有一些细节需要调整，直接在输入框中继续进行对话，告诉它你需要调整的细节。这样它就会根据你的反馈来调整规划任务的步骤，不需要中断当前任务。
+
+## 命令
+- `/resume` 历史会话
