@@ -112,7 +112,14 @@ claude -c
 
 - `/rename` 给当前会话重新命名，重启CC后`/resume`可选择会话，也可进入历史会话，重新命名
 
-- `/clear`清除当前会话
+- `/clear`清除当前会话，开启新会话，可以重新对当前会话命名，否则共用上次会话名称
+
+- `/rewind`选择回滚的版本
+会有几个选项：
+1. "Restore code and conversation"：它会恢复代码和对话记录。
+2. "Restore conversation"：它只会恢复对话记录，不会恢复代码。
+3. "Restore code"：它只会恢复代码，不会恢复对话记录。
+4. "Never mind"：取消回滚。
 
 
 
