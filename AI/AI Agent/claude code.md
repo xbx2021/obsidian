@@ -133,4 +133,9 @@ claude -c
 
 - `!` 进入 Shell 模式。在 Shell 模式下，可以直接输入 Bash 命令
 
-- 
+- `截图` 将截图发给CC，执行任务
+
+- `安装 MCP` 命令
+```
+claude mcp add --transport http figma https://mcp.figma.com/mcp
+```
