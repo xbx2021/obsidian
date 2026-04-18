@@ -110,6 +110,7 @@ your-project/
 claude -c
 ```
 
+- `/init` 通读项目，保存到CLAUDE.md文件，cc执行任务前先读取文件来了解项目
 - `/rename` 给当前会话重新命名，重启CC后`/resume`可选择会话，也可进入历史会话，重新命名
 
 - `/clear`清除当前会话，开启新会话，可以重新对当前会话命名，否则共用上次会话名称
@@ -118,3 +119,6 @@ claude -c
 
 - `/compact` 压缩上下文
 
+- `/ide`  先安装claude code 插件，再执行命令
+
+- `/cost` 查看token消耗
