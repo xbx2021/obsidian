@@ -129,4 +129,6 @@ CC 会在每次对话开始时读取它，其中包含 Bash 命令、代码风�
 
 - `/cost` 查看token消耗
 
-- `/memory` 查看编辑 `CLAUDE.md` 文件，ke
+- `/memory` 查看编辑 `CLAUDE.md` 文件，可选用户或项目级别
+
+- `!`
