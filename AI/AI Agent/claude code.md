@@ -114,12 +114,7 @@ claude -c
 
 - `/clear`清除当前会话，开启新会话，可以重新对当前会话命名，否则共用上次会话名称
 
-- `/rewind`选择回滚的版本
-会有几个选项：
-1. "Restore code and conversation"：它会恢复代码和对话记录。
-2. "Restore conversation"：它只会恢复对话记录，不会恢复代码。
-3. "Restore code"：它只会恢复代码，不会恢复对话记录。
-4. "Never mind"：取消回滚。
+- `/rewind`回滚版本
 
 
 
