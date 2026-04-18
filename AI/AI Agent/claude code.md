@@ -110,3 +110,9 @@ your-project/
 claude -c
 ```
 
+- `/rename` 给当前会话重新命名，重启CC后`/resume`可选择会话，也可进入历史会话，重新命名
+
+- `/clear`清除当前会话
+
+
+
