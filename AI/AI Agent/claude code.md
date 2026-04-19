@@ -139,3 +139,5 @@ claude -c
 ```
 claude mcp add --transport http figma https://mcp.figma.com/mcp
 ```
+
+- `/hooks` 在特定的事件发生时，自动执行一些操作
