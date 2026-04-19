@@ -162,3 +162,9 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 
 官方参考文档： https://code.claude.com/docs/en/hooks-guide
 
+- `/skill` 给大模型添加一些特定的技能，让大模型能够更好地完成任务。可以创建用户级别的 Agent Skills，也可以创建项目级别的 Agent Skills。
+	`~/.claude/skills`  用户级别
+	`.claude/skills` 项目级别
+
+- `/agents`  自定义子代理，子代理拥有独立的上下文和记忆，可以专注于特定的任务或领域。
+	`~/.claude/agents` 创建子代理目录
