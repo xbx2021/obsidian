@@ -160,4 +160,5 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 }
 	```
 
+官方参考文档： https://code.claude.com/docs/en/hooks-guide
 
