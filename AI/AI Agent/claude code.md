@@ -174,3 +174,5 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 - `/plugin` 插件。可以把 Agent Skills、子代理、MCP 和 Hooks 结合起来，打包成一个插件，让其他人安装，也可以安装其他人分享的插件，轻松扩展 Claude Code 的功能。
 	官方文档： https://code.claude.com/docs/en/plugins
 	官方插件市场： https://claude.com/plugins
+
+- `/review` 评审改动的代码，或最佳文件路径，只评审单个文件
