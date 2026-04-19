@@ -140,4 +140,24 @@ claude -c
 claude mcp add --transport http figma https://mcp.figma.com/mcp
 ```
 
-- `/hooks` 在特定的事件发生时，自动执行一些操作
+- `/hooks` 在特定的事件发生时，自动执行一些操作。
+	也可以直接在 `~/.claude/settings.json`、`.claude/settings.json` 或者 `.claude/settings.local.json` 文件中，手动添加 Hooks 的配置。
+	```json
+	{  
+  "hooks": {  
+    "Notification": [  
+      {  
+        "matcher": "*",  
+        "hooks": [  
+          {  
+            "type": "command",  
+            "command": "powershell.exe -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude Code needs your attention', 'Claude Code')\""  
+          }  
+        ]  
+      }  
+    ]  
+}  
+}
+	```
+
+
