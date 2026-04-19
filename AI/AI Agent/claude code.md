@@ -169,4 +169,6 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 - `/agents`  自定义子代理，子代理拥有独立的上下文和记忆，可以专注于特定的任务或领域。
 	`~/.claude/agents` 创建子代理目录
 
-- `/plugin` 插件。可以把 Agent Skills、子代理、MCP 和 Hooks 结合起来，打包成一个插件，让其他人安装，也可以安装其他人分享的插件，轻松扩展 Claude Code 的功能。官方文档： https://code.claude.com/docs/en/plugins
+- `/plugin` 插件。可以把 Agent Skills、子代理、MCP 和 Hooks 结合起来，打包成一个插件，让其他人安装，也可以安装其他人分享的插件，轻松扩展 Claude Code 的功能。
+	官方文档： https://code.claude.com/docs/en/plugins
+	官方插件市场： https://claude.com/plugins
