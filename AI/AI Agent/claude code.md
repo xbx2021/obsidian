@@ -1,10 +1,19 @@
 # 安装
+官方项目地址： https://github.com/anthropics/claude-code
+
+## 安装方法
+windows下的安装方法：
+```
+winget install Anthropic.ClaudeCode
+
+# 或
+irm https://claude.ai/install.ps1 | iex
+```
+
 ``` 
 # 这个方法已过时
 npm install -g @anthropic-ai/claude-code
 ```
-windows下的安装方法：
-
 
 C:\Users\54310\.claude 目录下创建配置文件 `seetings.json`，配置调用的模型
 ```json
@@ -16,6 +25,8 @@ C:\Users\54310\.claude 目录下创建配置文件 `seetings.json`，配置调�
 	}
 }
 ```
+
+## cc-switch管理接入模型
 
 # .claude目录结构
 ## 项目级
