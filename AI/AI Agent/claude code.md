@@ -407,6 +407,7 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 ### `/review` 
 评审改动的代码，或最佳文件路径，只评审单个文件
 
+
 ### `/context`
 查看 token 占用结构，排查 MCP 和文件读取占比
 
@@ -414,10 +415,10 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 清除当前会话，开启新会话，可以重新对当前会话命名，否则共用上次会话名称
 
 ###  `/compact` 
-压缩上下文
+压缩但保留重点，配合 Compact Instructions 使用
 
 ###  `/memory` 
-查看编辑 `CLAUDE.md` 文件，可选用户或项目级别
+查看编辑 `CLAUDE.md` 文件，可选用户或项目级别。确认哪些 CLAUDE.md 真的被加载了
 
 # 运行模式
 ## 概览
