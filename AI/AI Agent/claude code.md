@@ -75,6 +75,67 @@ your-project/
 ```
 
 
+## CLAUDE.md
+### **该放什么**
+- 怎么 build、怎么 test、怎么跑（最核心的）
+- 关键目录结构和模块边界
+- 代码风格和命名约束
+- 不明显的环境坑
+- 绝对不能干的事（NEVER 列表）
+- 压缩时必须保留的信息（Compact Instructions）
+
+### **不该放什么**
+- 大段背景介绍
+- 完整 API 文档
+- "写高质量代码"这种空泛原则
+- Claude 读一下仓库就能推断出来的信息
+- 低频任务的详细知识（这些放到 Skills 里）
+
+### **实用模板**
+```
+# Project Contract  
+  
+## Build And Test  
+- Install: `pnpm install`  
+- Dev: `pnpm dev`  
+- Test: `pnpm test`  
+- Lint: `pnpm lint`  
+  
+## Architecture Boundaries  
+- HTTP handlers live in `src/http/handlers/`  
+- Domain logic lives in `src/domain/`  
+- Do not put persistence logic in handlers  
+  
+## Safety Rails  
+  
+### NEVER  
+- Modify `.env`, lockfiles, or CI secrets without approval  
+- Commit without running tests  
+  
+### ALWAYS  
+- Show diff before committing  
+- Update CHANGELOG for user-facing changes  
+  
+## Compact Instructions  
+Preserve:  
+1. Architecture decisions (NEVER summarize)  
+2. Modified files and key changes  
+3. Current verification status  
+4. Open risks and TODOs
+```
+
+### **CLAUDE.md自我修正**
+每次纠正 Claude 的错误后，直接告诉它
+```
+Update your CLAUDE.md so you don't make that mistake again
+```
+
+## Skills
+### **渐进式披露**
+Skill 的核心设计是"按需加载"——描述符常驻上下文（告诉 Claude 什么时候该用它），但完整内容只在真正需要的时候才拉进来。
+
+这个设计背后的理念叫"渐进式披露"（progressive disclosure）：不是让模型一次性看到所有信息，而是先给索引和导航，再按需拉取细节。
+
 # 使用
 ## 权限模式
 通过 `Shift+Tab` 键来切换权限模式
@@ -249,59 +310,4 @@ CLAUDE.md 写太长，上下文先把自己污染了；工具堆太多，它选�
 - **不进上下文**：Hooks 负责确定性脚本、审计、阻断
 
 说白了，偶尔用的东西就不要每次都加载进来。
-
-# CLAUDE.md
-### **该放什么**
-- 怎么 build、怎么 test、怎么跑（最核心的）
-- 关键目录结构和模块边界
-- 代码风格和命名约束
-- 不明显的环境坑
-- 绝对不能干的事（NEVER 列表）
-- 压缩时必须保留的信息（Compact Instructions）
-
-### **不该放什么**
-- 大段背景介绍
-- 完整 API 文档
-- "写高质量代码"这种空泛原则
-- Claude 读一下仓库就能推断出来的信息
-- 低频任务的详细知识（这些放到 Skills 里）
-
-### **实用模板**
-```
-# Project Contract  
-  
-## Build And Test  
-- Install: `pnpm install`  
-- Dev: `pnpm dev`  
-- Test: `pnpm test`  
-- Lint: `pnpm lint`  
-  
-## Architecture Boundaries  
-- HTTP handlers live in `src/http/handlers/`  
-- Domain logic lives in `src/domain/`  
-- Do not put persistence logic in handlers  
-  
-## Safety Rails  
-  
-### NEVER  
-- Modify `.env`, lockfiles, or CI secrets without approval  
-- Commit without running tests  
-  
-### ALWAYS  
-- Show diff before committing  
-- Update CHANGELOG for user-facing changes  
-  
-## Compact Instructions  
-Preserve:  
-1. Architecture decisions (NEVER summarize)  
-2. Modified files and key changes  
-3. Current verification status  
-4. Open risks and TODOs
-```
-
-### **CLAUDE.md自我修正**
-每次纠正 Claude 的错误后，直接告诉它
-```
-Update your CLAUDE.md so you don't make that mistake again
-```
 
