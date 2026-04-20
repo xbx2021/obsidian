@@ -520,4 +520,6 @@ Definition of done:
 - Lint passes  
 - No TODO left behind unless explicitly tracked
 ```
+假如一个任务你都说不清楚"什么叫做完"，那它大概率也不适合直接丢给 Claude 自动完成。
+
 
