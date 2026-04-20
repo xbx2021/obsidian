@@ -154,6 +154,43 @@ Skill 的核心设计是"按需加载"——描述符常驻上下文（告诉 Cl
 低频的禁止自动调用，手动触发；
 极低频的直接删掉，改成文档。
 
+## Hooks
+### **重要性**
+Hooks 很容易被忽视，但它解决的问题非常关键：**有些事情不能靠 Claude 自己记得去做。** 比如：
+- 每次编辑完 Rust 文件，自动跑一下编译检查
+- 修改了受保护的配置文件，直接拦住不让动
+- 任务完成后推送一个通知
+这些事如果写在 CLAUDE.md 里，它经常当没看见。但如果做成 Hook，是在生命周期事件前后强制执行的，不依赖模型判断。
+
+### **实用案例**
+假设项目同时有 Rust 和 Lua 代码，可以按文件类型分别触发检查：
+```json
+{  
+  "hooks": {  
+    "PostToolUse": [  
+      {  
+        "matcher": "Edit",  
+        "pattern": "*.rs",  
+        "hooks": [{  
+          "type": "command",  
+          "command": "cargo check 2>&1 | head -30",  
+          "statusMessage": "Checking Rust..."  
+        }]  
+      },  
+      {  
+        "matcher": "Edit",  
+        "pattern": "*.lua",  
+        "hooks": [{  
+          "type": "command",  
+          "command": "luajit -b $FILE /dev/null 2>&1 | head -10",  
+          "statusMessage": "Checking Lua syntax..."  
+        }]  
+      }  
+    ]  
+  }  
+}
+```
+
 # 使用
 ## 权限模式
 通过 `Shift+Tab` 键来切换权限模式
