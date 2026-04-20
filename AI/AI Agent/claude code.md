@@ -292,6 +292,8 @@ Claude Code 内置了三种 Subagent：
 - **maxTurns**：防止跑飞
 - **isolation: worktree**：需要动文件时隔离文件系统
 
+### **什么时候不该用 Subagent**
+子任务之间强依赖、频繁要共享中间状态的场景，用 Subagent 反而更麻烦。这种情况在主线程里顺序做就好。
 
 # 使用
 ## 权限模式
