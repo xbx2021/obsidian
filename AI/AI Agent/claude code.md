@@ -344,17 +344,11 @@ CC 会在每次对话开始时读取它，其中包含 Bash 命令、代码风�
 ###  `/rewind`
 回滚版本
 
-###  `/compact` 
-压缩上下文
-
 ###  `/ide`  
 先安装claude code 插件，再执行命令
 
 ###  `/cost` 
 查看token消耗
-
-###  `/memory` 
-查看编辑 `CLAUDE.md` 文件，可选用户或项目级别
 
 ###  `!` 
 进入 Shell 模式。在 Shell 模式下，可以直接输入 Bash 命令
@@ -414,8 +408,16 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 评审改动的代码，或最佳文件路径，只评审单个文件
 
 ### `/context`
-查看当前上下文使用信息
+查看 token 占用结构，排查 MCP 和文件读取占比
 
+### `/clear`
+清除当前会话，开启新会话，可以重新对当前会话命名，否则共用上次会话名称
+
+###  `/compact` 
+压缩上下文
+
+###  `/memory` 
+查看编辑 `CLAUDE.md` 文件，可选用户或项目级别
 
 # 运行模式
 ## 概览
