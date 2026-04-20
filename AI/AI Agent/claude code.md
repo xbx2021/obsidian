@@ -74,6 +74,8 @@ your-project/
     └── cache/
 ```
 
+如果同时维护多个项目，可以把稳定的个人基线放在 `~/.claude/`，各项目的差异放在项目级 `.claude/`。避免不同项目之间互相污染。
+
 ## 配置示例
 ### CLAUDE.md
 ```markdown
