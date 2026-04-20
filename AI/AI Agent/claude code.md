@@ -407,7 +407,7 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 ### `/review` 
 评审改动的代码，或最佳文件路径，只评审单个文件
 
-
+**上下文管理：**
 ### `/context`
 查看 token 占用结构，排查 MCP 和文件读取占比
 
