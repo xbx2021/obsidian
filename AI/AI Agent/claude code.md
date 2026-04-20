@@ -192,3 +192,9 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 
 ### `/review` 
 评审改动的代码，或最佳文件路径，只评审单个文件
+
+
+# 运行模式
+核心是一个循环运转的代理系统：
+![427](assets/Claude%20Code/file-20260420094116189.png)
+
