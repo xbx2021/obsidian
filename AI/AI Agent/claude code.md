@@ -250,3 +250,53 @@ CLAUDE.md 写太长，上下文先把自己污染了；工具堆太多，它选�
 
 说白了，偶尔用的东西就不要每次都加载进来。
 
+# CLAUDE.md
+### **该放什么**
+- 怎么 build、怎么 test、怎么跑（最核心的）
+- 关键目录结构和模块边界
+- 代码风格和命名约束
+- 不明显的环境坑
+- 绝对不能干的事（NEVER 列表）
+- 压缩时必须保留的信息（Compact Instructions）
+
+### **不该放什么**
+- 大段背景介绍
+- 完整 API 文档
+- "写高质量代码"这种空泛原则
+- Claude 读一下仓库就能推断出来的信息
+- 低频任务的详细知识（这些放到 Skills 里）
+
+### **实用模板**
+```
+# Project Contract  
+  
+## Build And Test  
+- Install: `pnpm install`  
+- Dev: `pnpm dev`  
+- Test: `pnpm test`  
+- Lint: `pnpm lint`  
+  
+## Architecture Boundaries  
+- HTTP handlers live in `src/http/handlers/`  
+- Domain logic lives in `src/domain/`  
+- Do not put persistence logic in handlers  
+  
+## Safety Rails  
+  
+### NEVER  
+- Modify `.env`, lockfiles, or CI secrets without approval  
+- Commit without running tests  
+  
+### ALWAYS  
+- Show diff before committing  
+- Update CHANGELOG for user-facing changes  
+  
+## Compact Instructions  
+Preserve:  
+1. Architecture decisions (NEVER summarize)  
+2. Modified files and key changes  
+3. Current verification status  
+4. Open risks and TODOs
+```
+
+w'i
