@@ -142,12 +142,17 @@ Skill 的核心设计是"按需加载"——描述符常驻上下文（告诉 Cl
 - **正文只放导航和核心约束**，大资料拆到 supporting files 里。
 - **有副作用的 Skill 要显式禁止自动调用**，不然 Claude 会自己决定要不要跑。
 
-### **典型的 Skill 类型**
+### **典型的 skill 类型**
 **检查清单型**：发布前跑一遍，确保不漏项。比如 build 通过了没、版本号改了没、CHANGELOG 更新了没。
 
 **工作流型**：标准化高风险操作。比如配置迁移，先备份、再 dry-run、确认后再执行、最后验证。内置回滚步骤。
 
 **领域专家型**：封装决策框架。比如运行时出问题了，按固定路径收集日志、检查状态、匹配症状，不让 Claude 瞎猜。
+
+### **实用策略**
+高频使用的 Skill 保持自动调用，优化描述符；
+低频的禁止自动调用，手动触发；
+极低频的直接删掉，改成文档。
 
 # 使用
 ## 权限模式
@@ -229,7 +234,10 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 
 ###  `/hooks` 
 在特定的事件发生时，自动执行一些操作。
-也可以直接在 `~/.claude/settings.json`、`.claude/settings.json` 或者 `.claude/settings.local.json` 文件中，手动添加 Hooks 的配置。
+可以在
+`~/.claude/settings.json`、
+`.claude/settings.json` 、
+`.claude/settings.local.json` 文件中，手动添加 Hooks 的配置。
 ```json
 {  
   "hooks": {  
