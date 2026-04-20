@@ -230,3 +230,11 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 这六层的关键在于：只强化其中一层，系统就会失衡。
 
 CLAUDE.md 写太长，上下文先把自己污染了；工具堆太多，它选择困难了；Subagent 开得到处都是，状态就漂移了；验证这步跳过了，出了问题根本不知道哪里挂的。
+
+## 上下文占用概况
+- 系统指令：约 2K
+- 所有启用的 Skill 描述：约 1-5K
+- MCP Server 工具定义：约 10-20K（这是最大的隐形杀手）
+- LSP 状态：约 2-5K
+- CLAUDE.md 和 Memory：约 3-7K
+
