@@ -299,4 +299,9 @@ Preserve:
 4. Open risks and TODOs
 ```
 
-w'i
+### **CLAUDE.md自我修正**
+每次纠正 Claude 的错误后，直接告诉它
+```
+Update your CLAUDE.md so you don't make that mistake again
+```
+
