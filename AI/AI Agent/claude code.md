@@ -195,10 +195,12 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 
 
 # 运行模式
+## 概览
 核心是一个循环运转的代理系统：
 ![427](assets/Claude%20Code/file-20260420094116189.png)
 这个循环会一直转，直到任务完成。每一轮它都在做三件事：看当前有什么信息、决定下一步做什么、检查做得对不对。
 
+## 分层级执行
 最直观的理解方式，是把 Claude Code 拆成六层来看。每一层解决一个不同的问题：
 
 - **第一层：CLAUDE.md / rules / memory —— 长期记忆**
