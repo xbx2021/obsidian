@@ -476,7 +476,7 @@ CLAUDE.md 写太长，上下文先把自己污染了；工具堆太多，它选�
 # Prompt Caching提示词缓存
 Claude Code 的整个架构都是围绕 Prompt 缓存构建的。缓存命中率高，不只降低成本，还能获得更宽松的速率限制。
 
-## **缓存是按前缀匹配的**
+## 缓存是按前缀匹配的
 Claude Code 的 Prompt 按这个顺序排列：
 1. System Prompt → 静态，锁定
 2. Tool Definitions → 静态，锁定
@@ -503,4 +503,21 @@ Prompt 缓存是模型唯一的。假如你已经和 Opus 对话了 100K tokens�
 - **最低层**：命令退出码、lint、typecheck、单元测试
 - **中间层**：集成测试、截图对比、contract test、smoke test
 - **更高层**：生产日志验证、监控指标、人工审查清单
+
+## 在 CLAUDE.md 和 Skill 里提前写好验收标准
+```markdown
+## Verification  
+  
+For backend changes:  
+- Run `make test` and `make lint`  
+- For API changes, update contract tests  
+  
+For UI changes:  
+- Capture before/after screenshots  
+  
+Definition of done:  
+- All tests pass  
+- Lint passes  
+- No TODO left behind unless explicitly tracked
+```
 
