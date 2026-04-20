@@ -359,7 +359,22 @@ CC 会在每次对话开始时读取它，其中包含 Bash 命令、代码风�
 ###  `截图` 
 将截图发给CC，执行任务
 
-### `安装 MCP` 
+### `/agents`  
+自定义子代理，子代理拥有独立的上下文和记忆，可以专注于特定的任务或领域。
+`~/.claude/agents` 创建子代理目录
+
+### `/plugin` 
+可以把 Agent Skills、子代理、MCP 和 Hooks 结合起来，打包成一个插件，让其他人安装，也可以安装其他人分享的插件，轻松扩展 Claude Code 的功能。
+	官方文档： https://code.claude.com/docs/en/plugins
+	官方插件市场： https://claude.com/plugins
+
+### `/review` 
+评审改动的代码，或最佳文件路径，只评审单个文件
+
+## **能力与治理**
+### `/mcp` 
+管理 MCP 连接，检查 token 成本，断开闲置 server
+### 安装 MCP 
 ```
 claude mcp add --transport http figma https://mcp.figma.com/mcp
 ```
@@ -395,19 +410,10 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 `~/.claude/skills`  用户级别
 `.claude/skills` 项目级别
 
-### `/agents`  
-自定义子代理，子代理拥有独立的上下文和记忆，可以专注于特定的任务或领域。
-`~/.claude/agents` 创建子代理目录
+### `/model`
+切换模型：Opus 深度推理，Sonnet 常规，Haiku 快速探索
 
-### `/plugin` 
-可以把 Agent Skills、子代理、MCP 和 Hooks 结合起来，打包成一个插件，让其他人安装，也可以安装其他人分享的插件，轻松扩展 Claude Code 的功能。
-	官方文档： https://code.claude.com/docs/en/plugins
-	官方插件市场： https://claude.com/plugins
-
-### `/review` 
-评审改动的代码，或最佳文件路径，只评审单个文件
-
-**上下文管理：**
+## **上下文管理**
 ### `/context`
 查看 token 占用结构，排查 MCP 和文件读取占比
 
