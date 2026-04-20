@@ -74,6 +74,72 @@ your-project/
     └── cache/
 ```
 
+## 配置示例
+### CLAUDE.md
+```markdown
+# Project Instructions
+- Use TypeScript strict mode
+- Follow Airbnb code style
+- All APIs return { data, error } shape
+- Use Zod for validation
+- Write unit tests for all functions
+```
+
+### settings.json
+```json
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "claude-3-5-sonnet-20240620",
+  "permissions": {
+    "allow": [
+      "bash(npm run*)",
+      "bash(git*)",
+      "read",
+      "write",
+      "edit",
+      "list"
+    ],
+    "deny": [
+      "bash(rm -rf*)",
+      "bash(curl*)",
+      "read(./.env*)",
+      "write(./node_modules/**)"
+    ]
+  },
+  "maxTokens": 8000,
+  "temperature": 0.1
+}
+```
+
+### rules/api-rules.md
+```markdown
+---
+paths:
+  - "src/api/**/*.ts"
+  - "src/controllers/**/*.ts"
+---
+# API Design Rules
+- Use RESTful conventions
+- All responses: { data, error, meta? }
+- Validate inputs with Zod
+- Add JSDoc for all endpoints
+```
+
+### commands/review.md
+```markdown
+---
+name: review
+description: Code review for current file
+---
+Review this code for:
+- Bugs & logic errors
+- Performance issues
+- Style violations
+- Security risks
+- Test coverage gaps
+
+Provide specific fixes.
+```
 
 ## CLAUDE.md
 ### **该放什么**
@@ -208,6 +274,7 @@ Claude Code 内置了三种 Subagent：
 - **model**：探索任务用 Haiku/Sonnet，重要审查用 Opus
 - **maxTurns**：防止跑飞
 - **isolation: worktree**：需要动文件时隔离文件系统
+
 
 # 使用
 ## 权限模式
