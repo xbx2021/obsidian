@@ -1,7 +1,10 @@
 # 安装
-```
+``` 
+# 这个方法已过时
 npm install -g @anthropic-ai/claude-code
 ```
+windows下的安装方法：
+
 
 C:\Users\54310\.claude 目录下创建配置文件 `seetings.json`，配置调用的模型
 ```json
