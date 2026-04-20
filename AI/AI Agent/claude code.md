@@ -194,7 +194,7 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 评审改动的代码，或最佳文件路径，只评审单个文件
 
 ### `/context`
-
+查看当前上下文使用信息
 
 
 # 运行模式
