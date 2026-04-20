@@ -202,6 +202,12 @@ Claude Code 内置了三种 Subagent：
 - **Explore**：只读扫库，跑 Haiku 模型省成本
 - **Plan**：规划调研，不动文件
 - **General-purpose**：通用型，什么都能干
+### **关键配置**
+不要给 Subagent 和主线程一样宽的权限，否则隔离就没有意义了。几个关键配置：
+- **tools / disallowedTools**：限定能用什么工具
+- **model**：探索任务用 Haiku/Sonnet，重要审查用 Opus
+- **maxTurns**：防止跑飞
+- **isolation: worktree**：需要动文件时隔离文件系统
 
 # 使用
 ## 权限模式
