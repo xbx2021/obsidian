@@ -295,8 +295,8 @@ Claude Code 内置了三种 Subagent：
 ### **什么时候不该用 Subagent**
 子任务之间强依赖、频繁要共享中间状态的场景，用 Subagent 反而更麻烦。这种情况在主线程里顺序做就好。
 
-# 使用
-## 命令
+# 命令
+
 ### `双击ESC`
 回到上一条输入重新编辑，不用重新手打。Claude 走偏了，双击 ESC 修改后重发，比重新开会话省事
 
@@ -373,6 +373,9 @@ claude -c
 - `claude --resume` —— 打开选择器恢复历史会话
 - `claude --continue --fork` —— 从已有会话分叉，同一起点不同方案
 - `claude -p "prompt"` —— 非交互模式，接入 CI 或脚本
+
+### `/insight`
+让 Claude 分析当前会话，提炼出哪些内容值得沉淀到 CLAUDE.md。是迭代优化配置的好手段
 
 ## **能力与治理**
 ### `/mcp` 
