@@ -744,6 +744,24 @@ CLAUDE.md 的每一行，都会在每一次对话开始时被自动注入上下�
 
 真正有价值的 CLAUDE.md，应该长这样。
 ```markdown
+# 项目规范
 
+## TypeScript
+- 使用 `interface` 定义对象结构，`type` 用于联合类型
+- 禁止 `any`，使用 `unknown` + 类型守卫
+- 函数参数 > 3 个时，使用对象参数
+
+## 错误处理
+```typescript
+// 业务错误
+throw new BusinessError('ORDER_NOT_FOUND', '订单不存在');
+
+// 验证错误（Zod 自动抛出）
+const data = orderSchema.parse(input);
+
+// controller 中不要 try-catch
+// 由全局错误中间件统一处理
 ```
+
+有个简单的判断标准——如果你不写，Claude 也大概率会做对，那就不要写。
 
