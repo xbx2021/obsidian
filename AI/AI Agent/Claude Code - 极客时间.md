@@ -43,3 +43,6 @@ Skills 的**渐进式披露架构**——不是把所有知识一股脑灌给 AI
 - **Agent SDK**：解决只会用对话的方式使用 Agent，难以嵌入现有系统和工作流的问题，用代码驱动 Agent，构建可编排的工程流程。
 
 
+## 什么是 Harness？
+Anthropic 官方文档里是怎么说的：
+	Claude Code serves as the agentic harness around Claude: it provides the tools, context management, and execution environment that turn a language model into a capable coding agent.
