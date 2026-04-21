@@ -293,7 +293,7 @@ Claude Code 并不是只有一个CLAUDE.md记忆文件，全局、项目和项�
 ```markdown
 ~/.claude/CLAUDE.md           # 全局（所有项目共用）
     ↓
-项目根目录/CLAUDE.md          # 项目级（当前项目）
+项目根目录/.claude/CLAUDE.md    # 项目级（当前项目）
     ↓
 项目根目录/.claude/rules/*.md # 模块级（特定目录）
 ```
