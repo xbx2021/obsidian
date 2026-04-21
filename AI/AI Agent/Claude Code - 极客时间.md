@@ -671,7 +671,7 @@ echo "CLAUDE.local.md" >> .gitignore
 ```
 
 ## 规则目录：分类组织
-Rules 是按主题组织的规则文件，支持**条件作用域**（也就是视情况来确定是否加载该记忆内容），适合场景包括 CLAUDE.md 变得太长时，不同文件类型需要不同规范时，以及前后端分离的项目。
+rules 是按主题组织的规则文件，支持**条件作用域**（也就是视情况来确定是否加载该记忆内容），适合场景包括 CLAUDE.md 变得太长时，不同文件类型需要不同规范时，以及前后端分离的项目。
 
 位置：.claude/rules/*.md
 
@@ -685,3 +685,41 @@ Rules 是按主题组织的规则文件，支持**条件作用域**（也就是�
     └── security.md        # 安全规范
 ```
 
+条件作用域示例：.claude/rules/testing.md
+```python
+---
+paths:
+  - "src/**/*.test.ts"
+  - "tests/**/*.ts"
+---
+
+# 测试规范
+
+## 命名
+- 单元测试: `*.test.ts`
+- 集成测试: `*.integration.test.ts`
+
+## 结构
+使用 Arrange-Act-Assert 模式：
+
+```typescript
+describe('OrderService', () => {
+  describe('createOrder', () => {
+    it('should create order when stock is available', async () => {
+      // Arrange
+      const mockProduct = createMockProduct({ stock: 10 });
+
+      // Act
+      const order = await orderService.createOrder(mockProduct.id, 1);
+
+      // Assert
+      expect(order.status).toBe('created');
+    });
+  });
+});
+
+## 覆盖率要求
+- 业务逻辑: > 80%
+- 工具函数: > 90%
+- 路由/控制器: 可以较低
+```
