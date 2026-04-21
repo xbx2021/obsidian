@@ -436,3 +436,29 @@ result = client.query(
 当你开发了一套好用的 Commands、Skills、Hooks 组合，想要分享给团队或社区时，就需要 Plugins。
 
 **Plugins 不是一种新能力，而是打包机制**——就像 npm 包把一堆 JavaScript 文件打包在一起，Plugin 把一组相关的 Claude Code 扩展打包在一起。
+
+```markdown
+my-team-plugin/
+├── commands/           # 斜杠命令
+│   └── review.md
+├── skills/             # 技能
+│   └── security-check/
+│       └── SKILL.md
+├── agents/             # 子代理
+│   └── test-runner.md
+├── hooks/              # 钩子
+│   └── pre-edit.sh
+└── plugin.json         # 插件配置
+```
+
+一个典型的 Plugins 使用场景：
+	你是团队的技术 Lead，花了两周时间打磨出一套完美的代码审查流程：一个  /review  命令触发审查，一个  code-quality Skill 自动分析代码质量，一个  test-runner  子代理执行测试，还有一个 Hook 确保所有修改都有对应的测试。
+	与其让团队成员手动复制这些文件，不如打包成一个 Plugin，新成员只需一条命令就能获得完整的工作流。
+
+**Plugin 的价值在于可复用、可版本化、可分发。**
+
+## 技术选型指南
+
+当你面对一个真实需求时，如何选择正确的技术？下面这是我总结的决策流程：
+
+![](assets/Claude%20Code%20-%20极客时间/file-20260421150226357.png)
