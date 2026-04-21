@@ -671,3 +671,17 @@ echo "CLAUDE.local.md" >> .gitignore
 ```
 
 ## 规则目录：分类组织
+Rules 是按主题组织的规则文件，支持**条件作用域**（也就是视情况来确定是否加载该记忆内容），适合场景包括 CLAUDE.md 变得太长时，不同文件类型需要不同规范时，以及前后端分离的项目。
+
+位置：.claude/rules/*.md
+
+目录结构：
+```markdown
+.claude/
+└── rules/
+    ├── typescript.md      # TypeScript 规范
+    ├── testing.md         # 测试规范
+    ├── api-design.md      # API 设计规范
+    └── security.md        # 安全规范
+```
+
