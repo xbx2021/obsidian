@@ -263,7 +263,7 @@ CCS（Claude Code Switch）管“哪个账户 + 哪个代理”
 Claude Code 的底层能力从技术上拆解可以分为四个层次：基础层、扩展层、集成层和编程接口层。
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421134003058.png)
 
-### 基础层：Memory（记忆系统）
+### **基础层：Memory（记忆系统）**
 
 基础层也可以称为是 Claude Code 的长期记忆系统，它的核心文件是 CLAUDE.md。
 
@@ -298,3 +298,5 @@ Claude Code 并不是只有一个CLAUDE.md记忆文件，全局、项目和项�
 项目根目录/.claude/rules/*.md # 模块级（特定目录）
 ```
 
+
+### **扩展层：四大核心组件**
