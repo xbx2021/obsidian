@@ -916,3 +916,7 @@ expect(screen.getByRole('button')).toBeEnabled();
 // ❌ 不好
 expect(component.state.isLoading).toBe(false);
 ```
+
+### **场景二：优化已有的 CLAUDE.md**
+假设你的 CLAUDE.md 已经有 500 行，Claude 开始变慢。此时就需要给它瘦个身，做一些优化了。我们可以分三步走。
+
