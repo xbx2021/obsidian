@@ -250,7 +250,7 @@ Claude Code 会怎么做？它会直接执行  Grep  工具搜索 TODO，然�
 
 - Parallel.ai，What is an Agent Harness，最佳独立解释文，定义 Harness 6 大组件，区分 Harness/Framework/Orchestrator。
 
-# 基础篇
+# 基础篇 - 底层技术全景导览
 
 ## 工具
 
@@ -517,3 +517,17 @@ my-team-plugin/
 
 ### **Claude Code 扩展层 · 四大核心组件对照表** 
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421151335830.png)
+
+
+# 基础篇 - 记忆系统与CLAUDE.md
+
+## Claude Code 记忆系统的工作原理
+在项目目录启动 Claude Code 时，发生的“记忆系统初始化”过程如下图所示。
+![](assets/Claude%20Code%20-%20极客时间/file-20260421154659441.png)
+Claude Code 有多种方式获取项目相关知识，它们的区别如下表所示：
+![](assets/Claude%20Code%20-%20极客时间/file-20260421154816613.png)
+**CLAUDE.md 的内容会每次对话都加载**，所以要精简。把“每次都需要”的内容放这里，把“偶尔需要”的内容放到 Skills 或文档里。
+
+## Claude Code 的五层记忆架构
+Claude Code 支持五个层级的记忆，就像洋葱一样，从外到内，按**层级结构**组织——高层级的文件优先加载，为底层文件提供基础：
+![](assets/Claude%20Code%20-%20极客时间/file-20260421155134524.png)
