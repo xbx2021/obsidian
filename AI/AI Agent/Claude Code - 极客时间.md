@@ -872,3 +872,8 @@ src/
 ```
 
 **Step 2：创建本地记忆**
+```bash
+touch CLAUDE.local.md
+echo "CLAUDE.local.md" >> .gitignore
+```
+
