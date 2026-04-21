@@ -923,4 +923,23 @@ expect(component.state.isLoading).toBe(false);
 **Step 1：识别核心内容**
 可以问自己：哪些内容是每次对话都需要的？下面是对于项目整体的一个规划示例——目的是使 CLAUDE.md 保有一个简单而清晰的结构。
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421163218013.png)
-Step 2：拆分成独立文件
+**Step 2：拆分成独立文件**
+详细的 API 文档、数据库表结构和部署流程虽然重要，但是完全没有必要每次都读入 Claude 内存，可以移动到单独文件，精简原来的 CLAUDE.md 。
+```markdown
+## 核心规范
+[精简内容]
+
+## 详细参考
+- API 端点清单: @docs/api.md
+- 数据库 Schema: @prisma/schema.prisma
+- 部署配置: @docs/deploy.md
+```
+
+**Step 3：使用条件规则**
+可以考虑进一步把测试规范、前端规范、后端规范拆分到  .claude/rules/，并设置  paths条件。
+
+### **场景三：记忆管理命令**
+要查看当前记忆，在 Claude Code 中输入：
+```
+
+```
