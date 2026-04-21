@@ -491,3 +491,23 @@ my-team-plugin/
 ### **场景 VS 方案的速查表**
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421150826181.png)
 ### **组合使用**
+真实世界的问题很少能用单一技术解决。Claude Code 的强大之处在于组件可组合——每个组件做好自己的事，组合起来完成复杂任务。
+
+假设你想实现这样一个流程：每当有人提交 PR，自动进行代码审查，发现问题就评论，没问题就通过。这需要组合多种技术：
+
+```markdown
+1. Headless 模式在 CI 中触发
+   └── GitHub Actions 监听 PR 事件，调用 claude --headless
+
+2. 调用 code-review SubAgent
+   └── 隔离审查任务，避免污染主流程上下文
+
+3. SubAgent 使用 security-check Skill
+   └── 自动识别安全相关代码，应用专业审查规则
+
+4. Hooks 记录审查日志
+   └── 每次工具调用都记录，便于审计和调试
+
+5. 结果通过 MCP 发送到 Slack
+   └── 审查完成后通知相关人员
+```
