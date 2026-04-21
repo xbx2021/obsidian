@@ -191,3 +191,29 @@ Claude Code 的成功证明了一件事：**模型 + Harness = 10× 生产力**�
 模型的能力由 Anthropic/OpenAI 决定，无法改变。
 但 Harness 的配置——CLAUDE.md 怎么写、工具权限怎么设、Hooks 怎么接、MCP 怎么连——这些全在你手中，本质上都是在**调教 Harness**。
 
+### **感受 Harness 的存在**
+用裸 API 和 Claude Code 分别执行同一个任务：
+```
+# 方式一：裸 API 调用（没有 Harness）- 你可以换成Deepseek或GPT等任何模型
+curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "content-type: application/json" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-sonnet-4-6-20260320",
+    "max_tokens": 1024,
+    "messages": [{"role":"user","content":"找出当前目录下所有 TODO 注释并列出文件名和行号"}]
+  }'
+
+# 方式二：通过 Harness（Claude Code）
+claude -p "找出当前目录下所有 TODO 注释并列出文件名和行号" --output-format text
+```
+
+裸 API 会怎么回答？它会告诉你“你可以用 grep 命令来搜索”——因为它没有手脚，**只能说**。
+
+Claude Code 会怎么做？它会直接执行  Grep  工具搜索 TODO，然后返回完整的文件名、行号和上下文——因为 **Harness 给了它行动的能力**。
+
+同一个大脑，有没有 Harness，结果天壤之别。
+
+我们从底层理解了 Claude Code 的真实身份——**它是一个  Harness，一个包裹在 Claude 模型外面的智能体编排框架**。
+
