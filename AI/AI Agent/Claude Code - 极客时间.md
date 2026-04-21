@@ -1,4 +1,6 @@
+源码地址：
 https://github.com/huangjia2019/claude-code-engineering
+
 # 开篇
 ## 为什么 Claude Code 这么强？
 
@@ -823,3 +825,9 @@ CLAUDE.md 的职责是定义默认决策，而不是承载全部知识。对于�
 
 ## CLAUDE.md 实战演练
 ### **场景一：为新项目创建记忆**
+假设你刚接手一个 React + TypeScript 前端项目，让我们从零配置记忆。（可以参考我们课程的 Github Repo 02-Memory 目录中的示例。）
+
+**Step 1：创建基础 CLAUDE.md**
+先通过 /init 命令自动初始化 CLAUDE.md 文件，或使用下面的命令在项目根目录手动创建记忆文件。
+```
+```
