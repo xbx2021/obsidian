@@ -267,3 +267,34 @@ Claude Code 的底层能力从技术上拆解可以分为四个层次：基础�
 
 基础层也可以称为是 Claude Code 的长期记忆系统，它的核心文件是 CLAUDE.md。
 
+强烈建议每一个人都为你的 Claude 创建 CLAUDE.md，以提供给它一系列最基本的信息。例如，当我们要开始一个新的电商项目，我创建了下面的 CLAUDE.md 文件。
+```markdown
+# Project: E-commerce Platform
+
+## Tech Stack
+- Frontend: React + TypeScript
+- Backend: Node.js + Express
+- Database: PostgreSQL
+
+## Code Style
+- Use functional components
+- Prefer async/await over .then()
+- Maximum line length: 100 characters
+
+## Important Rules
+- NEVER commit to main directly
+- Always run tests before pushing
+```
+
+Claude 每次开始对话时，都会读取这个文件。这样它就“记住”了你的项目规范，不需要每次重复说明。
+
+Claude Code 并不是只有一个CLAUDE.md记忆文件，全局、项目和项目的特定模块都可以拥有属于自己的记忆文件（或者也可以叫配置文件）。
+
+```markdown
+~/.claude/CLAUDE.md           # 全局（所有项目共用）
+    ↓
+项目根目录/CLAUDE.md          # 项目级（当前项目）
+    ↓
+项目根目录/.claude/rules/*.md # 模块级（特定目录）
+```
+
