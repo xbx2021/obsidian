@@ -47,6 +47,8 @@ Skills 的**渐进式披露架构**——不是把所有知识一股脑灌给 AI
 Anthropic 官方文档里是怎么说的：
 	Claude Code serves as the agentic harness around Claude: it provides the tools, context management, and execution environment that turn a language model into a capable coding agent.
 
-Claude Code 是一个智能体编排框架，包裹在 Claude 模型外面。它提供工具、上下文管理和执行环境，把一个语言模型变成一个有能力的编码 Agent。
+Claude Code 是一个**智能体编排框架**，包裹在 Claude 模型外面。它提供工具、上下文管理和执行环境，把一个语言模型变成一个有能力的编码 Agent。
 
 这个定义里有三个关键词，**工具、上下文管理、执行环境**。模型本身只会生成文本。是 Harness 给了它读文件的能力、写代码的能力、搜索代码库的能力、在终端执行命令的能力。没有 Harness，Claude 就是一个只会说话的大脑——有智力，没有手脚。
+
+![](assets/Claude%20Code%20-%20极客时间/file-20260421103236177.png)
