@@ -252,6 +252,9 @@ Claude Code 会怎么做？它会直接执行  Grep  工具搜索 TODO，然�
 
 # 基础篇
 
-## CC Switch
-它做了三件事：模型切换、MCP 管理和  Skills 管理。
+CC Switch 管“用哪个模型 + 哪个 MCP”
+CCS（Claude Code Switch）管“哪个账户 + 哪个代理”
+
+核心功能都是改  settings.json。
+
 
