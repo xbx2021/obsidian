@@ -920,3 +920,7 @@ expect(component.state.isLoading).toBe(false);
 ### **场景二：优化已有的 CLAUDE.md**
 假设你的 CLAUDE.md 已经有 500 行，Claude 开始变慢。此时就需要给它瘦个身，做一些优化了。我们可以分三步走。
 
+**Step 1：识别核心内容**
+可以问自己：哪些内容是每次对话都需要的？下面是对于项目整体的一个规划示例——目的是使 CLAUDE.md 保有一个简单而清晰的结构。
+![](assets/Claude%20Code%20-%20极客时间/file-20260421163218013.png)
+Step 2：拆分成独立文件
