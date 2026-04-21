@@ -802,3 +802,18 @@ const data = orderSchema.parse(input);
 示例参考: `src/routes/orders.ts`
 ```
 当步骤清晰、路径明确、还有参考文件时，Claude 才会稳定复用同一套工作流，而不是每次自由发挥。
+
+### **核心原则 4：渐进式披露：不要把一切都塞进 CLAUDE.md**
+CLAUDE.md 的职责是定义默认决策，而不是承载全部知识。对于非核心、但可能被用到的内容，正确的做法是引用，而不是复制。
+```markdown
+# 项目规范
+
+## 核心
+[精简的核心规范]
+
+## 详细文档
+- 数据库设计: 见 `docs/database.md`
+- API 规范: 见 `docs/api-spec.md`
+- 部署流程: 见 `docs/deployment.md`
+```
+
