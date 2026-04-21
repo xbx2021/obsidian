@@ -411,3 +411,16 @@ result = client.query(
 ### **数据流向**
 数据是怎么在系统中流动的。这张图展示了一个典型请求的生命周期：
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421145046081.png)
+让我结合一个具体场景来解释这个流程——当用户输入“帮我修复 src/api.js 中的安全漏洞”之后，Claude 可能的处理流程如下。
+
+1Memory 层：Claude 首先加载  CLAUDE.md，了解到这是一个 Node.js 项目，团队要求所有安全修复必须附带测试。
+
+- 扩展层分发：
+
+a 用户没有输入斜杠命令，所以 Commands 不参与。
+
+b. Claude 识别出“安全漏洞”关键词，激活  security-review Skill。
+
+c. Skill 指示 Claude 创建一个子代理来执行测试。
+
+Hooks 监控：Claude 准备执行  Edit  工具修改代码时，Hooks 自动运行预检查脚本，确保没有引入新的安全问题。工具执行：通过 Read、Edit 等工具完成代码修改。MCP 连接：如果配置了 Jira MCP，还可以自动更新相关的 ticket 状态。
