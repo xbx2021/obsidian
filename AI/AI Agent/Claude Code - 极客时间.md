@@ -173,3 +173,21 @@ Claude Code 的成功证明了一件事：**模型 + Harness = 10× 生产力**�
 
 **OpenCode**（前身 SST）是最成功的第三方 Harness。它用 Client-Server 架构解决了 Claude Code 的“单表面”局限——TUI、桌面 App、IDE 插件、Slack 机器人共享同一个后端。截至 2026 年 3 月，OpenCode 拿到了 119K GitHub stars，月活 65 万 +，超过了 Claude Code 本身的 star 数。
 
+### **为什么 2026 年是 Harness 之年？**
+
+2025 年的关键词是 Agent。2026 年的关键词是  Agent Harness。
+
+为什么？因为行业已经意识到。模型本身正在商品化——Claude、GPT、Gemini、DeepSeek 的能力差距在缩小。但**同一个模型在不同 Harness 中的表现差距，远大于不同模型在同一个 Harness 中的差距**。
+
+换句话说，**Harness 比模型更重要**。
+
+几个数据点足以佐证：
+- Claude Code 在 2025 年 11 月达到  10 亿美元年化收入——这是一个 Harness 产品的收入，不是模型本身的收入。
+- Anthropic 在 2026 年 3 月收购了  Bun（JavaScript 运行时），明确表示要加强 Claude Code 的基础设施。收购一个运行时来加强一个 Harness——这说明 Anthropic 把 Harness 视为战略级资产。
+- 开源社区出现了“Agent Harness“作为独立品类。GitHub 上以 “harness” 为关键词的新仓库数量在 2026 年 Q1 翻了三倍。
+
+对于我们开发者来说，这意味着什么？**理解 Harness 比理解模型更重要**。
+
+模型的能力由 Anthropic/OpenAI 决定，无法改变。
+但 Harness 的配置——CLAUDE.md 怎么写、工具权限怎么设、Hooks 怎么接、MCP 怎么连——这些全在你手中，本质上都是在**调教 Harness**。
+
