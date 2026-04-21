@@ -53,5 +53,9 @@ Claude Code 是一个**智能体编排框架**，包裹在 Claude 模型外面�
 
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421103236177.png)
 
-Harness 的内部结构拆解
+**Harness 的内部结构拆解**
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421103434707.png)
+
+
+**Agent = Model + Harness。**  图中最核心的位置是  Model——那个蓝色芯片图标，代表 Claude 的大语言模型。但模型本身只是一个推理引擎，它不能独立行动。
+
