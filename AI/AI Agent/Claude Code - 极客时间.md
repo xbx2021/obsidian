@@ -356,3 +356,39 @@ Hook: 自动检查是否有安全敏感内容
 ```
 
 Hooks 适合**自动化检查**——格式化、安全检查、日志记录等。
+
+### **集成层：连接外部世界**
+上面这四大核心组件之上，是集成层，负责链接外部世界。集成层包含 Headless（无头模式）和 MCP（Model Context Protocol）两大技术。
+
+- **Headless（无头模式）**
+无头模式让 Claude Code 在没有人工交互的情况下运行，适合  CI/CD 集成——自动代码审查、自动修复、自动生成变更日志等。
+```markdown
+# GitHub Actions 中
+- name: Auto-fix code issues
+  run: claude --headless "Fix all linting errors in src/"
+```
+
+- **MCP（Model Context Protocol）**
+MCP 让 Claude 连接外部工具和服务，适合工具连接——可以把任何外部系统变成 Claude 可调用的工具。
+```markdown
+Claude → MCP → 数据库
+Claude → MCP → Jira
+Claude → MCP → 自定义 API
+```
+
+### **编程接口层：Agent SDK**
+当配置式的扩展不够用时，你可以用代码来驱动 Claude。这种方式适合**构建自定义 Agent**——完全控制执行流程、自定义工具、复杂工作流。
+```python
+from claude_sdk import ClaudeSDKClient
+
+client = ClaudeSDKClient()
+
+# 执行任务
+result = client.query(
+    prompt="Review this code for security issues",
+    tools=["Read", "Grep"],
+    max_turns=10
+)
+```
+
+
