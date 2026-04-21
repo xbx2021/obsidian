@@ -148,3 +148,21 @@ pip install claude-agent-sdk
 
 Agent SDK 提供了与 Claude Code 完全相同的 Agentic Loop、内置工具、上下文管理、权限系统、Hooks、Sub-Agent 支持和 MCP 集成。区别在于，Claude Code 是面向终端用户的交互式产品，Agent SDK 是面向开发者的编程库。
 
+用 Agent SDK，你可以构建自己的 Harness——一个定制化的 Agent 应用，嵌入到你自己的产品、工作流或 CI/CD 系统中。
+
+```python
+from claude_agent_sdk import AgentClient
+
+client = AgentClient(api_key="...")
+
+# 创建一个有工具能力的 Agent
+result = client.run(
+    prompt="审查这个 PR 的安全问题",
+    tools=["Read", "Grep", "Glob", "Bash"],
+    max_turns=20,
+    allowed_tools={"Bash": ["npm test", "npm run lint"]}
+)
+
+print(result.text)
+```
+
