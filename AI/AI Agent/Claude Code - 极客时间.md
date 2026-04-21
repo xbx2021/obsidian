@@ -791,5 +791,14 @@ const data = orderSchema.parse(input);
 
 **HOW —— 按什么步骤去做？**
 ```markdown
+## 创建新 API 端点
 
+1. 在 `src/schemas/` 创建请求/响应 Zod schema
+2. 在 `src/routes/` 添加路由定义
+3. 在 `src/controllers/` 实现请求处理
+4. 在 `src/services/` 实现业务逻辑
+5. 在 `tests/` 添加测试用例
+
+示例参考: `src/routes/orders.ts`
 ```
+当步骤清晰、路径明确、还有参考文件时，Claude 才会稳定复用同一套工作流，而不是每次自由发挥。
