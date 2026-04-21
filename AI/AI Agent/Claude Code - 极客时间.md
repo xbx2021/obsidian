@@ -166,3 +166,5 @@ result = client.run(
 print(result.text)
 ```
 
+如果说 Claude Code 是一辆出厂配置的整车，Agent SDK 就是发动机总成——你可以把它装进任何车身里。
+![](assets/Claude%20Code%20-%20极客时间/file-20260421110624111.png)
