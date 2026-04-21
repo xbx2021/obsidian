@@ -951,3 +951,18 @@ expect(component.state.isLoading).toBe(false);
 /memory edit user    # 编辑用户级记忆
 /memory edit local   # 编辑本地级记忆
 ```
+
+也可以通过自然语言指令，让 Claude 帮你更新记忆！
+```markdown
+你：请记住，我们项目使用 pnpm 而不是 npm
+
+Claude：好的，我可以将这个信息添加到项目的 CLAUDE.md 中。
+        要我现在更新吗？
+```
+
+## Auto Memory 解读
+Claude Code 本身拥有自动记忆功能，随着项目的演进和对话的深入，会在 `~/.claude/projects/memory/` 目录下自动生成 Auto Memory，用于记录模型在项目中学习到的模式、调试经验与结构认知。
+
+这意味着，Claude Code 的“记忆”并不是单一文件，而是一种多层叠加的上下文注入架构：有些是人为编写的长期规则，有些是组织级强制策略，还有一些是模型自动沉淀的经验笔记。
+
+CLAUDE.md 决定“系统被告知什么”，而 Auto Memory 决定“系统在实践中学到了什么”。记忆因此成为一种结构化的工程能力，而不是简单的对话缓存。
