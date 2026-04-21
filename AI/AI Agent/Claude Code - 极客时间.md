@@ -877,3 +877,42 @@ touch CLAUDE.local.md
 echo "CLAUDE.local.md" >> .gitignore
 ```
 
+然后创建如下的内容。
+```markdown
+# 本地笔记
+
+## 环境
+- API: http://localhost:8080
+- Mock: 使用 MSW
+
+## 当前任务
+- 重构购物车组件
+- 截止: 本周五
+```
+
+**Step 3：添加条件规则（可选）**
+```bash
+mkdir -p .claude/rules
+```
+
+然后创建如下.claude/rules/testing.md：
+```markdown
+---
+paths:
+  - "src/**/*.test.tsx"
+  - "src/**/*.test.ts"
+---
+
+# 测试规范
+
+- 使用 Vitest + React Testing Library
+- 测试文件放在同目录: `Button.test.tsx`
+- 优先测试用户行为，而非实现细节
+
+```typescript
+// ✅ 好
+expect(screen.getByRole('button')).toBeEnabled();
+
+// ❌ 不好
+expect(component.state.isLoading).toBe(false);
+```
