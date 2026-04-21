@@ -217,3 +217,5 @@ Claude Code 会怎么做？它会直接执行  Grep  工具搜索 TODO，然�
 
 我们从底层理解了 Claude Code 的真实身份——**它是一个  Harness，一个包裹在 Claude 模型外面的智能体编排框架**。
 
+### **参考资料**
+Tier 1：AI 实验室一手资料AnthropicEffective Harnesses for Long-Running Agents：官方定义 harness 架构，Initializer + Coding Agent 两阶段设计。Building Effective Agents：2024.12 发表的行业奠基性文章，Workflow vs Agent 区分，Harness 概念前身。Building Agents with the Claude Agent SDK：Agent SDK 官方文档，暴露 Claude Code 内部的 Agent Loop。
