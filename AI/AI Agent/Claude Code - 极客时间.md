@@ -941,5 +941,13 @@ expect(component.state.isLoading).toBe(false);
 ### **场景三：记忆管理命令**
 要查看当前记忆，在 Claude Code 中输入：
 ```
+/memory
+```
+就会显示当前加载的所有记忆内容和来源。
 
+编辑记忆的命令参数如下。
+```
+/memory edit         # 编辑项目级 CLAUDE.md
+/memory edit user    # 编辑用户级记忆
+/memory edit local   # 编辑本地级记忆
 ```
