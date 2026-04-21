@@ -435,3 +435,4 @@ result = client.query(
 
 当你开发了一套好用的 Commands、Skills、Hooks 组合，想要分享给团队或社区时，就需要 Plugins。
 
+**Plugins 不是一种新能力，而是打包机制**——就像 npm 包把一堆 JavaScript 文件打包在一起，Plugin 把一组相关的 Claude Code 扩展打包在一起。
