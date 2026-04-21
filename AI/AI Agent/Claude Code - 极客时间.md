@@ -252,11 +252,18 @@ Claude Code 会怎么做？它会直接执行  Grep  工具搜索 TODO，然�
 
 # 基础篇
 
-# 工具
+## 工具
 
 CC Switch 管“用哪个模型 + 哪个 MCP”
 CCS（Claude Code Switch）管“哪个账户 + 哪个代理”
 
 核心功能都是改  settings.json。
 
+## 底层技术全景图
+Claude Code 的底层能力从技术上拆解可以分为四个层次：基础层、扩展层、集成层和编程接口层。
+![](assets/Claude%20Code%20-%20极客时间/file-20260421134003058.png)
+
+### 基础层：Memory（记忆系统）
+
+基础层也可以称为是 Claude Code 的长期记忆系统，它的核心文件是 CLAUDE.md。
 
