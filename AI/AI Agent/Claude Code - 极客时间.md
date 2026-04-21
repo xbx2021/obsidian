@@ -168,3 +168,8 @@ print(result.text)
 
 如果说 Claude Code 是一辆出厂配置的整车，Agent SDK 就是发动机总成——你可以把它装进任何车身里。
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421110624111.png)
+### **第三方 Harness 的崛起与冲突**
+Claude Code 的成功证明了一件事：**模型 + Harness = 10× 生产力**。这个公式吸引了大量第三方工具来构建自己的 Harness。
+
+**OpenCode**（前身 SST）是最成功的第三方 Harness。它用 Client-Server 架构解决了 Claude Code 的“单表面”局限——TUI、桌面 App、IDE 插件、Slack 机器人共享同一个后端。截至 2026 年 3 月，OpenCode 拿到了 119K GitHub stars，月活 65 万 +，超过了 Claude Code 本身的 star 数。
+
