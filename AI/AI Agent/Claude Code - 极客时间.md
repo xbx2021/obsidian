@@ -249,3 +249,9 @@ Claude Code 会怎么做？它会直接执行  Grep  工具搜索 TODO，然�
 - Lilian Weng，LLM Powered Autonomous Agents，2023 年的奠基综述，虽未用 “harness”一词但定义了同一架构。
 
 - Parallel.ai，What is an Agent Harness，最佳独立解释文，定义 Harness 6 大组件，区分 Harness/Framework/Orchestrator。
+
+# 基础篇
+
+## CC Switch
+它做了三件事：模型切换、MCP 管理和  Skills 管理。
+
