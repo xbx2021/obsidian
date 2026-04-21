@@ -765,3 +765,7 @@ const data = orderSchema.parse(input);
 
 有个简单的判断标准——如果你不写，Claude 也大概率会做对，那就不要写。
 
+### **核心原则 3：关键三问题 WHY / WHAT / HOW**
+
+一份真正“能用”的 CLAUDE.md，通常都在回答三个问题。不是一次性回答，而是在**关键地方给出明确指引**。
+
