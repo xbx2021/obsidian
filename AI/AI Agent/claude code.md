@@ -157,7 +157,7 @@ Review this code for:
 Provide specific fixes.
 ```
 
-### ## agents/code-reviewer.md
+### agents/code-reviewer.md
 ```markdown
 ---
 name: code-reviewer
