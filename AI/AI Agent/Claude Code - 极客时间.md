@@ -135,3 +135,16 @@ Claude Code 的解决方案是**自动压缩**。当对话历史接近上下文�
 
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421110159058.png)
 
+### **Claude Agent SDK——可编程的 Harness**
+
+虽然 Claude Code CLI 本身不开源，但 Anthropic 在 2025 年发布了  Claude Agent SDK——一套可编程的 Harness 接口。
+```
+# TypeScript 版本
+npm install @anthropic-ai/claude-agent-sdk
+
+# Python 版本
+pip install claude-agent-sdk
+```
+
+Agent SDK 提供了与 Claude Code 完全相同的 Agentic Loop、内置工具、上下文管理、权限系统、Hooks、Sub-Agent 支持和 MCP 集成。区别在于，Claude Code 是面向终端用户的交互式产品，Agent SDK 是面向开发者的编程库。
+
