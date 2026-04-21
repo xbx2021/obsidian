@@ -428,3 +428,10 @@ result = client.query(
 4. 工具执行：通过 Read、Edit 等工具完成代码修改。
 
 5. MCP 连接：如果配置了 Jira MCP，还可以自动更新相关的 ticket 状态。
+
+**Memory 是基础设施，始终存在；扩展层是能力中心，按需激活；Hooks 是守门人，监控一切。**
+
+## Plugins：打包容器
+
+当你开发了一套好用的 Commands、Skills、Hooks 组合，想要分享给团队或社区时，就需要 Plugins。
+
