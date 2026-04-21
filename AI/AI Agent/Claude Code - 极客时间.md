@@ -43,6 +43,7 @@ Skills 的**渐进式披露架构**——不是把所有知识一股脑灌给 AI
 - **Agent SDK**：解决只会用对话的方式使用 Agent，难以嵌入现有系统和工作流的问题，用代码驱动 Agent，构建可编排的工程流程。
 
 
+# Harness
 ## 什么是 Harness？
 
 Anthropic 官方文档里是怎么说的：
@@ -54,7 +55,7 @@ Claude Code 是一个**智能体编排框架**，包裹在 Claude 模型外面�
 
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421103236177.png)
 
-**Harness 的内部结构拆解**
+## Harness 的内部结构拆解
 ![](assets/Claude%20Code%20-%20极客时间/file-20260421103434707.png)
 
 
@@ -75,4 +76,14 @@ Claude Code 是一个**智能体编排框架**，包裹在 Claude 模型外面�
 注意图中的空间关系：**Model 在中心，五个组件围绕它排列，整体被一个名为 Harness 的边框包裹**。这不是随意的布局，它精确表达了一个架构事实：模型不直接接触外部世界，所有交互都通过 Harness 的组件中转。Harness 是模型和现实之间的唯一接口。
 
 这五个组件也不是孤立的。Tools 的执行结果变成 Context 的一部分；Hooks 在 Tools 执行前后触发；Permissions 决定哪些 Tools 可以被调用；Memory 用于跨会话保留 Context 中的关键信息。它们构成了一个协同运转的系统，少了任何一个，Agent 的能力都会大打折扣。
+
+## Harness 在整个系统中的层级位置
+
+![](assets/Claude%20Code%20-%20极客时间/file-20260421104453020.png)
+
+### **Agentic Loop——Harness 的心脏**
+
+如果 Harness 是一台机器，Agentic Loop 就是它的发动机。整个 Claude Code 的运转，归根到底就是一个循环：
+![](assets/Claude%20Code%20-%20极客时间/file-20260421104625524.png)
+
 
