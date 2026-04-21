@@ -781,4 +781,15 @@ const data = orderSchema.parse(input);
 
 **WHAT —— 具体要做什么，不要做什么？**
 ```markdown
+## 数据库操作规范
+- 所有查询通过 Prisma ORM
+- 复杂查询封装在 `src/repositories/`
+- 禁止在 controller/service 中直接写 SQL
+- 事务使用 `prisma.$transaction()`
+```
+这一部分的重点是边界。什么是允许的，什么是禁止的，决策应该发生在哪一层？对 Claude 来说，这比“最佳实践”四个字重要得多。
+
+**HOW —— 按什么步骤去做？**
+```markdown
+
 ```
