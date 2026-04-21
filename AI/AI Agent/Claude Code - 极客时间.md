@@ -252,6 +252,8 @@ Claude Code 会怎么做？它会直接执行  Grep  工具搜索 TODO，然�
 
 # 基础篇
 
+# 工具
+
 CC Switch 管“用哪个模型 + 哪个 MCP”
 CCS（Claude Code Switch）管“哪个账户 + 哪个代理”
 
