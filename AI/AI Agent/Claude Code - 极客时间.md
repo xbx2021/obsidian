@@ -816,4 +816,7 @@ CLAUDE.md 的职责是定义默认决策，而不是承载全部知识。对于�
 - API 规范: 见 `docs/api-spec.md`
 - 部署流程: 见 `docs/deployment.md`
 ```
+这样做有两个好处：
+- CLAUDE.md 保持轻量，启动成本低 。
+- 当 Claude 需要进一步的细节信息时，可以按需读取引用文件。
 
