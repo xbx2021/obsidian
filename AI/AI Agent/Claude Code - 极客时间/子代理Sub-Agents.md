@@ -283,3 +283,65 @@ hooks:
 
 上面的例子中，db-reader  虽然拥有 Bash 工具，但每次执行 Bash 命令前都会被 Hook 拦截验证——只有 SELECT 查询能通过，INSERT/UPDATE/DELETE 等写操作会被阻止。这比不给 Bash 工具更灵活（允许读操作），又比无约束的 Bash 更安全。
 
+# 子代理的存放位置与优先级
+子代理可以被设置为不同的作用域。当多个作用域存在同名子代理时，高优先级的会覆盖低优先级的。
+![](assets/子代理Sub-Agents/file-20260422133506948.png)
+子代理可以被设置为项目级或用户级，项目级（仅当前项目可用）存放位置如下所示，适合项目特有的角色，比如针对特定框架的测试运行器
+```markdown
+your-project/
+└── .claude/
+    └── agents/
+        ├── test-runner.md
+        └── code-reviewer.md
+```
+
+用户级（所有项目可用）子代理适合通用角色，比如日志分析器、通用代码审查器。
+```markdown
+~/.claude/
+└── agents/
+    ├── general-reviewer.md
+    └── log-analyzer.md
+```
+
+# 创建子代理的三种方式
+
+## 方式一：交互式创建（推荐新手使用）
+在 Claude Code 中输入  /agents，按照向导操作：
+```markdown
+步骤 1：输入 /agents
+步骤 2：选择 "Create new agent"
+步骤 3：选择存放位置（User-level 或 Project-level）
+步骤 4：选择 "Generate with Claude" 并描述功能
+步骤 5：选择需要的工具
+步骤 6：选择模型
+步骤 7：保存
+```
+
+## 方式二：手写配置文件
+直接创建  .claude/agents/your-agent.md  文件。其优势是更精细的控制，方便版本管理，可以从其他项目复制。
+
+## 方式三：CLI 参数临时创建
+通过  --agents  参数，可以在启动 Claude Code 时传入 JSON 格式的子代理定义。这种方式创建的子代理仅在当前会话中存在，不会保存到磁盘。这种方式特别适合 CI/CD 自动化时在流水线中临时创建任务专用的子代理。
+
+# 子代理的运行模式
+子代理可以在前台或后台运行。
+![](assets/子代理Sub-Agents/file-20260422133952247.png)
+Claude 会根据任务自动选择前台或后台。你也可以手动控制。
+
+- 对 Claude 说 “run this in the background”
+
+- 正在运行的前台子代理可以按  Ctrl+B  切换到后台
+
+启动前，Claude Code 会预先请求子代理可能需要的所有权限——因为后台运行时无法弹出交互式确认。如果后台子代理因权限不足而失败，你可以恢复它到前台重试。
+
+每个子代理执行完成后，Claude 会自动收到它的  agent ID。如果你需要在之前的子代理基础上继续工作，可以让 Claude 恢复（Resume）它：
+```markdown
+用 code-reviewer 子代理审查认证模块
+[子代理完成]
+
+继续刚才的审查，再看一下授权逻辑
+[Claude 恢复之前的子代理，保留完整上下文]
+```
+
+恢复的子代理会保留所有之前的对话历史——它从上次停下的地方继续，而不是重新开始。这对于需要多轮迭代的长任务非常有用。
+
