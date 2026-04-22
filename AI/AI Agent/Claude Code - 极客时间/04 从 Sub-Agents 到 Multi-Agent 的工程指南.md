@@ -149,4 +149,20 @@ Handoffs 的典型应用是客服工单流程：
 
 2. 每个阶段都是一个“角色约束的 Agent 视角”，比如：阶段一：信息收集（前台接待）；阶段二：技术诊断；阶段三：执行与修复。
 
-3. 
+3. 显式的阶段完成条件（Handoff Trigger）。这是 Handoffs 能稳定运行的核心。每个阶段都必须有完成条件（Exit Criteria）， 否则就会“卡在阶段里出不来”。
+
+“Claude Code 风格”的 Handoffs 示例：
+```markdown
+系统规则：
+你将按照以下阶段顺序工作：
+1. 信息收集（intake）
+2. 问题诊断（diagnosis）
+3. 解决方案（resolution）
+
+当前阶段：intake
+
+规则：
+- 只能提问
+- 不要给解决方案
+- 当信息完整时，明确声明：`进入 diagnosis 阶段`
+```
