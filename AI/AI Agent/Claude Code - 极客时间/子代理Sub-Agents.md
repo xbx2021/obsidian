@@ -232,4 +232,6 @@ disallowedTools: Write, Edit
 
 ## model：模型选择与默认值
 ![](assets/子代理Sub-Agents/file-20260422113730309.png)
+## permissionMode：权限模式
+permissionMode  控制子代理在执行过程中遇到需要权限的操作时如何处理。**子代理会继承主对话的权限上下文**，但可以通过此字段覆盖行为：
 
