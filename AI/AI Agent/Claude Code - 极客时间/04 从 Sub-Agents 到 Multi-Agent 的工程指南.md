@@ -270,4 +270,14 @@ Anthropic 在工程博客中公开了他们的[多 Agent 研究系统的完整�
 
 适合大多数初期场景。不要过早引入多 Agent。
 ![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422145050912.png)
+## 第二阶段：单 Agent + Skills
 
+当工具数量增多、prompt 变得臃肿时，用 Skills 实现渐进式加载。
+![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422145136669.png)
+## 第三阶段：Supervisor + Sub-Agents
+
+当不同领域需要独立的上下文空间和专业知识时引入。
+![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422145159671.png)
+## 第四阶段：混合架构
+
+成熟系统中，不同类型的任务流可能采用不同的模式。Router 处理分类，Sub-Agent 处理并行研究，Handoff 处理顺序流程。
