@@ -223,4 +223,6 @@ LangChain 对这四种模式做了实际的性能量化测试，分别从单任�
 ![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422144154679.png)
 ## 场景三：多领域查询（如“对比 Python/JS/Rust 的性能”）
 ![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422144236697.png)
+比较上面几个表的结论，可以看出，简单任务中，Sub-Agent 模式有额外开销。多轮对话中，有状态模式效率优势明显。而在多领域查询中，上下文隔离的模式（Sub-Agent、Router）在 token 效率上优势显著——节省 40% 以上的 token 成本。
+
 
