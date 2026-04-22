@@ -60,3 +60,23 @@ Claude Code 中内置就有很多子代理（Explore、Plan、General-purpose）
 
 在 Anthropic 的真实生产系统中，[Research](https://www.anthropic.com/engineering/multi-agent-research-system) 功能采用的就是一种典型的 Sub-Agent 架构。
 
+Anthropic 的 Research 功能采用了经典的 Sub-Agent 模式：
+1. LeadResearcher（Claude Opus 4）分析查询、制定策略
+2. 并行派出  3-5 个 SubAgent（Claude Sonnet 4），各自独立搜索
+3. 每个 SubAgent 执行 3+ 个并行工具调用
+4. CitationAgent  处理引用和来源归属
+5. 结果汇聚回 LeadResearcher 综合输出
+
+工程评测显示，并行化的 Sub-Agent 执行方式可将复杂查询的整体研究时间最多缩短约 90%，但其代价是相较普通对话约 15 倍的 token 消耗；在高价值研究任务中，这一成本换来了高达 90.2% 的整体性能提升。
+![](assets/04%20-%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422140744305.png)
+
+为了在不同复杂度任务中控制资源消耗，Anthropic 在 Prompt 层引入了明确的“努力分配规则（Effort Scaling）”，例如对简单问题仅启用单个 Agent 和有限次数的工具调用，而在复杂研究场景下则调度更多 Sub-Agent 全面并行执行。
+```markdown
+简单查询：1 个 Agent，3-10 次工具调用
+中等研究：3-5 个 SubAgent，各 3+ 次并行工具调用
+复杂研究：10+ 个 SubAgent，全面并行执行
+```
+
+这一架构特别适用于需要并行检索多个信息源、跨多个知识领域协同工作的研究系统，个人助手协调日历、邮件、CRM 等，同时也通过上下文隔离显著降低了信息串扰和泄漏风险。
+
+不过，因为在每次交互中都会引入额外的模型调用和结果回传过程，Sub-Agent 架构会增加一定的延迟和 token 成本，但换来的则是更强的集中控制能力和可预测的工程行为。
