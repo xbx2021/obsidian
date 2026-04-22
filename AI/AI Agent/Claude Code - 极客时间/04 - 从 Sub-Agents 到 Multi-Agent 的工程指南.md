@@ -42,3 +42,20 @@ Sub-Agents 的核心设计思想是一个 Supervisor Agent 充当老板，将任
 
 这种结构天然支持并行执行，多个 Sub-Agent 可以同时展开工作，从而显著提升复杂任务的吞吐效率。用户并不直接与各个 Sub-Agent 交互，而是始终通过 Supervisor 间接沟通，由其负责任务拆解、结果汇总与最终输出。
 
+在调试和可控性层面，该模式的复杂度处于中等水平，工程上需要重点关注 Supervisor 的委派逻辑与决策路径，以便在出现偏差时能够准确定位问题来源。
+```markdown
+# Claude Agent SDK 中的 Sub-Agent 定义（概念示例）
+subagent_config = {
+    "name": "research-agent",
+    "description": "Research specific topics by searching the web. "
+                   "Use when user asks factual questions requiring "
+                   "up-to-date information.",
+    "system_prompt": "You are a research specialist...",
+    "tools": ["WebSearch", "WebFetch", "Read"],
+    "model": "sonnet"  # 用更快的模型降低成本
+}
+```
+
+Claude Code 中内置就有很多子代理（Explore、Plan、General-purpose），非常容易实现这种架构。
+
+在 Anthropic 的真实生产系统中，Research 功能采用的就是一种典型的 Sub-Agent 架构。
