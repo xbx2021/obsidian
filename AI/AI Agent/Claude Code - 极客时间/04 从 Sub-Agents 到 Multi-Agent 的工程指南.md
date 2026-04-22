@@ -127,3 +127,8 @@ Sub-Agent：独立的上下文 → 适合大量信息过滤
 Skill：共享的上下文 → 适合需要连贯对话的场景
 ```
 
+## 模式三：Handoffs（交接 / 状态驱动的 Agent 切换）
+
+Handoffs 的核心思想是活跃的 Agent 根据对话状态动态切换。Agent A 完成自己的阶段后，通过调用  handoff()  工具将控制权（和上下文）传递给 Agent B。
+![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422143024968.png)
+
