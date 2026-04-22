@@ -203,13 +203,13 @@ describe('OrderService', () => {
 
 此处的关键特性是**paths字段让这个规则只在编辑测试文件时生效**，不会浪费其他场景的上下文空间。
 
-## 编写高效的 CLAUDE.md
+# 编写高效的 CLAUDE.md
 
-### **核心原则 1：Less is More**
+## **核心原则 1：Less is More**
 
 CLAUDE.md 的每一行，都会在每一次对话开始时被自动注入上下文。这意味着一件事：冗余不是无害的，而是持续消耗的。所以保持精简不是建议，而是必须。
 
-### **核心原则 2：具体优于泛泛**
+## **核心原则 2：具体优于泛泛**
 
 一个非常常见、但几乎没有任何效果的写法。
 ```markdown
@@ -242,7 +242,7 @@ const data = orderSchema.parse(input);
 
 有个简单的判断标准——如果你不写，Claude 也大概率会做对，那就不要写。
 
-### **核心原则 3：关键三问题 WHY / WHAT / HOW**
+## **核心原则 3：关键三问题 WHY / WHAT / HOW**
 
 一份真正“能用”的 CLAUDE.md，通常都在回答三个问题。不是一次性回答，而是在**关键地方给出明确指引**。
 
@@ -280,7 +280,7 @@ const data = orderSchema.parse(input);
 ```
 当步骤清晰、路径明确、还有参考文件时，Claude 才会稳定复用同一套工作流，而不是每次自由发挥。
 
-### **核心原则 4：渐进式披露：不要把一切都塞进 CLAUDE.md**
+## **核心原则 4：渐进式披露：不要把一切都塞进 CLAUDE.md**
 CLAUDE.md 的职责是定义默认决策，而不是承载全部知识。对于非核心、但可能被用到的内容，正确的做法是引用，而不是复制。
 ```markdown
 # 项目规范
@@ -297,8 +297,8 @@ CLAUDE.md 的职责是定义默认决策，而不是承载全部知识。对于�
 - CLAUDE.md 保持轻量，启动成本低 。
 - 当 Claude 需要进一步的细节信息时，可以按需读取引用文件。
 
-## CLAUDE.md 实战演练
-### **场景一：为新项目创建记忆**
+# CLAUDE.md 实战演练
+## **场景一：为新项目创建记忆**
 假设你刚接手一个 React + TypeScript 前端项目，让我们从零配置记忆。（可以参考我们课程的 Github Repo 02-Memory 目录中的示例。）
 
 **Step 1：创建基础 CLAUDE.md**
@@ -391,7 +391,7 @@ expect(screen.getByRole('button')).toBeEnabled();
 expect(component.state.isLoading).toBe(false);
 ```
 
-### **场景二：优化已有的 CLAUDE.md**
+## **场景二：优化已有的 CLAUDE.md**
 假设你的 CLAUDE.md 已经有 500 行，Claude 开始变慢。此时就需要给它瘦个身，做一些优化了。我们可以分三步走。
 
 **Step 1：识别核心内容**
@@ -412,7 +412,7 @@ expect(component.state.isLoading).toBe(false);
 **Step 3：使用条件规则**
 可以考虑进一步把测试规范、前端规范、后端规范拆分到  .claude/rules/，并设置  paths条件。
 
-### **场景三：记忆管理命令**
+## **场景三：记忆管理命令**
 要查看当前记忆，在 Claude Code 中输入：
 ```
 /memory
