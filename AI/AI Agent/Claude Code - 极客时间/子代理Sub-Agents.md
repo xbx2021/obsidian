@@ -237,3 +237,14 @@ disallowedTools: Write, Edit
 permissionMode  控制子代理在执行过程中遇到需要权限的操作时如何处理。**子代理会继承主对话的权限上下文**，但可以通过此字段覆盖行为：
 ![](assets/子代理Sub-Agents/file-20260422113903409.png)
 
+举个例子，如果你希望子代理能跑  git diff  但绝不能修改文件，可以这样配置：
+```markdown
+---
+name: code-reviewer
+tools: Read, Grep, Glob, Bash
+permissionMode: plan          # 强制只读模式，即使有 Bash 也无法写入
+---
+```
+
+这比单纯依赖 prompt 约束更可靠——permissionMode: plan  是**系统级**的只读保障。
+
