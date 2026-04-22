@@ -220,4 +220,5 @@ LangChain 对这四种模式做了实际的性能量化测试，分别从单任�
 ![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422144114625.png)
 
 ## 场景二：重复请求效率（第二轮相同类型的请求）
-
+![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422144154679.png)
+## 场景三：多领域查询（如“对比 Python/JS/Rust 的性能”）
