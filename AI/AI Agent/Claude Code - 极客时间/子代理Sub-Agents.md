@@ -267,6 +267,18 @@ skills:
 ## hooks：子代理专属的生命周期 Hook
 
 子代理可以在自己的 frontmatter 中定义 Hook——这些 Hook **只在该子代理运行期间生效**，子代理结束后自动清理。
-
-`
+```markdown
+---
+name: db-reader
+description: Execute read-only database queries.
+tools: Bash
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "./scripts/validate-readonly-query.sh"
+---
 ```
+
+上面的例子中，db-reader  虽然拥有 Bash 工具，但每次执行 Bash 命令前都会被 Hook 拦截验证——只有 SELECT 查询能通过，INSERT/UPDATE/DELETE 等写操作会被阻止。这比不给 Bash 工具更灵活（允许读操作），又比无约束的 Bash 更安全。
