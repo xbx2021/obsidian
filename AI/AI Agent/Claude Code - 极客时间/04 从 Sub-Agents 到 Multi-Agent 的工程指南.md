@@ -141,3 +141,12 @@ Handoffs 的典型应用是客服工单流程：
 ![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422143155236.png)
 在 Claude Code 中并不存在一个底层 API 叫 handoff()， Handoffs 是通过 **Prompt + 状态约束 + 工程结构模拟出来的**。
 
+换句话说： **Handoffs 是一种“工程模式”，不是一个“框架特性”**。
+
+在 Claude Code 中实现 Handoffs 的三大工程要素：
+
+1. 明确的阶段状态（State）—— 你需要显式定义流程阶段。
+
+2. 每个阶段都是一个“角色约束的 Agent 视角”，比如：阶段一：信息收集（前台接待）；阶段二：技术诊断；阶段三：执行与修复。
+
+3. 
