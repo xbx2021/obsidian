@@ -218,3 +218,18 @@ disallowedTools: Write, Edit
 
 两者的选择取决于你想要的表达方式：如果子代理只需要少数几个工具，用白名单更清晰；如果子代理需要大部分工具但排除个别，用黑名单更简洁。**不要同时使用两者**——选一种即可。
 
+工具权限应遵循最小权限原则——只开放必要的工具，能用 Read 完成的任务，就不要给 Edit。以下是根据用途划分的典型工具组合：
+
+```markdown
+只读型（审计/检查）         研究型（信息收集）         开发型（读写改）
+├── Read                    ├── Read                   ├── Read
+├── Grep                    ├── Grep                   ├── Write
+└── Glob                    ├── Glob                   ├── Edit
+                            ├── WebFetch               ├── Bash
+                            └── WebSearch              ├── Glob
+                                                       └── Grep
+```
+
+## model：模型选择与默认值
+![](assets/子代理Sub-Agents/file-20260422113730309.png)
+
