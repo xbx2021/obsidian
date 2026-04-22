@@ -188,4 +188,13 @@ frontmatter 部分（---  之间）定义子代理的元数据和配置，下�
 
 上述文件中出现的以及未出现的 frontmatter 字段详解如下。其中  name  和  description  是必填字段，其余均为可选：
 ![](assets/子代理Sub-Agents/file-20260422113017738.png)
+## description 的设计艺术
+description  字段决定了 Claude 何时自动调用你的子代理——这是配置中最重要的设计决策。
+```markdown
+# 写的太模糊，Claude 不知道什么时候该用它
+description: A code reviewer
+
+# 好的 description：说明做什么 + 什么时候用
+description: Review code changes for quality, security vulnerabilities, and best practices. Use proactively after code is modified or when user asks for code review.
+```
 
