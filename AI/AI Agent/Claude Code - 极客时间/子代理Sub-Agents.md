@@ -248,3 +248,17 @@ permissionMode: plan          # 强制只读模式，即使有 Bash 也无法写
 
 这比单纯依赖 prompt 约束更可靠——permissionMode: plan  是**系统级**的只读保障。
 
+## skills：为子代理预加载知识
+
+skills  字段允许你在子代理启动时，把指定 Skill 的完整内容注入到子代理的上下文中。这意味着子代理不需要在执行过程中发现和加载 Skill——知识已经在它的脑子里了。
+```markdown
+---
+name: impact-analyzer
+description: Analyze impact scope of code changes on the full call chain.
+tools: Read, Grep, Glob, Bash
+skills:
+  - chain-knowledge        # 链路拓扑和 SLA 约束
+  - recent-incidents       # 近期事故记录
+---
+```
+
