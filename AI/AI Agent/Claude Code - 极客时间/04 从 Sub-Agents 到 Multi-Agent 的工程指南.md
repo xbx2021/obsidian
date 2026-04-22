@@ -37,7 +37,7 @@ LangChain 在 Choosing the Right Multi-Agent Architecture 这篇文章中总结�
 ## 模式一：Sub-Agents（子代理委派 / 集中式编排）
 
 Sub-Agents 的核心设计思想是一个 Supervisor Agent 充当老板，将任务分解后委派给专门的 Sub-Agent。每个 Sub-Agent 解决一个特定的任务。
-![](assets/03%20-%20子代理Sub-Agents/file-20260422135758784.png)
+![](assets/03%20子代理Sub-Agents/file-20260422142730810.png)
 在 Sub-Agent 架构中，上下文隔离能力非常强，每个 Sub-Agent 都拥有独立的上下文窗口，从根本上避免了信息相互污染。Sub-Agent 本身通常设计为无状态组件，专注于完成被委派的单次任务，而整体对话状态与流程控制则由 Supervisor 统一维护。
 
 这种结构天然支持并行执行，多个 Sub-Agent 可以同时展开工作，从而显著提升复杂任务的吞吐效率。用户并不直接与各个 Sub-Agent 交互，而是始终通过 Supervisor 间接沟通，由其负责任务拆解、结果汇总与最终输出。
@@ -68,7 +68,7 @@ Anthropic 的 Research 功能采用了经典的 Sub-Agent 模式：
 5. 结果汇聚回 LeadResearcher 综合输出
 
 工程评测显示，并行化的 Sub-Agent 执行方式可将复杂查询的整体研究时间最多缩短约 90%，但其代价是相较普通对话约 15 倍的 token 消耗；在高价值研究任务中，这一成本换来了高达 90.2% 的整体性能提升。
-![](assets/04%20-%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422140744305.png)
+![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422142736574.png)
 
 为了在不同复杂度任务中控制资源消耗，Anthropic 在 Prompt 层引入了明确的“努力分配规则（Effort Scaling）”，例如对简单问题仅启用单个 Agent 和有限次数的工具调用，而在复杂研究场景下则调度更多 Sub-Agent 全面并行执行。
 ```markdown
@@ -80,3 +80,40 @@ Anthropic 的 Research 功能采用了经典的 Sub-Agent 模式：
 这一架构特别适用于需要并行检索多个信息源、跨多个知识领域协同工作的研究系统，个人助手协调日历、邮件、CRM 等，同时也通过上下文隔离显著降低了信息串扰和泄漏风险。
 
 不过，因为在每次交互中都会引入额外的模型调用和结果回传过程，Sub-Agent 架构会增加一定的延迟和 token 成本，但换来的则是更强的集中控制能力和可预测的工程行为。
+
+## 模式二：Skills（技能 / 渐进式能力加载）
+
+LangChain 把 Skills 也视为一种多智能体模式。其实此时仍然是单个 Agent（或 SubAgent），但**通过 SKILL.md 文件（或类似配置）实现能力的渐进式加载**。Agent 一开始只知道技能的名称和描述，当判断需要某个技能时，才加载完整的指令。
+
+这是一种“准多 Agent”方案——用更轻量的 prompt 切换替代完整的 Agent 切换。
+![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422142736554.png)
+在 Skills 模式下，系统仍然由单一 Agent 负责全部推理与执行，所有技能共享同一个上下文窗口，因此在上下文隔离能力上相对较弱，但换来的好处是对话状态可以自然连续地保留在同一个 Agent 内部，无需额外的状态协调机制。
+
+由于不存在多个 Agent 的并行调度，整体执行过程以顺序方式展开，并行能力相对有限，但在多数交互式场景下已经足够。用户始终与同一个 Agent 直接交互，交互路径最短，体验也最为流畅。
+```markdown
+.claude/skills/           
+├── deploy/
+│   └── SKILL.md          # 部署技能的完整指令
+├── review-pr/
+│   └── SKILL.md          # PR 审查技能的指令
+└── database-migration/
+    └── SKILL.md          # 数据库迁移技能的指令
+```
+
+在 Claude Code 的配置中，每个 SKILL.md 包含 YAML frontmatter（元数据）和详细的步骤指令：
+```markdown
+---
+name: deploy
+description: "Deploy application to production environment"
+allowed-tools: ["Bash", "Read", "Edit"]
+---
+
+## 部署步骤
+
+1. 检查当前分支是否为 main
+2. 运行完整测试套件
+3. 构建生产版本
+4. 执行部署脚本
+5. 验证部署结果
+```
+
