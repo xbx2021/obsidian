@@ -58,4 +58,5 @@ subagent_config = {
 
 Claude Code 中内置就有很多子代理（Explore、Plan、General-purpose），非常容易实现这种架构。
 
-在 Anthropic 的真实生产系统中，Research 功能采用的就是一种典型的 Sub-Agent 架构。
+在 Anthropic 的真实生产系统中，[Research](https://www.anthropic.com/engineering/multi-agent-research-system
+) 功能采用的就是一种典型的 Sub-Agent 架构。
