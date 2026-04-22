@@ -225,4 +225,5 @@ LangChain 对这四种模式做了实际的性能量化测试，分别从单任�
 ![](assets/04%20从%20Sub-Agents%20到%20Multi-Agent%20的工程指南/file-20260422144236697.png)
 比较上面几个表的结论，可以看出，简单任务中，Sub-Agent 模式有额外开销。多轮对话中，有状态模式效率优势明显。而在多领域查询中，上下文隔离的模式（Sub-Agent、Router）在 token 效率上优势显著——节省 40% 以上的 token 成本。
 
+Anthropic 在工程博客中公开了他们的[多 Agent 研究系统的完整设计](https://www.anthropic.com/engineering/multi-agent-research-system)，其中也涉及到性能和成本的权衡。Anthropic 认为多 Agent 系统中的性能差异在很大程度上是可解释的，其中约 95% 的性能波动可以归因于三个因素：Token 使用量占据主导地位，其影响约为 80%；工具调用次数与模型选择共同贡献约 15%；其余因素的影响则相对有限。
 
