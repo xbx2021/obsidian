@@ -166,3 +166,17 @@ Handoffs 的典型应用是客服工单流程：
 - 不要给解决方案
 - 当信息完整时，明确声明：`进入 diagnosis 阶段`
 ```
+
+当 Claude 输出：
+```markdown
+信息已收集完成，进入 diagnosis 阶段。
+```
+
+系统（或你自己）再注入下一段 Prompt：
+```markdown
+当前阶段：diagnosis
+你现在是技术支持 Agent……
+```
+
+这就是一次 handoff。
+
