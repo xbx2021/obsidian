@@ -282,3 +282,4 @@ hooks:
 ```
 
 上面的例子中，db-reader  虽然拥有 Bash 工具，但每次执行 Bash 命令前都会被 Hook 拦截验证——只有 SELECT 查询能通过，INSERT/UPDATE/DELETE 等写操作会被阻止。这比不给 Bash 工具更灵活（允许读操作），又比无约束的 Bash 更安全。
+
