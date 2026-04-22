@@ -189,12 +189,30 @@ frontmatter 部分（---  之间）定义子代理的元数据和配置，下�
 上述文件中出现的以及未出现的 frontmatter 字段详解如下。其中  name  和  description  是必填字段，其余均为可选：
 ![](assets/子代理Sub-Agents/file-20260422113017738.png)
 ## description 的设计艺术
+
 description  字段决定了 Claude 何时自动调用你的子代理——这是配置中最重要的设计决策。
+
 ```markdown
 # 写的太模糊，Claude 不知道什么时候该用它
 description: A code reviewer
 
 # 好的 description：说明做什么 + 什么时候用
 description: Review code changes for quality, security vulnerabilities, and best practices. Use proactively after code is modified or when user asks for code review.
+```
+
+优点：说明了做什么（审查代码质量、安全、规范）和什么时候用（代码修改后，或用户请求时）。“Proactively” 这个关键词会鼓励 Claude 在合适的时机主动委派任务。
+
+## tools vs disallowedTools：白名单与黑名单
+
+控制子代理能使用哪些工具有两种方式：
+
+```markdown
+# 方式一：白名单 (tools) — "只能用这些"
+# 适合：需要严格限制的场景（如只读审查）
+tools: Read, Grep, Glob
+
+# 方式二：黑名单 (disallowedTools) — “继承所有，但排除这些”
+# 适合：需要大部分工具但排除少数危险工具的场景
+disallowedTools: Write, Edit
 ```
 
