@@ -64,5 +64,21 @@ Agent Teams 支持两种显示模式：
 ![](assets/08%20Agent%20Teams多会话协作架构/file-20260423140442797.png)
 完成工作后，Lead 会向 Teammate 发送关闭请求，Teammate 可以批准（优雅退出）或拒绝（并解释原因）。
 
+最后，全部工作收尾，Lead 会清理团队，移除共享的团队资源。需要注意，如果出现需要用户人工指示清理的话，清理前先关闭所有 Teammates，而且应该只让 Lead 执行清理（Teammates 的 team 上下文可能不正确）。
 
+# 实战项目：全栈 Bug 猎人
 
+完整的工程化实战项目，位于项目目录03-SubAgents/projects/06-agent-teams-bug-hunt/。
+
+项目场景是一个 Express.js 电商应用（ShopStream），其中刻意植入了多个相互关联 bug。用户报告了三个看似独立的症状：会话丢失、API 变慢、数据泄漏。真相是这些症状由相互 bug 的级联故障造成：
+````markdown
+Bug 1: DB 连接池太小（db.js）
+    ↓ 连接耗尽
+Bug 2: Redis Session 不处理重连（middleware/session.js）
+    ↓ Session 写入静默失败
+Bug 3: 订单查询 N+1 问题（routes/orders.js）
+    ↓ 大量连接被占用 → 加剧 Bug 1
+Bug 4: 缓存竞态条件（middleware/cache.js）
+    ↓ 缓存 key 缺少用户标识 → 数据泄漏
+    ... ...
+```
