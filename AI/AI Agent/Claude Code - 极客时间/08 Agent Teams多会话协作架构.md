@@ -62,5 +62,7 @@ Claude 会建团队，生成指定的 Teammates 让它们探索问题，然后�
 
 Agent Teams 支持两种显示模式：
 ![](assets/08%20Agent%20Teams多会话协作架构/file-20260423140442797.png)
+完成工作后，Lead 会向 Teammate 发送关闭请求，Teammate 可以批准（优雅退出）或拒绝（并解释原因）。
+
 
 
