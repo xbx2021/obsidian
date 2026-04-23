@@ -89,5 +89,26 @@ Bug 4: 缓存竞态条件（middleware/cache.js）
 
 项目中具体的文件内容和说明如下。
 ![](assets/08%20Agent%20Teams多会话协作架构/file-20260423141425587.png)
+启用 Agent Teams，用 team-prompt.md 中的指令启动团队，观察四个侦探如何各自调查、分享发现、互相挑战，最终拼出完整的级联故障链。
 
+把 team-prompt.md 中介绍的某一种启动模式（我设计了多个 Teams 协同模式，这里只展示竞争假设模式）拷贝到 Claude Code 命令行中，启动 Teams 即可。
+```markdown
+阅读 bug-report.md 中描述的三个症状。然后创建一个 agent team 来调查这些问题。
 
+生成 4 个 investigator teammates：
+- "Session 侦探"：假设根因在 Session/Redis 层。重点审查 middleware/session.js 和 server.js 中的 session 配置。
+- "数据库侦探"：假设根因在数据库连接和查询层。重点审查 db.js 和 routes/ 下所有路由的数据库操作。
+- "缓存侦探"：假设根因在缓存机制。重点审查 middleware/cache.js 以及缓存与用户隔离相关的逻辑。
+- "架构侦探"：不预设假设，从整体架构角度分析各组件的交互。重点关注错误处理、资源管理和并发安全。
+
+每个 teammate 的 prompt 中包含：
+1. buggy-app/ 目录包含完整的应用代码
+2. 他们需要用 Read/Grep/Glob 工具审查代码
+3. 找到可疑问题后，要发消息告诉其他 teammates
+4. 如果其他 teammate 的发现与自己的发现有关联，要主动指出
+5. 特别注意：三个症状可能不是独立的，要寻找它们之间的因果关系
+
+要求所有 teammates 在完成初步调查后互相分享发现，并尝试挑战彼此的结论。
+
+最终综合所有发现，生成一份按照 findings-template.md 格式的调查报告。
+```
