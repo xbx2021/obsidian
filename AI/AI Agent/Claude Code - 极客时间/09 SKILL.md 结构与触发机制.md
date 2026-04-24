@@ -280,3 +280,18 @@ description: Generate API documentation from code. Extracts endpoints, parameter
 description: Query databases and analyze results. Supports SQL generation, query optimization, and result interpretation. Use when the user asks about data, wants to run queries, needs database information, or mentions tables/schemas.
 ```
 
+当你有多个 Skills 时，确保它们的 description 有明确区分：
+```markdown
+# ❌ 容易冲突
+name: unit-testing
+description: Write tests for code
+
+name: integration-testing
+description: Write tests for code
+# ✅ 明确区分
+name: unit-testing
+description: Write and run unit tests for individual functions. Use for testing single functions or methods in isolation, mocking dependencies, and verifying function behavior.
+
+name: integration-testing
+description: Write and run integration tests for system components. Use when testing how multiple components work together, testing API endpoints end-to-end, or verifying database interactions.
+```
