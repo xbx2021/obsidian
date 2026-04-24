@@ -22,5 +22,6 @@ description: Deploy the application to production
 disable-model-invocation: true
 ```
 ![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424112933306.png)
+![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424113024977.png)
 
 
