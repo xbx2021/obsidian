@@ -99,3 +99,5 @@ description: Migrate a component from one framework to another
 Migrate the $0 component from $1 to $2.
 Preserve all existing behavior and tests.
 ```
+例如，/migrate-component SearchBar React Vue 中，$0 被替换为 SearchBar,  $1 为 React, $2 为 Vue。
+
