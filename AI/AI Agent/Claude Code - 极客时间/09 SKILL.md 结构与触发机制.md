@@ -124,6 +124,11 @@ SKILL.md                    ← 导航页：概述 + 引用（< 500 行）
 
 >注意：SKILL.md 应该被控制在 500 行以内。如果过于复杂，应该将详细参考资料移到独立文件，并在 SKILL.md 中进行引用（也就是我们所常说的渐进式加载）。
 
+## 优先级顺序
+
 Skills 的存放位置决定了谁能使用它，以及优先级顺序。
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424101730593.png)
+同名优先级：**Enterprise > Personal > Project**。Plugin Skills 使用  plugin-name:skill-name  命名空间，不与其他级别冲突。
+
+
 
