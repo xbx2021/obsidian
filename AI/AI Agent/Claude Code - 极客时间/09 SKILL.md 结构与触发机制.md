@@ -84,3 +84,5 @@ Claude 在加载 code-review Skill 时，所做的事情，本质上是同一个
 
 当用户发送消息时，Claude 的处理流程如下图所示：
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424100312556.png)
+假设你有 5 个 Skills，每个 SKILL.md 约 1000 tokens。
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424100348984.png)
