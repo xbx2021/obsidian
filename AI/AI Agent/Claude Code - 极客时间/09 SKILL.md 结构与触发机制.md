@@ -78,3 +78,9 @@ Claude 在加载 code-review Skill 时，所做的事情，本质上是同一个
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424100023600.png)
 这是 Skills 最重要的设计特性——**同一个 Skill 既可以作为斜杠命令使用，也可以让 Claude 自动判断何时需要**。
 
+为什么要这样设计？  用户有时知道自己要什么（/review），有时只是描述需求（“帮我看看代码“）。Skills 的双向触发机制让两种场景都能被满足，同时保持能力定义的统一。
+
+和 Sub-Agents 类似，Skills 的触发机制**靠 LLM 语义推理，而非精确匹配**。Claude 读取所有 Skills 的 description，通过语义理解判断当前对话是否匹配某个 Skill。
+
+当用户发送消息时，Claude 的处理流程如下图所示：
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424100312556.png)
