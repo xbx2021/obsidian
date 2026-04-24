@@ -86,3 +86,6 @@ Claude 在加载 code-review Skill 时，所做的事情，本质上是同一个
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424100312556.png)
 假设你有 5 个 Skills，每个 SKILL.md 约 1000 tokens。
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424100348984.png)
+这里我们注意到，渐进式加载时 Token 的节省比例高达 78% ~ 98%。这就是为什么 Skills 采用“渐进式披露”而非“一次性加载”。
+
+当用户请求可能匹配多个 Skills 时，Claude 会：评估每个 Skill 的 description 与用户请求的相关性。选择最相关的那个。如果不确定，可能会询问用户或使用通用方式处理。
