@@ -224,3 +224,59 @@ All API responses must follow this structure:
 - Breaking changes require new version
 
 ```
+
+这个文件有三个部分：
+1. YAML frontmatter，是通过---包裹的元数据
+2. Markdown 正文，是技能的具体说明
+3. 辅助文件：.claude/skills//SKILL.md——每个 Skill 在自己的目录中，可以包含辅助文件（此处只有主文件，下一讲中的示例我们将看到辅助文件）。
+
+注意这个 Skill 的关键特征——它是一个典型的参考型 Skill：
+1. **没有执行步骤**：不是先做 A 再做 B，而是“遵循这些规范”。
+2. **没有输出模板**：不要求 Claude 输出固定格式的报告。
+3. **没有设disable-model-invocation**：Claude 可以自动判断何时需要。
+4. **只读工具**：allowed-tools  限制为 Read/Grep/Glob，因为规范查阅不需要改代码。
+
+这正是企业本体论的体现——**它告诉 Claude 在我们的世界里，API 应该长什么样**。
+
+在这里，**description 是 Skill 的灵魂，因为它不是给人看的文档，而是给 Claude 看的触发器**。Claude 选择是否激活一个 Skill，完全依赖于阅读 description。这不是关键词匹配，而是语义理解。
+```markdown
+用户输入: "帮我看看这段代码有没有问题"
+
+Claude 思考过程：
+1. 扫描所有 Skills 的 description
+2. 看到 "code-reviewing" 的 description:
+   "Review code for quality... Use when the user asks for code review..."
+3. 语义推理："看看代码有没有问题" ≈ "code review"
+4. 决定：激活这个 Skill
+```
+
+如果你这样写 description，想想看合适么？
+```markdown
+description: Handles PDFs
+```
+很明显，问题在于太模糊，“handles”是什么意思？读取？转换？合并？Claude 不知道什么时候该用它。用户说“帮我处理这个 PDF”时，Claude 可能不确定这个 Skill 是否合适。
+
+我们再对比一下更好的 description 长什么样。
+```markdown
+description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+```
+
+为什么这版更好？因为它列出了**具体动作**（extract, fill, merge）；包含了用户可能说的**关键词**（PDF, forms, document extraction）；明确说明了**触发场景**（“Use when…”）
+
+因此，总结了一个 description 写作公式：
+```markdown
+description = [做什么] + [怎么做] + [什么时候用]
+```
+
+套用公式创作几个示例 Skill：
+```markdown
+# 代码审查 Skill
+description: Review code for quality, security, and best practices. Checks for bugs, performance issues, and style violations. Use when the user asks for code review, wants feedback on their code, mentions reviewing changes, or asks about code quality.
+
+# API 文档 Skill
+description: Generate API documentation from code. Extracts endpoints, parameters, and response schemas. Use when the user wants to document APIs, create API reference, generate endpoint documentation, or needs help with OpenAPI/Swagger specs.
+
+# 数据库查询 Skill
+description: Query databases and analyze results. Supports SQL generation, query optimization, and result interpretation. Use when the user asks about data, wants to run queries, needs database information, or mentions tables/schemas.
+```
+
