@@ -139,3 +139,14 @@ Skills 的存放位置决定了谁能使用它，以及优先级顺序。
 
 你在写 description 时需要明确它属于哪种类型。
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424102717334.png)
+```markdown
+# 参考型——Claude 自动选择是否使用
+name: api-conventions
+description: API design patterns for this codebase. Use when writing or reviewing API endpoints.
+
+# 任务型——通常由用户手动触发
+name: deploy
+description: Deploy the application to production
+disable-model-invocation: true
+```
+
