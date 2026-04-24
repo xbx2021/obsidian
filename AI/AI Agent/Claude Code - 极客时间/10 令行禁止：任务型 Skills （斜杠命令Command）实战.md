@@ -276,6 +276,17 @@ allowed-tools: Bash(*)
 
 > 课程示例路径：我目前是把这一部分的示例文件放在  Repo 的 05-Commands/projects/  下，你可以尝试着把这些斜杠命令迁移到 Skills 目录。项目结构如下。
 
+```markdown
+.claude/skills/                    # 推荐：Skills 目录
+├── committing/SKILL.md            # /committing  快速提交
+├── reviewing/SKILL.md             # /reviewing   代码审查
+├── pr-creating/SKILL.md           # /pr-creating 创建 PR
+└── testing/SKILL.md               # /testing     运行测试
 
+.claude/commands/                   # 兼容：Commands 目录
+└── git/
+    ├── status.md                  # /git:status
+    └── log.md                     # /git:log
+```
 
-
+Skills 目录名即命令名。包括简单的查询类命令（git:status、git:log）以及包含动作的命令建议。建议你把它们迁移到 Skills 目录以获得  disable-model-invocation  等高级能力。
