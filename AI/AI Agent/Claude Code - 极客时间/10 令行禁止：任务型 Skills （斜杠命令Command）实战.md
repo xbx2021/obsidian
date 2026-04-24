@@ -496,3 +496,18 @@ Changes: [n] files
 /pr-create "Add user authentication" "Implements JWT-based auth with refresh tokens"
 ```
 
+当命令越来越多时，可以用目录结构组织它们：
+```markdown
+.claude/commands/
+├── commit.md           →  /commit
+├── review.md           →  /review
+├── git/
+│   ├── status.md       →  /git:status
+│   ├── log.md          →  /git:log
+│   └── sync.md         →  /git:sync
+└── test/
+    ├── unit.md         →  /test:unit
+    └── e2e.md          →  /test:e2e
+```
+
+命名规则是当目录名成为前缀，用冒号  :  分隔。这样做的好处是相关命令归类在一起，避免命令名冲突，而且输入  /git:  会提示所有 git 相关命令。
