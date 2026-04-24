@@ -150,3 +150,77 @@ description: Deploy the application to production
 disable-model-invocation: true
 ```
 
+从企业本体论的视角看，所谓“参考型”和“任务型”Skill，其实对应的是两种不同的组织存在方式。
+
+**参考型 Skill 更像组织的行为规范层**。它定义“在这个世界里，**什么是正确的做法**”——例如 API 设计标准、代码风格、错误处理约定。这类 Skill 通常由模型根据语义自动判断是否加载，它不主导行动，而是塑造行动的方式。它属于“世界规则”。
+
+**任务型 Skill 则更像组织的操作流程层**。它定义一次**明确的行动**——部署、发布、迁移、生成报告等。这类行为具有边界和风险，通常需要显式触发，因此常配合 disable-model-invocation 使用。它属于“世界事件”。
+
+# 创建一个参考型 SKILL.md 文件：api-conventions
+
+在 Claude Code 中，每个 Skill 独占一个目录。其标准的目录和文件结构如下：`.claude/skills/SKILL.md`。
+
+因此，首先要在项目中创建一个以 skill 名称命名的目录（参考 04-Skills/projects/01-reference-skill）。里面放  SKILL.md  文件。
+
+创建的这个参考型 Skill  是一个“API 设计规范”：
+```markdown
+.claude/skills/api-conventions/     # skill 目录，名称即 skill 名
+└── SKILL.md                        # 主文件（必需）
+---
+name: api-conventions
+description: API design patterns and conventions for this project. Covers RESTful URL naming, response format standards, error handling, and authentication requirements. Use when writing or reviewing API endpoints, designing new APIs, or making decisions about request/response formats.
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+---
+
+# API Design Conventions
+
+These are the API design standards for our project. Apply these conventions whenever working with API endpoints.
+
+## URL Naming
+
+- Use plural nouns for resources: `/users`, `/orders`, `/products`
+- Use kebab-case for multi-word resources: `/order-items`, `/user-profiles`
+- Nested resources for belongsTo relationships: `/users/{id}/orders`
+- Maximum two levels of nesting; beyond that, use query parameters
+- Use query parameters for filtering: `/orders?status=active&limit=20`
+
+## Response Format
+
+All API responses must follow this structure:
+
+{
+  "data": {},        // 成功时返回的数据
+  "error": null,     // 错误时返回错误对象 { code, message, details }
+  "meta": {          // 分页和元信息
+    "page": 1,
+    "limit": 20,
+    "total": 100
+  }
+}
+
+## HTTP Status Codes
+
+- 200: 成功返回数据
+- 201: 成功创建资源
+- 400: 请求参数错误
+- 401: 未认证
+- 403: 无权限
+- 404: 资源不存在
+- 422: 业务逻辑错误
+- 500: 服务器内部错误
+
+## Authentication
+
+- All endpoints require Bearer token unless explicitly marked as public
+- Public endpoints must be documented with `@public` annotation
+- Token format: `Authorization: Bearer <jwt-token>`
+
+## Versioning
+
+- API version in URL path: `/api/v1/users`
+- Breaking changes require new version
+
+```
