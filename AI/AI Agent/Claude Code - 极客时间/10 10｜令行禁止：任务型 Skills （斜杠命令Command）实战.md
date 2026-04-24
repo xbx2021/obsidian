@@ -57,5 +57,7 @@ Fix GitHub issue $ARGUMENTS following our coding standards.
 4. Write tests
 5. Create a commit
 ```
+注意，传参并不仅仅限于任务型 Skill，但是，需要明确传参的场景，对于任务型 Skill 自然是显得更加常见。
+
 
 
