@@ -207,3 +207,7 @@ hooks:
 Deploy the application to staging environment.
 ```
 
+Skill 内的 Hooks 不是一条一条平铺写的，而是按“事件 → 匹配规则 → 要执行的命令列表”一层一层包起来。也就是一个三层树形结构，而不是一行一个 Hook —— 这是为了支持**多事件 × 多工具 × 多动作**的组合扩展。
+
+Skill 中常用 Hook 模式如下。
+![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140745394.png)
