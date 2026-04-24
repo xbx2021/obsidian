@@ -130,5 +130,12 @@ Skills 的存放位置决定了谁能使用它，以及优先级顺序。
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424101730593.png)
 同名优先级：**Enterprise > Personal > Project**。Plugin Skills 使用  plugin-name:skill-name  命名空间，不与其他级别冲突。
 
+当你在子目录（如  packages/frontend/）中工作时，Claude Code 会自动发现该目录下的  .claude/skills/。这种 monorepo 的 Skills 自动发现机制让 monorepo 中的每个 package 都可以有自己的 Skills。
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424102542731.png)
 
+# 两大类型的 Skills：参考型和任务型
 
+从工程角度，Skill 内容分为两类，参考型和任务型。**参考型 Skill 影响“怎么做”**，**任务型 Skill 决定“做什么”**。前者是语义环境，后者是具体行动。
+
+你在写 description 时需要明确它属于哪种类型。
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424102717334.png)
