@@ -72,3 +72,30 @@ Create a git commit with message: $ARGUMENTS
 ```
 
 ### **多参数**—— $1，$2 接收位置参数：
+```markdown
+---
+description: Create a pull request
+argument-hint: [title] [description]
+disable-model-invocation: true
+---
+
+Title: $1
+Description: $2
+```
+
+用法示例如下。
+```markdown
+/commit fix login bug           # $ARGUMENTS = "fix login bug"
+/pr-create "Add auth" "JWT"     # $1 = "Add auth", $2 = "JWT"
+```
+
+可以用 $ARGUMENTS[N]   或简写  $N  访问特定位置的参数：
+```markdown
+---
+name: migrate-component
+description: Migrate a component from one framework to another
+---
+
+Migrate the $0 component from $1 to $2.
+Preserve all existing behavior and tests.
+```
