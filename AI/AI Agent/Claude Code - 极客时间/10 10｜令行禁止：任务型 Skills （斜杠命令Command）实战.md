@@ -37,3 +37,25 @@ disable-model-invocation: true
 用户级：  ~/.claude/skills/  或 ~/.claude/commands/      → 跨项目个人使用
 ```
 
+# 通过 ARGUMENTS 给 Skill 传参
+
+当你通过  /skill-name args  调用 Skill 时，args  会通过  $ARGUMENTS  注入到 Skill 内容中。
+
+举例来说，当运行  /fix-issue 123  时，Claude 收到的内容是“Fix GitHub issue 123 following our coding standards…”。
+```markdown
+---
+name: fix-issue
+description: Fix a GitHub issue
+disable-model-invocation: true
+---
+
+Fix GitHub issue $ARGUMENTS following our coding standards.
+
+1. Read the issue description
+2. Understand the requirements
+3. Implement the fix
+4. Write tests
+5. Create a commit
+```
+
+
