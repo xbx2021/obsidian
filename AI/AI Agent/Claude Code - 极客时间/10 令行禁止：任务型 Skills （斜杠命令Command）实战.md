@@ -514,3 +514,10 @@ Changes: [n] files
 
 
 # 小结
+
+**任务型 Skill =disable-model-invocation: true** ——这个字段决定了 Skill 是“知识提供者”还是“动作执行者"。任务型绝不让 Claude 自作主张触发。
+
+**! `command` 动态上下文注入**——让 Claude 启动时就拥有完整上下文，减少 3-5 次工具调用，提升响应一致性。
+
+**Skill 内 Hooks 提供执行期间的安全网**，仅在 Skill 生命周期内生效，随 Skill 一起分发。
+
