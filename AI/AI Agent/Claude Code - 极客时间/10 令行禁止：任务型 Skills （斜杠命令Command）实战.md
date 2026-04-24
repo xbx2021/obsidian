@@ -480,3 +480,19 @@ Title: [title]
 Branch: [branch] → main
 Changes: [n] files
 ```
+
+其中的  !`…`  就是我们刚才学过的 ! \command` 动态上下文注入，Claude 启动时就拿到了当前分支、commit 记录和文件变更。
+
+使用方式如下：
+```markdown
+```bash
+# 自动生成标题和描述
+/pr-create
+
+# 指定标题
+/pr-create "Add user authentication"
+
+# 指定标题和描述
+/pr-create "Add user authentication" "Implements JWT-based auth with refresh tokens"
+```
+
