@@ -100,5 +100,5 @@ Claude 在加载 code-review Skill 时，所做的事情，本质上是同一个
 可以采用三种方式来控制 Claude 对 Skills 的访问。
 1. 全局禁用：在  /permissions  中 deny Skill  工具
 2. 精确控制：Skill(commit)  精确匹配，Skill(deploy *)  前缀匹配
-3. 逐个控制：给 Skill 加  disable-model-invocation: true frontmatter
+3. 逐个控制：给 Skill 加  disable-model-invocation: true
 
