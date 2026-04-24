@@ -322,3 +322,19 @@ hooks:                             # 可选：作用域为此 Skill 的 Hooks
 ---
 ```
 
+其中所有字段都是可选的，但强烈建议提供  description，否则 Claude 无法判断何时使用。
+
+- **name**  字段：最大 64 字符，只能使用小写字母、数字、连字符，推荐使用动名词形式：code-reviewing、api-documenting、bug-fixing。如果省略了这个字段，则自动使用目录名（.claude/skills/code-reviewing/ → name 为  code-reviewing）
+
+- **description**  字段：这是最重要的字段——它决定 Skill 何时被触发。这个字段应该包含两部分信息：这个 Skill 做什么，以及什么情况下使用它。如果省略了这个字段，系统会使用 Markdown 正文的第一段作为 description。
+
+	注意：所有 Skill 的 description 会被加载到上下文中供 Claude 判断选择，默认总预算为  15,000 字符。如果你的 Skills 很多，导致 description 被截断，可以运行  /context  查看警告，并通过环境变量  SLASH_COMMAND_TOOL_CHAR_BUDGET  调大预算。
+
+**argument-hint** 字段：自动补全提示，为用户提供参数格式提示，在输入  /skill-name  时系统会自动补全显示：
+```markdown
+argument-hint: "[issue-number]"          # /fix-issue [issue-number]
+argument-hint: "[filename] [format]"     # /convert [filename] [format]
+```
+
+**disable-model-invocation  和  user-invocable**：这两个字段组合起来控制“谁能触发这个 Skill”。
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424105733970.png)
