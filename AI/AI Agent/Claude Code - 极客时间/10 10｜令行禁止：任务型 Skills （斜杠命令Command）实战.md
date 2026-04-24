@@ -154,3 +154,24 @@ Files changed:
 ```
 
 这样，Claude 启动 /pr-create "Add auth" 时就拥有了完整上下文，可以直接生成 PR 标题和描述，无需额外再进行多一次工具调用。
+
+上面的过程画了个图，方便更清晰地体会这个过程
+![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424135919556.png)
+! `command` 可以与  $ARGUMENTS  组合，在动态注入时使用参数值。
+```markdown
+---
+description: Show git blame for a file
+argument-hint: [file path]
+disable-model-invocation: true
+allowed-tools: Bash(git:*)
+---
+
+Analyze the git history for: $ARGUMENTS
+
+File blame:
+!`git blame $ARGUMENTS 2>/dev/null | head -30 || echo "File not found"`
+
+Recent changes:
+!`git log --oneline -5 -- $ARGUMENTS 2>/dev/null || echo "No history"`
+```
+
