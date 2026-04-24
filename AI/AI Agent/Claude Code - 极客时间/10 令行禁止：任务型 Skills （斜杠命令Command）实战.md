@@ -290,3 +290,193 @@ allowed-tools: Bash(*)
 ```
 
 Skills 目录名即命令名。包括简单的查询类命令（git:status、git:log）以及包含动作的命令建议。建议你把它们迁移到 Skills 目录以获得  disable-model-invocation  等高级能力。
+
+## 命令一：智能提交 /commit
+
+`.claude/skills/committing/SKILL.md`（或 ` .claude/commands/commit.md`）：
+
+```markdown
+---
+description: Quick git commit with auto-generated or specified message
+argument-hint: [optional: commit message]
+disable-model-invocation: true
+allowed-tools: Bash(git status:*), Bash(git add:*), Bash(git commit:*), Bash(git diff:*)
+model: haiku
+---
+
+Create a git commit.
+
+If a message is provided: $ARGUMENTS
+- Use that as the commit message
+
+If no message is provided:
+- Analyze the changes with `git diff --staged` (or `git diff` if nothing staged)
+- Generate a concise, meaningful commit message
+
+## Steps
+
+1. Check `git status` to see current state
+2. If nothing staged, run `git add .` to stage all changes
+3. Review what will be committed with `git diff --staged`
+4. Create commit:
+   - If `$ARGUMENTS` is provided, use it as the message
+   - Otherwise, generate a message based on the diff
+5. Show the commit result
+
+## Commit Message Format
+
+- Start with type: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
+- Be concise but descriptive (max 72 chars for first line)
+- Example: `feat: add user authentication with JWT`
+
+## Output
+
+Show a brief confirmation:
+✓ Committed: [commit message] [number] files changed
+```
+
+使用方式如下：
+```markdown
+# 自动生成 commit message
+/commit
+
+# 使用指定的 message
+/commit fix: resolve login validation bug
+```
+
+这个命令可以自动生成 commit message，也可以使用用户提供的说明。有参数用参数，没参数自动生成；内部会强制遵循 conventional commits 格式；使用 haiku 模型，响应快；而且只授权 git 相关命令。
+
+## 命令二：代码审查 /review
+
+用于自动进行代码的审查
+`.claude/skills/reviewing/SKILL.md`（或  `.claude/commands/review.md`）：
+
+```markdown
+---
+description: Review code for quality, bugs, and improvements
+argument-hint: [optional: file path]
+disable-model-invocation: true
+allowed-tools: Read, Grep, Glob, Bash(git diff:*)
+---
+
+Review code and provide feedback.
+
+Target: $ARGUMENTS (or current git diff if not specified)
+
+## Review Focus Areas
+
+1. **Bugs & Errors**: Logic errors, null checks, edge cases
+2. **Security**: Input validation, injection risks, sensitive data exposure
+3. **Performance**: Obvious inefficiencies, N+1 queries, memory leaks
+4. **Readability**: Naming, complexity, documentation needs
+
+## Steps
+
+1. If file path provided, read that file
+2. If no path, run `git diff` to see current changes
+3. Analyze the code against the focus areas
+4. Provide structured feedback
+
+## Output Format
+
+```markdown
+## Code Review
+
+### Summary
+[One sentence overall assessment]
+
+### Issues Found
+
+#### Critical (Must Fix)
+- [issue]: [location] - [brief explanation]
+
+#### Warnings (Should Fix)
+- [issue]: [location] - [brief explanation]
+
+#### Suggestions (Nice to Have)
+- [suggestion]: [location] - [brief explanation]
+
+### What's Good
+- [positive observation]
+
+## Guidelines
+Be specific about locations (file:line if possible)
+Provide actionable feedback, not just criticism
+Don't nitpick style unless it impacts readability
+Acknowledge good patterns you see
+```
+
+使用方式如下：
+```markdown
+```bash
+# 审查当前 git diff
+/review
+
+# 审查特定文件
+/review src/auth/login.ts
+```
+
+该命令只授权 Read、Grep、Glob，不能修改代码，统一的反馈格式，便于团队理解。此外还有优先级分类功能：Critical > Warning > Suggestion。
+
+## 命令三：创建 PR /pr-create
+
+`.claude/skills/pr-creating/SKILL.md`（或 ` .claude/commands/pr-create.md`）：
+
+```markdown
+---
+description: Create a pull request with auto-detected context
+argument-hint: [title] [description]
+disable-model-invocation: true
+allowed-tools: Bash(git:*), Bash(gh:*)
+---
+
+Create a pull request.
+
+Title: $1
+Description: $2
+
+## Current Context (Auto-detected)
+
+Current branch:
+!`git branch --show-current`
+
+Recent commits on this branch:
+!`git log origin/main..HEAD --oneline 2>/dev/null || echo "No commits ahead of main"`
+
+Files changed:
+!`git diff --stat origin/main 2>/dev/null || git diff --stat HEAD~3`
+
+## Steps
+
+1. Ensure we're not on main/master branch
+2. Push current branch to remote (if not already)
+3. Create PR using `gh pr create`:
+   - Title: $1 (or auto-generate from branch name)
+   - Body: $2 (or auto-generate from commits)
+4. Return the PR URL
+
+## PR Body Template
+
+If $2 is not provided, generate:
+
+```markdown
+## Summary
+[Auto-generated from commit messages]
+
+## Changes
+[List of changed files with brief descriptions]
+
+## Testing
+- [ ] Tests pass locally
+- [ ] Manual testing completed
+
+---
+Created with `/pr-create`
+
+## Output
+✓ PR Created: [URL]
+
+Title: [title]
+Branch: [branch] → main
+Changes: [n] files
+```
