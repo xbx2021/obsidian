@@ -175,3 +175,35 @@ Recent changes:
 !`git log --oneline -5 -- $ARGUMENTS 2>/dev/null || echo "No history"`
 ```
 
+> $ARGUMENTS  参数会先被替换，再执行 ! `command`。这意味着用户输入会进入 shell 命令——因此务必在 allowed-tools 中严格限制可执行范围。
+
+
+动态注入的工程价值和优势列表分析如下
+![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140306206.png)
+# Skill 内的 Hooks
+
+任务型 Skill 执行的是有“**副作用**” **(side-effect）** 的操作——提交代码、部署应用、修改文件。这类操作需要自动化的安全网。
+![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140528397.png)
+
+Hooks 配置很简单，只需要在 frontmatter 的  hooks  字段中定义：
+```markdown
+---
+description: Safe deployment command
+disable-model-invocation: true
+allowed-tools: Bash(git:*), Bash(npm:*), Bash(ssh:*)
+hooks:
+  PreToolUse:
+    - matcher: Bash
+      hooks:
+        - type: "command"           
+          command: echo "About to run: $TOOL_INPUT" >> /tmp/deploy.log
+  PostToolUse:
+    - matcher: Edit
+      hooks:
+        - type: "command"           
+          command: npx prettier --write "$FILE_PATH"
+---
+
+Deploy the application to staging environment.
+```
+
