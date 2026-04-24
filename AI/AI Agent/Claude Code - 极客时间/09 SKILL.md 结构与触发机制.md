@@ -367,4 +367,5 @@ allowed-tools:
 1. 面对一个具体需求，如何决定该不该用 Skill，怎么用。
 2. 什么时候用参考型 Skill，什么时候用任务型 Skill？什么时候必须手动触发？
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424110710402.png)
+简而言之，CLAUDE.md  放“Claude 每次都该知道的少量规则”（< 100 行）；Skill  放“特定场景下的详细指令和知识”（可以很长，按需加载）。如果你**犹豫放 CLAUDE.md 还是 Skill，那么就放 Skill，并在 CLAUDE.md 里加一行引用**。
 
