@@ -30,4 +30,10 @@ disable-model-invocation: true
 .claude/skills/<name>/SKILL.md      # 推荐：Skills 目录（完整能力）
 .claude/commands/<name>.md           # 兼容：Commands 目录（简单命令）
 ```
+![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424113241196.png)
+任务型 Skill 作用域如下：
+```
+项目级：  .claude/skills/   或 .claude/commands/       → 随项目 git 分发
+用户级：  ~/.claude/skills/  或 ~/.claude/commands/      → 跨项目个人使用
+```
 
