@@ -295,3 +295,30 @@ description: Write and run unit tests for individual functions. Use for testing 
 name: integration-testing
 description: Write and run integration tests for system components. Use when testing how multiple components work together, testing API endpoints end-to-end, or verifying database interactions.
 ```
+
+# Skills Frontmatter 字段详解
+
+Claude Code 官方支持的完整 frontmatter 字段如下。
+```markdown
+---
+name: my-skill-name                # 可选：Skill 标识符（省略则用目录名）
+description: What this does        # 推荐：触发器（最重要！）
+argument-hint: "[issue-number]"    # 可选：自动补全时的参数提示
+disable-model-invocation: true     # 可选：禁止 Claude 自动触发
+user-invocable: false              # 可选：对用户隐藏 /skill-name
+allowed-tools:                     # 可选：限制可用工具
+  - Read
+  - Grep
+  - Glob
+model: sonnet                      # 可选：指定执行模型
+context: fork                      # 可选：在子代理中隔离执行
+agent: Explore                     # 可选：context: fork 时的代理类型
+hooks:                             # 可选：作用域为此 Skill 的 Hooks
+  PreToolUse:
+    - matcher: Write
+      hooks:
+        - type: command
+          command: "echo 'Write called in skill'"
+---
+```
+
