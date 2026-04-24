@@ -212,3 +212,16 @@ Skill 内的 Hooks 不是一条一条平铺写的，而是按“事件 → 匹�
 Skill 中常用 Hook 模式如下。
 ![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140745394.png)
 Skill Hooks 与全局 Hooks 的区别如下。
+![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140855309.png)
+#  任务型 Skill 设计方法论
+
+设计一个任务型 Skill 时，提供一个七步设计清单，引导你按顺序回答后面的问题。
+```markdown
+1. 动作是什么？ → 命名（commit、deplo，y、review）
+2. 谁能触发？   → disable-model-invocation: true
+3. 需要什么权限？→ allowed-tools 精确到命令级
+4. 启动时需要什么上下文？→ !`command` 预注入
+5. 执行过程需要什么安全网？→ hooks
+6. 输出量大不大？→ 大则 context: fork
+7. 用什么模型？ → model（简单 haiku，复杂 sonnet）
+```
