@@ -103,3 +103,6 @@ Preserve all existing behavior and tests.
 
 Claude Code 是非常灵活的，如果 Skill 中根本就没有定义 $ARGUMENTS，而你在调用 Skill 的时候又偏偏传递了参数进去。那也不怕，Claude Code 会自动在内容末尾追加  ARGUMENTS: <用户输入>，确保参数不会丢失。
 
+此外，还可以通过 ${CLAUDE_SESSION_ID} 变量传入当前会话 ID，可用于把日志关联到当前会话。
+
+# ! `command` 动态上下文注入
