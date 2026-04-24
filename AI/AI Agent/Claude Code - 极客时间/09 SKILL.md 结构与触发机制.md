@@ -338,3 +338,33 @@ argument-hint: "[filename] [format]"     # /convert [filename] [format]
 
 **disable-model-invocation  和  user-invocable**：这两个字段组合起来控制“谁能触发这个 Skill”。
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424105733970.png)
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424110034164.png)
+**allowed-tools**  字段用来限制 Skills 被激活时 Claude 能使用的工具。Skills 支持的工具包括：
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424110112229.png)
+还可以更精细地控制 Bash 命令
+```markdown
+allowed-tools:
+  - Bash(git:*)      # 只能执行 git 命令
+  - Bash(npm test:*) # 只能执行 npm test 相关命令
+```
+
+> 权限交互：allowed-tools  中的工具在 Skill 激活时无需逐次确认。你的全局权限设置（/permissions）仍然控制其他工具的审批行为。
+
+
+**context、agent、model**——Skills 的执行环境
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424110332196.png)
+**hooks**——Skill 级别的 Hooks，可以为 Skill 定义仅在其生命周期内生效的 Hooks。
+
+# 小结
+
+1. **Skills 是可由用户或 Claude 触发的能力包**，Claude 通过语义推理决定何时激活，但目前已经脱离了 Claude Code 本身，形成了 Agent 通用技能生态。
+2. **Skill 的 description 不是文档，而是触发器**，其构建公式为：做什么 + 怎么做 + 什么时候用
+3. **Claude Code 采用渐进式加载来节省 token**——description 常驻上下文，全文仅在触发时加载。
+
+当我们谈论 Agent 系统的工程化时，我们真正面对的问题，并不是“模型是否足够强大”，而是“模型在何时拥有何种知识”。Skills 给出的答案，是**通过语义定义与按需加载**，让能力在正确的时刻出现。在有限的上下文窗口里，**组织的做事方式第一次获得了结构化存在的形式**。
+
+建立一个系统的设计思维框架。这个框架用来回答两个问题。
+1. 面对一个具体需求，如何决定该不该用 Skill，怎么用。
+2. 什么时候用参考型 Skill，什么时候用任务型 Skill？什么时候必须手动触发？
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424110710402.png)
+
