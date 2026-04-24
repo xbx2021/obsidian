@@ -35,4 +35,15 @@ Skills 的真正突破点，在于它把能力的“语义定义权”交给模�
 
 人不再编排具体执行路径，而是定义能力的边界与含义。模型根据 description 理解能力语义，并在运行时决定是否加载、何时加载。这看似只是增加了一个字段，却完成了一次范式跃迁。我们**从“人调度模型”，走向“模型调度能力”**。
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424094157190.png)
+正因为“模型调度能力”和“可操作知识”的重要性，Skills 已经逐渐脱离了 Claude 的语境，成了 Agent 生态中的通用概念。“技能化”思路正在从 Claude 系统扩展到其他智能体平台，以及 AI 赋能的工程工具中。在 Claude 发布的 [Agent Skills 公用仓库](https://github.com/anthropics/skills)中，集成了大量可复用的能力。Coze 也推出了[技能商店](https://www.coze.cn/skills)，为 Coze 智能体生态提供即插即用的能力组件。
+
+
+# 企业本体论视角：Skills 是组织的 SOP 体系
+
+当这种“可操作知识”机制扩展到企业层面，它的意义会更加清晰。
+
+如果把 Claude Code 的技术栈映射到企业组织结构，我们会发现一种高度对称的关系。Tools 对应员工的操作工具；SubAgents 对应岗位分工；Hooks 对应质量与合规流程；CLAUDE.md 类似企业文化与通用规章；MCP Servers 像外部合作伙伴；Plugins 是对外打包的解决方案。
+
+而 Skills，正是企业的 SOP 体系。
+![](assets/09%20SKILL.md%20结构与触发机制/file-20260424094716752.png)
 
