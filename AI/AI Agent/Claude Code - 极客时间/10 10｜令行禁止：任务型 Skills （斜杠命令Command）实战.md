@@ -59,5 +59,16 @@ Fix GitHub issue $ARGUMENTS following our coding standards.
 ```
 注意，传参并不仅仅限于任务型 Skill，但是，需要明确传参的场景，对于任务型 Skill 自然是显得更加常见。
 
+## Skill 支持两种参数传递方式。
+### **单参数**——$ARGUMENTS  接收所有参数。
+```markdown
+---
+description: Quick git commit
+argument-hint: [commit message]
+disable-model-invocation: true
+---
 
+Create a git commit with message: $ARGUMENTS
+```
 
+### **多参数**—— $1，$2 接收位置参数：
