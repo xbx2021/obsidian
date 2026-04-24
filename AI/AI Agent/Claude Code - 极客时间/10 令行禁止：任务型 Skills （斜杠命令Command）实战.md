@@ -270,3 +270,12 @@ allowed-tools: Bash(*)
 3. Otherwise, proceed with the commit
 ```
 
+# 实战项目：团队标准命令集
+
+现在让我们创建一套真正实用的团队命令。
+
+> 课程示例路径：我目前是把这一部分的示例文件放在  Repo 的 05-Commands/projects/  下，你可以尝试着把这些斜杠命令迁移到 Skills 目录。项目结构如下。
+
+
+
+
