@@ -106,3 +106,6 @@ Claude Code 是非常灵活的，如果 Skill 中根本就没有定义 $ARGUMENT
 此外，还可以通过 ${CLAUDE_SESSION_ID} 变量传入当前会话 ID，可用于把日志关联到当前会话。
 
 # ! `command` 动态上下文注入
+
+Skills 中那么多文字和信息，其实归根结底还是 Prompt，需要 Claude Code（工具）发给 Claude 或者 GLM/Qwen 等模型来处理。而模型启动时并不知道和当前技能相关的上下文，这一功能刚好可以解决该问题。
+
