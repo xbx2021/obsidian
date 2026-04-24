@@ -98,7 +98,7 @@ Claude 在加载 code-review Skill 时，所做的事情，本质上是同一个
 之前讲过 Skill 有两种触发方式，理解这一点对 Skill 设计和触发过程也很重要。
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260424100556515.png)
 
-## 禁用方法
+## 权限规则
 设有  `disable-model-invocation: true`  的 Skill，其 description **不会加载到上下文**——Claude 完全看不到它，只有用户  /name  才能触发。
 
 可以采用三种方式来控制 Claude 对 Skills 的访问。
@@ -111,6 +111,7 @@ Skill(commit)        # 允许 Claude 使用 commit skill
 Skill(review-pr *)   # 允许 Claude 使用 review-pr skill（带任意参数）
 Skill(deploy *)      # 拒绝 Claude 使用 deploy skill（放在 deny 列表）
 ```
+
 
 好的 Skill 设计遵循“**导航页 + 详情页**”模式
 ```markdown
