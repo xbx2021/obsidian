@@ -259,3 +259,14 @@ allowed-tools: Bash(*)
 
 权限范围的设计经验梳理表格
 ![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142126829.png)
+错误处理也非常重要，不可忽视。应该在说明中显式处理错误路径。
+```markdown
+## Steps
+
+1. Check if we're in a git repository
+   - If not, inform the user and stop
+2. Check for uncommitted changes
+   - If none, inform the user that there's nothing to commit
+3. Otherwise, proceed with the commit
+```
+
