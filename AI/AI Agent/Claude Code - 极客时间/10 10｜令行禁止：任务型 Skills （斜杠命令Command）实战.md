@@ -211,3 +211,4 @@ Skill 内的 Hooks 不是一条一条平铺写的，而是按“事件 → 匹�
 
 Skill 中常用 Hook 模式如下。
 ![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140745394.png)
+Skill Hooks 与全局 Hooks 的区别如下。
