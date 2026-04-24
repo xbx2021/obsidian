@@ -537,3 +537,17 @@ Changes: [n] files
 ![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424145544403.png)
 我们仍以“代码审查”为例，对比一下同一个需求的三种实现。
 ![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424145759496.png)
+三种方案可以共存。一个成熟的团队工具箱通常这样组织：
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424145919720.png)
+当 Skill + SubAgent 配合起来，任务型 Skill 可以通过  context: fork  在子代理中隔离执行（第 12 讲我们再详细学习  context: fork）。
+```markdown
+---
+description: Full codebase review
+disable-model-invocation: true
+context: fork
+allowed-tools: Read, Grep, Glob
+---
+```
+
+这样  `/review ` 的大量输出不会污染主对话上下文。
+
