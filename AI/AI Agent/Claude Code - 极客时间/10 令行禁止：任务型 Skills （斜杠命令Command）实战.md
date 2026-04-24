@@ -1,5 +1,5 @@
 任务型 Skill 的价值：**把重复的对话模式，变成可复用的快捷方式。**
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424112422766.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028181.png)
 # Skills vs Commands
 
 早期，斜杠命令 /Comands 和 Skills 是两个独立组件。但在新版 Claude Code 中，Commands 已合并到 Skills，成为 Skills 的子集。
@@ -7,7 +7,7 @@
 因此，在 .claude/commands/review.md  和  .claude/skills/review/SKILL.md  两个不同目录的文件，都会创建  /review。**Skills 目录的额外优势是支持辅助文件目录（模板、示例、脚本等）**。**如果同名 Skill 和 Command 共存，Skill 优先**。
 
 下面的对比主要是帮助你理解历史演进和两种目录结构的差异。
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424112712993.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028178.png)
 # 任务型 Skill 的核心机制
 
 简单来说，任务型 Skill 就是设了 disable-model-invocation: true 的 Skill。
@@ -21,16 +21,16 @@ name: deploy
 description: Deploy the application to production
 disable-model-invocation: true
 ```
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424112933306.png)
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424113024977.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028176.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028175.png)
 有两种类型的命令。**内置命令**是 Claude Code 自带的，用于控制会话和工具，你无法修改。 **自定义命令**是你创建的任务型 Skill，用于执行特定的工作流程，完全由你掌控。
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424113157286.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028173.png)
 任务型 Skill 可以放在两个目录下：
 ```markdown
 .claude/skills/<name>/SKILL.md      # 推荐：Skills 目录（完整能力）
 .claude/commands/<name>.md           # 兼容：Commands 目录（简单命令）
 ```
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424113241196.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028172.png)
 任务型 Skill 作用域如下：
 ```
 项目级：  .claude/skills/   或 .claude/commands/       → 随项目 git 分发
@@ -119,7 +119,7 @@ Skills 中那么多文字和信息，其实归根结底还是 Prompt，需要 Cl
 而 ! `command` 是 Skill 文件的**预处理器**——在文件内容发送给模型  之前，先在 shell 中执行这些预设的命令，然后**把它们的输出结果内联替换到 Prompt 中**，再去执行新的命令。
 
 执行流程如下：
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424134740492.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028170.png)
 下面的示例中，我们为 pr-create 命令设置 ! `command` ，让它能够动态接收上下文（上下文就是在技能中预设的 ! `command` 的输出）。
 ```markdown
 ## Current Context (Auto-detected)
@@ -156,7 +156,7 @@ Files changed:
 这样，Claude 启动 /pr-create "Add auth" 时就拥有了完整上下文，可以直接生成 PR 标题和描述，无需额外再进行多一次工具调用。
 
 上面的过程画了个图，方便更清晰地体会这个过程
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424135919556.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028168.png)
 ! `command` 可以与  $ARGUMENTS  组合，在动态注入时使用参数值。
 ```markdown
 ---
@@ -179,11 +179,11 @@ Recent changes:
 
 
 动态注入的工程价值和优势列表分析如下
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140306206.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028166.png)
 # Skill 内的 Hooks
 
 任务型 Skill 执行的是有“**副作用**” **(side-effect）** 的操作——提交代码、部署应用、修改文件。这类操作需要自动化的安全网。
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140528397.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028150.png)
 
 Hooks 配置很简单，只需要在 frontmatter 的  hooks  字段中定义：
 ```markdown
@@ -210,9 +210,9 @@ Deploy the application to staging environment.
 Skill 内的 Hooks 不是一条一条平铺写的，而是按“事件 → 匹配规则 → 要执行的命令列表”一层一层包起来。也就是一个三层树形结构，而不是一行一个 Hook —— 这是为了支持**多事件 × 多工具 × 多动作**的组合扩展。
 
 Skill 中常用 Hook 模式如下。
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140745394.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028149.png)
 Skill Hooks 与全局 Hooks 的区别如下。
-![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424140855309.png)
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142028147.png)
 #  任务型 Skill 设计方法论
 
 设计一个任务型 Skill 时，提供一个七步设计清单，引导你按顺序回答后面的问题。
@@ -248,3 +248,14 @@ Skill Hooks 与全局 Hooks 的区别如下。
 ❌ argument-hint: [args]
 ```
 
+**权限最小化原则**：严格控制每个任务的权限边界。
+```markdown
+# ✅ 精确授权——只允许 git 的特定子命令
+allowed-tools: Bash(git status:*), Bash(git add:*), Bash(git commit:*)
+
+# ❌ 过于宽泛——等于授权所有 shell 命令
+allowed-tools: Bash(*)
+```
+
+权限范围的设计经验梳理表格
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424142126829.png)
