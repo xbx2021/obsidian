@@ -108,4 +108,10 @@ Skill(review-pr *)   # 允许 Claude 使用 review-pr skill（带任意参数）
 Skill(deploy *)      # 拒绝 Claude 使用 deploy skill（放在 deny 列表）
 ```
 
-
+好的 Skill 设计遵循“**导航页 + 详情页**”模式
+```markdown
+SKILL.md                    ← 导航页：概述 + 引用（< 500 行）
+├── reference.md            ← 详情页：详细 API 文档
+├── examples.md             ← 详情页：使用示例
+└── scripts/validate.sh     ← 工具：可执行脚本
+```
