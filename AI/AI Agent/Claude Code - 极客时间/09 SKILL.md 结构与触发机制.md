@@ -101,9 +101,11 @@ Claude 在加载 code-review Skill 时，所做的事情，本质上是同一个
 1. 全局禁用：在  /permissions  中 deny Skill  工具
 2. 精确控制：Skill(commit)  精确匹配，Skill(deploy *)  前缀匹配
 3. 逐个控制：给 Skill 加  disable-model-invocation: true
-
+```markdown
 # 权限规则示例
 Skill(commit)        # 允许 Claude 使用 commit skill
 Skill(review-pr *)   # 允许 Claude 使用 review-pr skill（带任意参数）
 Skill(deploy *)      # 拒绝 Claude 使用 deploy skill（放在 deny 列表）
+```
+
 
