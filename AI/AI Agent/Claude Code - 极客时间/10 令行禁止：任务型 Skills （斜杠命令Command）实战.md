@@ -533,3 +533,5 @@ Changes: [n] files
 
 任务型 Skill（用户触发动作）、参考型 Skill（Claude 匹配知识）、SubAgent（隔离执行）**三者共存互补**。
 
+经过前面的学习，你已经知道 Commands 和 Skills 是同一个系统。现在我们用统一视角来理清三种能力扩展机制。
+![](assets/10%20令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424145544403.png)
