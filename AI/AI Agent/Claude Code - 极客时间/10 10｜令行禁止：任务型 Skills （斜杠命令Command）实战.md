@@ -23,5 +23,11 @@ disable-model-invocation: true
 ```
 ![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424112933306.png)
 ![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424113024977.png)
-
+有两种类型的命令。**内置命令**是 Claude Code 自带的，用于控制会话和工具，你无法修改。 **自定义命令**是你创建的任务型 Skill，用于执行特定的工作流程，完全由你掌控。
+![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424113157286.png)
+任务型 Skill 可以放在两个目录下：
+```markdown
+.claude/skills/<name>/SKILL.md      # 推荐：Skills 目录（完整能力）
+.claude/commands/<name>.md           # 兼容：Commands 目录（简单命令）
+```
 
