@@ -153,4 +153,4 @@ Files changed:
  3 files changed, 161 insertions(+)
 ```
 
-
+这样，Claude 启动 /pr-create "Add auth" 时就拥有了完整上下文，可以直接生成 PR 标题和描述，无需额外再进行多一次工具调用。
