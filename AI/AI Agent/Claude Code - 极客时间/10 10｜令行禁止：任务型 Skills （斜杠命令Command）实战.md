@@ -121,3 +121,36 @@ Skills 中那么多文字和信息，其实归根结底还是 Prompt，需要 Cl
 执行流程如下：
 ![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424134740492.png)
 下面的示例中，我们为 pr-create 命令设置 ! `command` ，让它能够动态接收上下文（上下文就是在技能中预设的 ! `command` 的输出）。
+```markdown
+## Current Context (Auto-detected)
+
+Current branch:
+!`git branch --show-current`
+
+Recent commits on this branch:
+!`git log origin/main..HEAD --oneline 2>/dev/null || echo "No commits ahead of main"`
+
+Files changed:
+!`git diff --stat origin/main 2>/dev/null || git diff --stat HEAD~3`
+```
+
+Claude 实际收到的 Prompt（替换后）：
+```markdown
+## Current Context (Auto-detected)
+
+Current branch:
+feature/auth
+
+Recent commits on this branch:
+a1b2c3d Add JWT middleware
+d4e5f6g Add login endpoint
+g7h8i9j Add user model
+
+Files changed:
+ src/auth/middleware.ts | 45 +++
+ src/auth/login.ts     | 82 +++
+ src/models/user.ts    | 34 +++
+ 3 files changed, 161 insertions(+)
+```
+
+
