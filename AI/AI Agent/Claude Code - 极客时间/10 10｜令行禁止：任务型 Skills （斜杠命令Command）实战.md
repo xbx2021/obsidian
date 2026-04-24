@@ -8,3 +8,19 @@
 
 下面的对比主要是帮助你理解历史演进和两种目录结构的差异。
 ![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424112712993.png)
+# 任务型 Skill 的核心机制
+
+简单来说，任务型 Skill 就是设了 disable-model-invocation: true 的 Skill。
+```markdown
+# 参考型——Claude 自动选择是否使用
+name: api-conventions
+description: API design patterns for this codebase. Use when writing or reviewing API endpoints.
+
+# 任务型——必须用户手动触发
+name: deploy
+description: Deploy the application to production
+disable-model-invocation: true
+```
+![](assets/10%2010｜令行禁止：任务型%20Skills%20（斜杠命令Command）实战/file-20260424112933306.png)
+
+
