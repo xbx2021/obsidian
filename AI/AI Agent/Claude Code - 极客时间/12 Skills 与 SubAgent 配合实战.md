@@ -262,3 +262,7 @@ SKILL.md（6 组件全展示）                  SKILL.md（精简为 3 组件�
 └── scripts/ (2 files)
 ```
 
+精简原则是参考型知识（PATTERNS、STANDARDS、EXAMPLES）在主对话场景中有用，但 SubAgent 场景下通常只需要执行流程。这里你可以回顾一下 Skill 和 Sub-Agent 的职责划分——Skill 负责 HOW，SubAgent 负责 WHO/WHAT。
+
+**然后是 SubAgent 的角色定义**。SubAgent 的  .md  文件只定义角色和使命，具体的工作流程由 Skill 提供。其中  skills: [api-generating]  这一行——就是把"操作手册"交到 SubAgent 手里的那一刻。
+
