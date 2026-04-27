@@ -549,3 +549,6 @@ python3 .claude/skills/route-scanning/scripts/scan-routes.py src/
 > 用 quality-checker 验证 docs/ 目录下生成的文档
 ```
 
+验证时需要注意下面几件事：
+1. 阶段 1 是否发现了全部 12 条路由？（包括链式路由  /:id/reviews）
+2. 阶段 2 是否生成了  docs/products-api.md  和  docs/categories-api.md？阶段 3 的质量报告是 PASS 还是 NEEDS_REVISION？
