@@ -164,3 +164,6 @@ Skills 方式（Agent 调用预定义 Skill）：
 ![](assets/14%20从Claude%20Code到行业开放标准/file-20260427140758753.png)
 这个权衡，在第 9 讲就学过了——CLAUDE.md vs Skills 就是同一个 Push vs Pull 的设计决策。如下图所示。
 ![](assets/14%20从Claude%20Code到行业开放标准/file-20260427140855306.png)
+
+Vercel 的测试场景是 Build / Lint / Test——这些是每个项目都需要的高频操作。对于高频操作，Push 模型当然更好：把构建指南放在 AGENTS.md 里，Agent 每次都能看到。
+
