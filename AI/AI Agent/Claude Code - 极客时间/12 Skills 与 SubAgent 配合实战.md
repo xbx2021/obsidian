@@ -108,4 +108,16 @@ Research $ARGUMENTS thoroughly:
 
 每个组件都有明确的职责。
 ![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427094000913.png)
+也许你觉得只不过设计个 API 而已，为什么需要这么多组件？
+
+但其实一位 API 文档专家，当有人请你写文档时，你需要：
+**识别技术栈**（Express? FastAPI? Spring?）→ PATTERNS.md、
+
+**遵循规范**（字段命名、格式要求）→ STANDARDS.md、
+
+**参考案例**（不确定时看例子）→ EXAMPLES.md、
+
+**使用模板**（保证一致性）→ templates/、
+
+**批量处理**（几十个端点不可能手写）→ scripts/。
 
