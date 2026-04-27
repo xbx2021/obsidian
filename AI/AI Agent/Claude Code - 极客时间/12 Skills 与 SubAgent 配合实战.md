@@ -614,3 +614,6 @@ python3 .claude/skills/route-scanning/scripts/scan-routes.py src/
 
 这里我也给出组合过程中的排错速查表，供你参考。
 ![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427104539246.png)
+最后的最后，就记住一句话。**SubAgent 定义“是谁、做什么”**，**Skill 定义“怎么做、用什么做”**。**两者各有所长，组合才完整**。
+
+
