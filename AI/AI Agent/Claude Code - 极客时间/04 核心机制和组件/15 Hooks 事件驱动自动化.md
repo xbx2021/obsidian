@@ -177,3 +177,8 @@ hooks                            ← 顶层容器
 
 四种类型的选择策略是怎样的呢？
 
+一句话概括：**能用 command 的不用 prompt，能用 prompt 的不用 agent，需要对接远程服务时用 http**。确定性规则永远比 LLM 判断更可靠，LLM 判断比子代理执行更快。
+![](assets/15%20Hooks%20事件驱动自动化/file-20260427153016763.png)
+# PreToolUse：工具执行前的守门员
+
+
