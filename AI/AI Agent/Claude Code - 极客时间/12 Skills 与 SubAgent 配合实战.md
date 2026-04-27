@@ -200,3 +200,22 @@ To validate OpenAPI spec:
 ![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427095422240.png)
 ![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427095426885.png)
 
+# 三种组合模式：具体咋用
+
+第一部分介绍的两个组合方向是基础构件。实战中，它们还衍生出三种组合模式。
+
+## 模式一：SubAgent 预加载 Skills（方向 A 的单次应用）
+
+一个子代理预加载一个或多个 Skill，用领域知识增强自己的能力。这是最常见的模式，也是本讲的实战重点。
+```markdown
+# 子代理在创建时预加载 Skill 作为领域知识
+---
+name: api-doc-generator
+skills:
+  - api-generating              # 预加载 API 文档生成知识
+---
+```
+配置了 Skill 的子代理好比一个经过培训的专业技师。
+
+**而同一个 Agent，注入不同的 Skill，就变成不同的专家。这就是组合的力量。**
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427100016605.png)
