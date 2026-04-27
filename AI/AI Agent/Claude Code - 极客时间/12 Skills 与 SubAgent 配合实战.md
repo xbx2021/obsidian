@@ -580,5 +580,12 @@ python3 .claude/skills/route-scanning/scripts/scan-routes.py src/
 # 三种模式完整对照
 为了帮你更好地理解和区分，我将这三种模式总结成了一张表。
 ![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427103842713.png)
+实际项目中，你觉得哪种模式最常用？——我感觉当然是**第一种**。
 
 
+# 小结
+
+分享一系列选型指南
+首先是各种场景下的选型矩阵和反模式警告。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427104056248.png)
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427104145625.png)
