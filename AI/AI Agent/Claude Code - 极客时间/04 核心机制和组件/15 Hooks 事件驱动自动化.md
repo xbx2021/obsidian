@@ -189,5 +189,17 @@ PreToolUse 是最强大的 Hook 事件，因为它能阻止工具执行。它就
 
 每个 Hook 脚本通过 stdin 接收一个 JSON 对象，包含做出判断所需的全部上下文。
 ```json
-
+{
+  "session_id": "abc123",
+  "transcript_path": "/path/to/transcript.jsonl",
+  "cwd": "/project/root",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "rm -rf /tmp/test"
+  }
+}
 ```
+
+这些字段告诉你：谁在执行（session_id），在哪里执行（cwd），什么权限模式（permission_mode），要执行什么工具（tool_name），什么参数（tool_input）。有了这些信息，你的脚本就能精准判断这个操作是否安全。
