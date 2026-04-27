@@ -426,3 +426,50 @@ Return a structured report:
 
 ## 模式三：流水线中的 Skill 分工（方向 A 的多阶段串联）
 
+下面我们再往前走一步。思考一下模式一的自然延伸——多个子代理各自预加载不同的 Skill，按阶段串联执行。每个阶段的输出作为下一阶段的输入。这种模式是和复杂的多阶段任务（我们之前子代理部分也介绍过类似的示例），但此处每个阶段需要通过 Skill 来配备不同的专业知识。配套项目：04-Skills/projects/08-skill-pipeline/
+
+项目整体结构如下。
+```markdown
+08-skill-pipeline/
+├── CLAUDE.md                              ← 流水线编排指令
+├── .claude/
+│   ├── agents/
+│   │   ├── route-scanner.md               ← 阶段 1: 路由扫描专家 (haiku)
+│   │   ├── doc-writer.md                  ← 阶段 2: 文档编写专家 (sonnet)
+│   │   └── quality-checker.md             ← 阶段 3: 质量检查专家 (haiku)
+│   ├── skills/
+│   │   ├── route-scanning/
+│   │   │   ├── SKILL.md                   ← 扫描工作流程
+│   │   │   └── scripts/scan-routes.py     ← 路由扫描脚本
+│   │   ├── doc-writing/
+│   │   │   ├── SKILL.md                   ← 文档生成工作流程
+│   │   │   └── templates/endpoint-doc.md  ← 文档模板
+│   │   └── quality-checking/
+│   │       ├── SKILL.md                   ← 质量检查工作流程
+│   │       └── rules/doc-standards.md     ← 质量标准规则
+│   └── settings.local.json
+├── src/routes/
+│   ├── products.js                        ← 7 条路由（含链式路由）
+│   └── categories.js                      ← 5 条路由
+└── docs/                                  ← 生成的文档输出
+```
+
+一个完整的 API 文档流程可以拆分为三个阶段，每个阶段需要不同的专业能力。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427102714251.png)
+每一个阶段的输入输出流程如下。
+```markdown
+阶段 1: 分析子代理
+  └─ skills: ["code-analyzing"]
+  └─ 输出：代码分析报告
+
+阶段 2: 重构子代理
+  └─ skills: ["refactoring-patterns"]
+  └─ 输入：阶段 1 的报告
+  └─ 输出：重构方案
+
+阶段 3: 测试子代理
+  └─ skills: ["testing-conventions"]
+  └─ 输入：阶段 2 的代码变更
+  └─ 输出：测试结果
+```
+
