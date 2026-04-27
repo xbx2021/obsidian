@@ -67,3 +67,33 @@ Claude Code 的 Hooks 机制与此异曲同工，但**它针对的不是 HTTP �
 
 最后一行值得特别关注——**Hooks 可以直接定义在子代理的 frontmatter 中**，只在该子代理执行期间生效。这比在全局 settings.json 中配置更精准，后面会详细讲解。
 
+一个典型的 Hook 配置长这样：
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/block-dangerous.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write $CLAUDE_FILE_PATH"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
