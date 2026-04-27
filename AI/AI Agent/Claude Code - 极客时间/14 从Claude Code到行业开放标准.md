@@ -50,3 +50,11 @@
 ![](assets/14%20从Claude%20Code到行业开放标准/file-20260427134403352.png)
 企业级管理方面，Anthropic 的 Team/Enterprise 计划支持管理员集中配置 Skills——控制哪些 Skills 可用，同时让员工自定义自己的工作流。
 
+# Skills 出圈的三个本质属性
+
+刚刚我们了解了“发生了什么”，更重要的问题是“为什么”。为什么是 Skills 出圈，而不是 SubAgents、不是 Hooks、不是 Plugins？
+
+**第一，声明式（Declarative）**。 Skills 的载体是纯 Markdown 文件——YAML frontmatter 加 Markdown 正文。没有编程语言，没有 import/require，没有编译和构建步骤。这意味着什么？任何能读 Markdown 的系统都能理解一个 Skill。不需要 Python 运行时，不需要 Node.js 环境。Claude 能读，GPT 能读，Gemini 也能读——因为它们都能读 Markdown。
+
+如果 Skills 是用 Python 类定义的（像 LangChain 的 Tool），那每个平台都需要一个 Python 运行时、兼容的 SDK、和特定的加载逻辑。切换平台就等于重写代码。
+
