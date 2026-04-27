@@ -566,12 +566,19 @@ python3 .claude/skills/route-scanning/scripts/scan-routes.py src/
 
 
 **要点二：每个 Skill 只关注一件事**
-
 - route-scanning  只扫描路由，不生成文档。
 - doc-writing  只生成文档，不检查质量。
 - quality-checking  只检查质量，不修改文档。
 
 **单一职责**让每个 Skill 更简洁、更可测试、更可复用。
 
+
 **要点三：编排逻辑集中管理**
+流水线的顺序、数据传递逻辑都放在  CLAUDE.md  中。如果要调整流程（比如跳过阶段 3），只需修改  CLAUDE.md，不需要动 Skill 或 SubAgent。
+
+
+# 三种模式完整对照
+为了帮你更好地理解和区分，我将这三种模式总结成了一张表。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427103842713.png)
+
 
