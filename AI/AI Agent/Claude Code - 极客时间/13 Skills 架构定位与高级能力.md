@@ -118,3 +118,17 @@ Skills 在系统中呈现出三种结构方向。
 ```
 
 **分层策略：**
+```markdown
+总是加载（SKILL.md 内联）
+  ← 80% 的请求只需要这些
+  ← 控制在 500 行以内
+
+触发时加载（Quick Reference）
+  ← 用户问到特定方向时加载
+  ← 契约式引用："When user asks about X → load Y"
+
+按需加载（reference/ + examples/）
+  ← Claude 判断需要时才读取
+  ← 文件名要有描述性
+```
+
