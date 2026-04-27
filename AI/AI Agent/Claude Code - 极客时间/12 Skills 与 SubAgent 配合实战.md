@@ -121,3 +121,70 @@ Research $ARGUMENTS thoroughly:
 
 **批量处理**（几十个端点不可能手写）→ scripts/。
 
+这些都是长期的经验积累之后内化的结果，而一个生产级 Skill 所希望做到的， 就是把这些专家经验形式化。
+
+## 主文件 SKILL.md
+
+主文件不是堆砌所有内容，而是路由器——根据任务需求指向正确的资源。设计要点包括：使用 Quick Reference 表格作为一目了然的资源索引，用清晰的步骤告诉 Claude 标准流程，以及按需指引（只在需要时才去读详细文档）。这些都是我们已经熟悉的内容。
+```markdown
+---
+name: api-documenting
+description: Generate API documentation from code. Use when the user wants to document APIs, create API reference, generate endpoint documentation, or needs help with OpenAPI/Swagger specs.
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Write
+  - Bash(python:*)
+  - Bash(./scripts/*:*)
+---
+
+# API Documentation Generator
+
+Generate comprehensive API documentation from source code.
+
+## Quick Reference
+
+| Task | Resource |
+|------|----------|
+| Identify framework | See `PATTERNS.md` |
+| Documentation standards | See `STANDARDS.md` |
+| Example outputs | See `EXAMPLES.md` |
+
+## Process
+
+### Step 1: Identify API Endpoints
+
+Look for route definitions. For framework-specific patterns, see `PATTERNS.md`.
+
+### Step 2: Extract Information
+
+For each endpoint, extract:
+- HTTP method (GET, POST, PUT, DELETE, etc.)
+- Path/route
+- Parameters (path, query, body)
+- Request/response schemas
+- Authentication requirements
+
+### Step 3: Generate Documentation
+
+Use the template in `templates/endpoint.md` for each endpoint.
+
+### Step 4: Create Overview
+
+Generate an index using `templates/index.md`.
+
+## Output Formats
+
+### Markdown (Default)
+Generate markdown suitable for README or docs site.
+
+### OpenAPI/Swagger
+If requested, generate OpenAPI 3.0 spec. See `templates/openapi.yaml`.
+
+## Automation
+
+To auto-detect routes:
+```bash
+python scripts/detect_routes.py <source_directory>
+```
