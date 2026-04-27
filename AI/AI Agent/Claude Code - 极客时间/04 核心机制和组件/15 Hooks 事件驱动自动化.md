@@ -462,3 +462,65 @@ echo '{}'
 exit 0
 ```
 
+这个脚本的结构和  `block-dangerous.sh`  很像，都是黑名单匹配。但注意一个细节：它检查的是  `tool_input.file_path`  而不是  `tool_input.command`。不同的工具传入不同的参数字段——**Bash 工具传  command**，**Write 和 Edit 工具传  file_path**。你的 Hook 脚本需要知道自己在拦截哪个工具，才能提取正确的字段。
+
+配置时，这个 Hook 要同时匹配 Write 和 Edit 两个工具。
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/protect-files.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+这个 Hook 会阻止 Claude 修改任何看起来像是敏感文件的东西。即使 Claude 误判了用户的意图，敏感文件也不会被触碰。**安全防线的价值不在于它每天拦截多少次，而在于它在那个唯一需要的瞬间不会缺席**。
+![](assets/15%20Hooks%20事件驱动自动化/file-20260427163837184.png)
+
+# PostToolUse：工具执行后的质量守卫
+
+PostToolUse 在工具**成功执行**后运行。它不能阻止已经发生的操作（文件已经写入了，命令已经执行了），但它可以做三件同样重要的事情：**后处理**（格式化、清理）、**反馈**（向 Claude 提供 lint 结果、警告）、**记录**（写入审计日志）。
+
+PostToolUse 接收的 JSON 比 PreToolUse 多一个关键字段——tool_response，即工具执行的结果：
+```json
+{
+  "session_id": "abc123",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Write",
+  "tool_input": {
+    "file_path": "/project/src/app.js",
+    "content": "..."
+  },
+  "tool_response": {
+    "success": true,
+    "result": "File written successfully"
+  }
+}
+```
+
+有了  tool_response，你的 Hook 脚本不仅知道“Claude 想做什么”，还将知道“做的结果怎样”。
+
+PostToolUse 最强大的能力在于通过  `additionalContext`  向 Claude 反馈信息：
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PostToolUse",
+    "additionalContext": "ESLint found 3 errors in the file you just wrote."
+  }
+}
+```
+
+additionalContext  的内容会被注入到 Claude 的上下文中，Claude 会看到这条反馈并据此调整行为。比如你告诉它“ESLint 发现了 3 个错误”，它就会主动去修复这些错误。**这不是简单的日志记录，而是一个闭环反馈机制——Hook 观察到问题，反馈给 Claude，Claude 自动修复。**
+
+下面我们通过三个经典实战案例来体会这些能力。
+
+## PostToolUse 实战案例 1：自动格式化
