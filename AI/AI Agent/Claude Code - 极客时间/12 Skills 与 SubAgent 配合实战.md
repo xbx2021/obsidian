@@ -196,3 +196,7 @@ To validate OpenAPI spec:
 
 剩下的各个文件，这里就不再赘述，大家直接去 Repo 阅读具体的文件和 Readme 说明就好啦。
 
+可以在 Claude Code 中先对这个 Skill 的能力做一个测试。他会生成 10 个 API 端点的完整文档。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427095422240.png)
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427095426885.png)
+
