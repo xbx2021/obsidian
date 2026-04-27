@@ -159,3 +159,6 @@ Skills 方式（Agent 调用预定义 Skill）：
 有了行业标准和分发机制，一个自然的问题浮出水面：既然 AGENTS.md（Push）和 Skills（Pull）是互补的，那什么时候该用哪个？
 
 2026 年 2 月 2 日，Vercel 发布了一篇引发广泛讨论的博文——**AGENTS.md outperforms skills in our agent evals**。他们对 Build、Lint、Test 三类任务做了严格的对照实验。
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427140645102.png)
+表面结论是，一个静态 Markdown 文件打败了按需检索的 Skill 系统。但这个结论需要更深层的分析。
+
