@@ -512,3 +512,23 @@ skills:
 You are a documentation quality specialist. You are Stage 3 of a documentation pipeline.
 ```
 
+流水线的编排逻辑写在  CLAUDE.md  中：
+```markdown
+# API Documentation Pipeline
+
+When the user asks to run the documentation pipeline:
+
+### Stage 1: Route Scanning
+Use the `route-scanner` agent to scan the source directory.
+Collect the route manifest (JSON) from its output.
+
+### Stage 2: Documentation Generation
+Use the `doc-writer` agent to generate documentation.
+Pass the route manifest from Stage 1 as input context.
+
+### Stage 3: Quality Validation
+Use the `quality-checker` agent to validate the generated docs.
+Report the quality verdict to the user.
+```
+
+编排的关键在于每个阶段的输出是下一阶段的输入。Claude 主对话扮演“项目经理”角色，依次调用三个专家。
