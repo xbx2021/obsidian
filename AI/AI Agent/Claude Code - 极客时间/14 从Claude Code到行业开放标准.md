@@ -58,3 +58,5 @@
 
 如果 Skills 是用 Python 类定义的（像 LangChain 的 Tool），那每个平台都需要一个 Python 运行时、兼容的 SDK、和特定的加载逻辑。切换平台就等于重写代码。
 
+**第二，自包含（Self-contained）**。  一个 Skill 就是一个文件夹。它不依赖任何外部注册中心，不需要在某个平台注册，不需要安装特定的 runtime，不需要配置 API key，不需要连接外部服务。复制这个文件夹到任何支持 Skills 的 Agent 环境，它就能工作。这就是为什么 Git 是 Skills 的天然分发渠道——git clone  就是“安装”。
+
