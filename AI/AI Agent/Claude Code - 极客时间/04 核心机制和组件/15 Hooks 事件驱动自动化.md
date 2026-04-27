@@ -202,4 +202,7 @@ PreToolUse 是最强大的 Hook 事件，因为它能阻止工具执行。它就
 }
 ```
 
-这些字段告诉你：谁在执行（session_id），在哪里执行（cwd），什么权限模式（permission_mode），要执行什么工具（tool_name），什么参数（tool_input）。有了这些信息，你的脚本就能精准判断这个操作是否安全。
+这些字段告诉你：**谁**在执行（session_id），**在哪里**执行（cwd），**什么权限**模式（permission_mode），要执行**什么工具**（tool_name），**什么参数**（tool_input）。有了这些信息，你的脚本就能精准判断这个操作是否安全。
+
+Hook 脚本通过退出码和 stdout JSON 告诉 Claude 下一步做什么。
+
