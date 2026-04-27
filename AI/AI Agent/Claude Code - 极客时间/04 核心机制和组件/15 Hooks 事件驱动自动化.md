@@ -608,3 +608,43 @@ exit 0
 
 ## PostToolUse 实战案例 2：自动 Lint 检查
 
+格式化解决了“代码长什么样”的问题，Lint 检查解决的是“代码有没有问题”。两者结合，构成了一个完整的代码质量反馈循环：**Claude 写代码 → 自动格式化 → 自动 Lint → 发现问题 → Claude 收到反馈 → Claude 修复**。这个循环全部自动发生，无需人工介入。
+
+脚本位于hooks/lint-check.sh：
+```python
+#!/bin/bash
+# lint-check.sh
+# 自动运行 lint 检查并反馈结果
+
+set -e
+
+INPUT=$(cat)
+FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // ""')
+
+# 只检查 JS/TS 文件
+if [[ "$FILE_PATH" == *.js || "$FILE_PATH" == *.ts || "$FILE_PATH" == *.jsx || "$FILE_PATH" == *.tsx ]]; then
+    echo "DEBUG: Linting $FILE_PATH" >&2
+
+    LINT_RESULT=$(npx eslint "$FILE_PATH" 2>&1) || true
+    LINT_EXIT_CODE=$?
+
+    if [ $LINT_EXIT_CODE -ne 0 ]; then
+        # 有 lint 错误，反馈给 Claude
+        ESCAPED_RESULT=$(echo "$LINT_RESULT" | head -30 | jq -Rs '.')
+        cat <<EOF
+{
+    "hookSpecificOutput": {
+        "hookEventName": "PostToolUse",
+        "additionalContext": "ESLint found issues:\n$ESCAPED_RESULT"
+    }
+}
+EOF
+    else
+        echo '{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "ESLint: No issues found"}}'
+    fi
+else
+    echo '{}'
+fi
+
+exit 0
+```
