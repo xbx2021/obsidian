@@ -250,3 +250,15 @@ SKILL.md（6 组件全展示）                  SKILL.md（精简为 3 组件�
                                        │ 共 10 条路由，验证覆盖率               │
                                        └──────────────────────────────────────┘
 ```
+
+**首先做的一件事是 Skill 精简化**。你可能注意到，新的项目中的 Skill 和刚才创建的独立 Skill 有点不一样了，从原来的 6 个组件精简为 3 个组件。为什么？因为 SubAgent 已经有了角色定义，Skill 只需提供工作流程和工具：
+```markdown
+05-api-generator（完整展示）         06-agent-skill-combo（实战精简）
+├── SKILL.md                       ├── SKILL.md          ← 强化工作流程
+├── PATTERNS.md                    ├── scripts/
+├── STANDARDS.md                   │   └── detect-routes.py
+├── EXAMPLES.md                    └── templates/
+├── templates/ (3 files)               └── api-doc.md
+└── scripts/ (2 files)
+```
+
