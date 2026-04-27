@@ -208,3 +208,53 @@ Hook 脚本通过退出码和 stdout JSON 告诉 Claude 下一步做什么。
 
 最简单的方式是用退出码——exit 0  表示放行，exit 2  表示阻止，其他非零退出码表示脚本出错但不阻止。这个区分很重要：**脚本出错不应该阻止正常工作流**——你的安全检查脚本因为  jq  没安装而报错退出码 1，这不应该阻止 Claude 执行一个完全安全的命令。只有退出码 2 才表示“我检查过了，这个操作确实危险”。
 
+需要更精细的控制时，通过 stdout 输出 JSON 决策。官方推荐的  hookSpecificOutput  格式支持四种响应方式。
+
+**允许执行**——检查通过，放行（exit 0  就等于默认允许，输出 JSON 让意图更明确）。
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "allow"
+  }
+}
+```
+
+**拒绝执行**——发现危险操作，直接拦截。permissionDecisionReason  会反馈给 Claude。
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "deny",
+    "permissionDecisionReason": "This command is not allowed"
+  }
+}
+```
+
+**交给用户确认**——操作不是明确的“安全”或“危险”，而是“需要人类判断”。
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "ask",
+    "permissionDecisionReason": "This command modifies production data"
+  }
+}
+```
+
+**修改输入后执行**——不拦截操作，而是改写参数后放行：
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "allow",
+    "updatedInput": {
+      "command": "rm -rf /tmp/test --dry-run"
+    }
+  }
+}
+```
+
+![](assets/15%20Hooks%20事件驱动自动化/file-20260427153941333.png)
+这四种响应方式构成了一个连续光谱：allow → ask → deny，外加一个“暗中修正”的 updatedInput。实际设计中，优先选择最温和的响应——**能 allow 的不 ask，能 ask 的不 deny**。
+
