@@ -162,3 +162,5 @@ Skills 方式（Agent 调用预定义 Skill）：
 ![](assets/14%20从Claude%20Code到行业开放标准/file-20260427140645102.png)
 表面结论是，一个静态 Markdown 文件打败了按需检索的 Skill 系统。但这个结论需要更深层的分析。
 ![](assets/14%20从Claude%20Code到行业开放标准/file-20260427140758753.png)
+这个权衡，在第 9 讲就学过了——CLAUDE.md vs Skills 就是同一个 Push vs Pull 的设计决策。如下图所示。
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427140855306.png)
