@@ -8,3 +8,43 @@
 这一讲，我们来回答三个问题：第一，发生了什么；第二，为什么偏偏是 Skills 能出圈；第三，这对你作为 AI 工程师意味着什么。
 
 我们先用一张图来完整复盘这些天里发生的事情。
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427133956345.png)
+整个故事的转折点是 12 月 18 日——不是技术突破，而是一个战略决策：Anthropic 选择把 Skills 开放。
+
+在此之前，Skills 是 Claude Code 的竞争优势。开放意味着竞争对手可以免费使用它、甚至用它来对抗你。为什么 Anthropic 愿意这样做？
+
+**因为标准的价值大于独占的价值。**
+
+独占 Skills，只有 Claude Code 的用户可以用；开放 Skills，所有 Agent 平台上创建的 Skills 都兼容 Claude Code。这是典型的平台经济学——当你的格式成为行业标准，每个人创建的内容都在增强你的生态。就像 USB 标准，Intel 发明了它，但开放后全世界都在用，Intel 反而获益最大。
+
+# 谁在用：四层采纳矩阵
+
+知道了时间线，接下来看采纳范围。截至 2026 年为止的 27+ 平台并不是简单的堆砌数字，它们呈现出清晰的分层结构。
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427134243395.png)
+当 OpenAI 的 Codex CLI 和 Google 的 Antigravity 都支持你的格式时，这已经不是“一家公司的功能”了——它是事实标准。
+```markdown
+                    Agent Skills 采纳全景图
+
+    ┌─────────────────────────────────────────────────────┐
+    │                                                     │
+    │   Anthropic                    OpenAI               │
+    │   ├─ Claude Code ★(创始者)     ├─ Codex CLI         │
+    │   └─ Claude.ai                └─ ChatGPT(测试中)    │
+    │                                                     │
+    │   Google                      Microsoft             │
+    │   ├─ Antigravity              ├─ VS Code            │
+    │   ├─ Gemini CLI               └─ GitHub Copilot     │
+    │   └─ Gemini                                         │
+    │                                                     │
+    │   Block        Cursor         Windsurf    Trae      │
+    │   └─ Goose     (原生支持)     (原生支持)   (原生支持) │
+    │                                                     │
+    │   Manus        Amp            Roo Code    Letta     │
+    │   OpenCode     Kiro CLI       Droid       Kilo      │
+    │                                                     │
+    │                  共 27+ 平台                         │
+    └─────────────────────────────────────────────────────┘
+```
+
+与此同时，Anthropic 还在  claude.com/connectors  上线了 Skills 目录，第三方合作伙伴发布了官方 Skill 包：
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427134403352.png)
