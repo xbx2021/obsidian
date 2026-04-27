@@ -532,7 +532,7 @@ additionalContext  的内容会被注入到 Claude 的上下文中，Claude 会
 Claude 可能用 2 空格缩进，你团队用 4 空格；Claude 可能不加尾逗号，你团队的 Prettier 配置要求加。每次手动跑  prettier --write  太麻烦，也容易忘记。PostToolUse Hook 把这件事彻底自动化了——**Claude 只管写代码，格式化自动发生**。
 
 脚本位于hooks/auto-format.sh：
-```python
+```bash
 #!/bin/bash
 # auto-format.sh
 # 自动格式化代码文件
@@ -611,7 +611,7 @@ exit 0
 格式化解决了“代码长什么样”的问题，Lint 检查解决的是“代码有没有问题”。两者结合，构成了一个完整的代码质量反馈循环：**Claude 写代码 → 自动格式化 → 自动 Lint → 发现问题 → Claude 收到反馈 → Claude 修复**。这个循环全部自动发生，无需人工介入。
 
 脚本位于hooks/lint-check.sh：
-```python
+```bash
 #!/bin/bash
 # lint-check.sh
 # 自动运行 lint 检查并反馈结果
@@ -651,4 +651,33 @@ exit 0
 
 注意 ` || true`  这个细节：ESLint 发现错误时会返回非零退出码，但我们不希望脚本因此中断（`set -e`  会让脚本在任何非零退出码时终止）。`|| true`  确保 ESLint 的退出码被捕获但不会触发脚本退出。`head -30`  限制了反馈的长度。ESLint 的输出可能非常长，但我们只需要把前 30 行（通常包含了最关键的错误信息）反馈给 Claude 就够了。这又是一个“高噪声处理”的应用——和我们在第 6 讲学到的子代理噪声过滤是同一个思路。
 
-这创造了一个自动化的质量循环：Claude 修改文件 → PostToolUse 触发 → Lint 检查 → 发现问题 → 反馈给 Claude → Claude 自动修复 → 再次触发 PostToolUse → 再次检查.……直到所有 Lint 错误消除。整个过程无需人工介入。
+这创造了一个自动化的质量循环：**Claude 修改文件 → PostToolUse 触发 → Lint 检查 → 发现问题 → 反馈给 Claude → Claude 自动修复 → 再次触发 PostToolUse → 再次检查.……直到所有 Lint 错误消除**。整个过程无需人工介入。
+
+
+## PostToolUse 实战案例 3：审计日志
+
+对于金融、医疗、政府等合规性要求高的场景，你可能需要记录 Claude 的所有操作——不是为了阻止什么，而是为了事后追溯。谁在什么时间修改了什么文件？执行了什么命令？这些信息在安全事件调查和合规审计中至关重要。
+
+脚本位于hooks/audit-log.sh：
+```bash
+#!/bin/bash
+# audit-log.sh
+# 记录所有工具调用
+
+INPUT=$(cat)
+LOG_FILE="${CLAUDE_PROJECT_DIR:-.}/.claude/audit.log"
+
+# 确保日志目录存在
+mkdir -p "$(dirname "$LOG_FILE")"
+
+# 记录时间戳、工具名、输入摘要
+TIMESTAMP=$(date -Iseconds)
+TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // "unknown"')
+TOOL_INPUT=$(echo "$INPUT" | jq -c '.tool_input // {}')
+
+echo "[$TIMESTAMP] $TOOL_NAME: $TOOL_INPUT" >> "$LOG_FILE"
+
+# 不阻止执行
+echo '{}'
+exit 0
+```
