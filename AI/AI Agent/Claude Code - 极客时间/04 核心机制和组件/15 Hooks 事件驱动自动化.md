@@ -524,3 +524,14 @@ additionalContext  的内容会被注入到 Claude 的上下文中，Claude 会
 下面我们通过三个经典实战案例来体会这些能力。
 
 ## PostToolUse 实战案例 1：自动格式化
+
+这是最受欢迎的 PostToolUse 应用——每次 Claude 写入或修改文件后，自动运行格式化工具。
+
+为什么自动格式化如此重要？因为 Claude 的代码风格和你团队的风格规范不一定一致。
+
+Claude 可能用 2 空格缩进，你团队用 4 空格；Claude 可能不加尾逗号，你团队的 Prettier 配置要求加。每次手动跑  prettier --write  太麻烦，也容易忘记。PostToolUse Hook 把这件事彻底自动化了——**Claude 只管写代码，格式化自动发生**。
+
+脚本位于hooks/auto-format.sh：
+```python
+
+```
