@@ -48,3 +48,5 @@
 
 与此同时，Anthropic 还在  claude.com/connectors  上线了 Skills 目录，第三方合作伙伴发布了官方 Skill 包：
 ![](assets/14%20从Claude%20Code到行业开放标准/file-20260427134403352.png)
+企业级管理方面，Anthropic 的 Team/Enterprise 计划支持管理员集中配置 Skills——控制哪些 Skills 可用，同时让员工自定义自己的工作流。
+
