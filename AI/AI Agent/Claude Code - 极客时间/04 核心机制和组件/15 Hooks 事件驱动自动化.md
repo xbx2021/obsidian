@@ -181,4 +181,6 @@ hooks                            ← 顶层容器
 ![](assets/15%20Hooks%20事件驱动自动化/file-20260427153016763.png)
 # PreToolUse：工具执行前的守门员
 
+PreToolUse 是最强大的 Hook 事件，因为它能阻止工具执行。它就像机场的安检门——在你登机（工具执行）之前，先过一道检查。PreToolUse Hook 可以做三件事：**允许**（allow，放行），**拒绝**（deny，拦截），**修改**（updatedInput，改写输入参数后再执行）。
 
+第三种能力特别有趣——你不仅能“放行或拦截”，还能“偷偷改参数”。比如用户要执行  rm -rf /tmp/test，你可以把它改成  rm -rf /tmp/test --dry-run，先看看会删什么再说。
