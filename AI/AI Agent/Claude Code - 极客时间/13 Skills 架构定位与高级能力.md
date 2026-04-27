@@ -72,3 +72,11 @@ Skills 在系统中呈现出三种结构方向。
     └── review.md          # 评审报告模板
 ```
 
+**SKILL.md 关键写法：**
+```markdown
+## Output Rules
+- ALWAYS use the template from `templates/` that matches the request type
+- Fill ALL placeholders — do not leave {placeholder} unfilled
+- Do NOT add sections beyond what the template defines
+```
+
