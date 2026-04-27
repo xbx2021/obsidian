@@ -219,3 +219,7 @@ skills:
 
 **而同一个 Agent，注入不同的 Skill，就变成不同的专家。这就是组合的力量。**
 ![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427100016605.png)
+现在我们来完成最后一步——把  Skill 装进 SubAgent，组装一个领域专家。
+
+下面就是从单独用 Skill 到组合使用的进化路线：参考代码库06-agent-skill-combo。
+
