@@ -223,3 +223,30 @@ skills:
 
 下面就是从单独用 Skill 到组合使用的进化路线：参考代码库06-agent-skill-combo。
 
+```markdown
+05-api-generator                        06-agent-skill-combo
+─────────────                           ─────────────────
+Skill 独立运行                           Skill + SubAgent 组合
+
+SKILL.md（6 组件全展示）                  SKILL.md（精简为 3 组件）
+┌─────────────────────────────┐        ┌──────────────────────────────────────┐
+│ Quick Reference              │        │ 工作流程 — MANDATORY                 │
+│ Process: Step 1-4            │   →    │ Step 1: Route Discovery（脚本）       │
+│ Automation: 可选              │        │ Step 2: Route Analysis（分析）        │
+│ 6 个引用文件                  │        │ Step 3: Documentation Generation      │
+└─────────────────────────────┘        └──────────────────────────────────────┘
+
+无 SubAgent 定义                         新增 SubAgent 定义
+                                       ┌──────────────────────────────────────┐
+                                       │ api-doc-generator.md                 │
+                                       │ skills: [api-generating]             │
+                                       │ "You are an API doc specialist."     │
+                                       └──────────────────────────────────────┘
+
+无测试目标                               新增 Express 测试路由
+                                       ┌──────────────────────────────────────┐
+                                       │ users.js  — 标准 CRUD（5 条路由）     │
+                                       │ orders.js — 含链式路由（5 条路由）     │
+                                       │ 共 10 条路由，验证覆盖率               │
+                                       └──────────────────────────────────────┘
+```
