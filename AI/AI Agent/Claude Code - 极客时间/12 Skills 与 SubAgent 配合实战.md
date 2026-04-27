@@ -532,3 +532,20 @@ Report the quality verdict to the user.
 ```
 
 编排的关键在于每个阶段的输出是下一阶段的输入。Claude 主对话扮演“项目经理”角色，依次调用三个专家。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427103247938.png)
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427103315671.png)
+下面进行运行与验证。
+```markdown
+# 先验证扫描脚本
+python3 .claude/skills/route-scanning/scripts/scan-routes.py src/
+# 预期：发现 12 条路由（products 7 条 + categories 5 条）
+
+# 运行完整流水线
+> 对 src/ 目录运行文档流水线
+
+# 或者分阶段手动运行
+> 用 route-scanner 扫描 src/ 目录的路由
+> 用 doc-writer 根据上面的路由清单生成文档
+> 用 quality-checker 验证 docs/ 目录下生成的文档
+```
+
