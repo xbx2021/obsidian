@@ -334,3 +334,129 @@ echo '{}'
 exit 0
 ```
 
+逐段解析这个脚本的设计思路。
+
+`INPUT=$(cat)`  从 stdin 读取 Claude 传入的 JSON 数据。`jq -r '.tool_input.command'`  从中提取要执行的命令字符串。// ""  是 jq 的空值保护——如果字段不存在，返回空字符串而不是报错。
+
+`echo "DEBUG: ..." >&2`  这一行值得特别说明：**调试信息必须输出到 stderr（文件描述符 2），而不是 stdout**。因为 stdout 被 Claude 用来读取 JSON 决策——如果你往 stdout 打了一行调试文本，**Claude 会因为 JSON 解析失败而报错。这是 Hook 脚本开发中最常见的坑**。
+
+`DANGEROUS_PATTERNS`  数组定义了所有需要拦截的命令模式。
+
+注意最后的`curl.*| sh`  和  `wget.*| bash`。这是一种常见的攻击手法：从网络下载脚本并直接执行，绕过任何安全审查。在 AI 辅助编程场景下，如果 Claude 从某个“教程”学到了这种做法，Hook 会自动拦截。
+
+另外，`exit 2`  是“有意阻止”，`exit 0`  是“检查通过、放行”。整个脚本的逻辑就是一个黑名单匹配，命中任何一个危险模式就拦截，否则放行。
+
+配置方式如下。
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/block-dangerous.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+光看代码不直观，接下来我们动手试一下。我们在 Claude Code 里实际触发一次拦截：
+![](assets/15%20Hooks%20事件驱动自动化/file-20260427162706874.png)
+```markdown
+# 1. 确认 jq 可用
+which jq
+
+# 2. 进入项目目录（已配好 .claude/settings.json 和 hooks 脚本）
+cd 06-Hooks/projects/01-safety-hooks
+
+# 3. 启动 Claude Code
+claude
+```
+
+进入会话后，故意让 Claude 执行一个危险命令：
+```markdown
+请帮我执行 rm -rf /tmp/test，清理一下临时文件
+```
+
+Claude 会尝试调用 Bash 工具执行这条命令。此时 PreToolUse Hook 自动触发，你会在终端看到类似这样的输出：
+```markdown
+⛔ Hook blocked tool call: Blocked dangerous command pattern: rm -rf /.
+   This command could cause irreversible damage.
+```
+
+Claude 收到拦截信息后，会自动调整策略——它不会傻傻地重试被拦截的命令，而是换一种更安全的方式来完成你的请求。**整个过程你什么都不用做，防线自动运行**。
+![](assets/15%20Hooks%20事件驱动自动化/file-20260427162909831.png)
+
+你也可以用管道手动验证脚本逻辑，不需要启动 Claude：
+```powershell
+# 危险命令 → 预期 deny（exit 2）
+echo '{"tool_input":{"command":"rm -rf /"}}' | ./hooks/block-dangerous.sh
+
+# 安全命令 → 预期 allow（exit 0）
+echo '{"tool_input":{"command":"git status"}}' | ./hooks/block-dangerous.sh
+```
+
+现在，当 Claude（或者深夜加班的你）试图执行  rm -rf /  或  git push --force origin main  时，这个 Hook 会自动拦截并给出警告。不需要你时刻“记住“检查，不需要你保持清醒，提前做好 Hook 配置，那么防线将永远在线。
+
+# PreToolUse 实战案例 2：保护敏感文件
+
+另一个常见需求是保护敏感文件（如.env  文件）不被 Claude 修改或读取——即使 Claude 出于好意想“帮你整理一下配置文件”，敏感文件也绝对不能被触碰。
+
+这种保护需要覆盖两个维度，文件本身（.env、credentials.json 等配置文件）和密钥文件（.pem、.key、id_rsa 等加密文件）。前者包含运行时密钥，后者包含身份认证凭据。两者泄露的后果都是灾难性的。
+
+脚本位于hooks/protect-files.sh。
+```python
+#!/bin/bash
+# protect-files.sh
+# 保护敏感文件不被修改
+
+set -e
+
+INPUT=$(cat)
+FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // ""')
+
+# 如果没有文件路径，跳过检查
+if [ -z "$FILE_PATH" ]; then
+    echo '{}'
+    exit 0
+fi
+
+# 敏感文件模式
+PROTECTED_PATTERNS=(
+    ".env"
+    ".env.*"
+    "credentials.json"
+    "secrets.yaml"
+    "secrets.yml"
+    "*.pem"
+    "*.key"
+    "id_rsa"
+    "id_ed25519"
+    ".ssh/config"
+    "kubeconfig"
+)
+
+for pattern in "${PROTECTED_PATTERNS[@]}"; do
+    if [[ "$FILE_PATH" == *$pattern* ]]; then
+        cat <<EOF
+{
+    "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "deny",
+        "permissionDecisionReason": "Cannot modify sensitive file: $FILE_PATH. This file may contain secrets or credentials."
+    }
+}
+EOF
+        exit 2
+    fi
+done
+
+echo '{}'
+exit 0
+```
+
