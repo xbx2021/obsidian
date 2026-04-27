@@ -72,3 +72,5 @@
 
 # 为什么 SubAgents 不能出圈
 
+理解了 Skills 为什么能出圈，再看 SubAgents 为什么不能——两者的对比揭示了一个深层的架构原理。
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427135129759.png)
