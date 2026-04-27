@@ -188,3 +188,11 @@ To auto-detect routes:
 ```bash
 python scripts/detect_routes.py <source_directory>
 ```
+
+To validate OpenAPI spec:
+```markdown
+./scripts/validate_openapi.sh <spec_file>
+```
+
+剩下的各个文件，这里就不再赘述，大家直接去 Repo 阅读具体的文件和 Readme 说明就好啦。
+
