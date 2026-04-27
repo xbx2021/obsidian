@@ -681,3 +681,48 @@ echo "[$TIMESTAMP] $TOOL_NAME: $TOOL_INPUT" >> "$LOG_FILE"
 echo '{}'
 exit 0
 ```
+
+这个脚本很短，但有几个细节值得注意。`${CLAUDE_PROJECT_DIR:-.}`  使用了 Bash 的默认值语法——如果  CLAUDE_PROJECT_DIR  环境变量存在就用它，否则用当前目录 `.`。`jq -c`  的  `-c`  参数表示“紧凑输出”，把 JSON 压缩成一行，便于日志文件的每一行对应一次操作。
+
+`date -Isecond`s  生成 ISO 8601 格式的时间戳（如  2025-03-01T14:30:00+08:00），这是最标准的时间格式，方便后续用脚本解析。配置时用  `matcher: "*" ` 匹配所有工具，这样每次工具调用都会被记录：
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/audit-log.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+审计日志的价值不在当下，而在未来。当你某天需要回答“上周三 Claude 到底改了什么导致了这个 bug”时，审计日志就是你的时光机。
+
+# 小结
+
+这一讲，我们学习了 Hooks 的基础概念并给出了最常用的两个事件——PreToolUse 和 PostToolUse 的大量示例。
+
+Hooks 的本质是 AI Agent 的中间件。就像 Web 开发中的中间件可以拦截 HTTP 请求一样，Hooks 可以在 Claude 执行工具前后插入自定义逻辑。
+
+Claude 不需要知道有 Hook 在运行，它只管专注于完成任务，安全防线、质量守卫、审计日志的工作，全部由 Hooks 在"幕后"自动完成。
+
+Claude Code 支持 17 种 Hook 事件，覆盖完整生命周期。它们分为控制点（能阻止）、接管点（替代默认行为）和观察点（只能记录）三大阵营。本讲重点学习了 PreToolUse（守门员）和 PostToolUse（质量守卫）。
+
+四种 Hook 类型如下。
+- **command**：确定性规则，最可靠。能用脚本解决的问题不要用 LLM。
+- **prompt**：单次 LLM 评估，需要判断力时使用。快但不能查代码。
+- **agent**：多轮验证，需要翻代码才能决策时使用。最强也最慢。
+- **http**：POST 事件数据到 HTTP 端点，适合对接外部服务（审计、通知、集中管控）。
+
+我们用两个实战案例覆盖了 PreToolUse 最常见的场景——阻止危险命令（`rm -rf /`、`git push --force origin main`）和保护敏感文件（.`env`、`*.pem`、`credentials.json`）。两者都是黑名单匹配模式，确定性最高、可靠性最强。
+
+PostToolUse 方面，我们学习了三个经典应用——自动格式化（根据文件类型调用 Prettier/Black/gofmt）、自动 Lint 检查（发现问题自动反馈给 Claude）、审计日志（记录所有工具调用）。PostToolUse 的  `additionalContext`  字段创造了一个闭环反馈机制——Hook 观察到问题，反馈给 Claude，Claude 自动修复。
+
+自动化不是为了替代人的判断，而是为了在人类最容易出错的时刻——疲劳、赶工、分心——提供一道可靠的防线。
