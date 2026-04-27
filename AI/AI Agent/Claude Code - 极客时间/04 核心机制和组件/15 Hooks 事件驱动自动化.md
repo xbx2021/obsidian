@@ -152,4 +152,11 @@ hooks                            ← 顶层容器
 
 ## Prompt 类型——LLM 评估
 
+当规则无法用确定性脚本表达时，就需要 LLM 的判断力。Prompt 类型会用一个小型 LLM（通常是 Haiku）来评估当前情况。比如“这段代码是否有安全隐患”——这种判断需要理解代码语义，不是简单的模式匹配能解决的。但 Prompt 类型只能“看一眼就判断”，它无法主动去读取更多文件来辅助决策。
+```json
+{
+  "type": "prompt",
+  "prompt": "Evaluate if this task was completed correctly. Check for any errors or incomplete work."
+}
+```
 
