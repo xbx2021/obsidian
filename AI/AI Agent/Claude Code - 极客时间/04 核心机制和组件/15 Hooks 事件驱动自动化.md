@@ -263,3 +263,74 @@ Hook 脚本通过退出码和 stdout JSON 告诉 Claude 下一步做什么。
 本讲所有示例代码位于  06-Hooks/projects/  下两个项目中，均已配好  .claude/settings.json，脚本已有执行权限，可独立运行（依赖  jq）。
 ![](assets/15%20Hooks%20事件驱动自动化/file-20260427154300565.png)
 
+
+# PreToolUse 实战案例 1：阻止危险命令
+
+现在来写我们的第一个 Hook——阻止可能造成灾难的命令。
+
+每个工程团队都有一些“绝对不能执行”的命令。rm -rf /  会删除整个文件系统，git push --force origin main  会覆盖远程主分支的历史，DROP DATABASE  会销毁整个数据库。这些命令的共同特点是：**一旦执行就无法挽回**。
+
+人在清醒状态下当然不会执行它们，但 Claude 作为 AI 有时会过于“积极”——如果用户说”清理一下项目”，Claude 可能会把  rm -rf  理解得过于字面。
+
+下面这个脚本用模式匹配来拦截这些灾难性命令：（脚本位于hooks/block-dangerous.sh）
+```python
+#!/bin/bash
+# block-dangerous.sh
+# 阻止危险的 Bash 命令
+
+set -e
+
+# 读取 stdin 输入
+INPUT=$(cat)
+
+# 提取命令
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""')
+
+# 调试输出（到 stderr，不影响 JSON 响应）
+echo "DEBUG: Checking command: $COMMAND" >&2
+
+# 危险命令模式
+DANGEROUS_PATTERNS=(
+    "rm -rf /"
+    "rm -rf ~"
+    "rm -rf \$HOME"
+    "rm -rf /*"
+    "> /dev/sd"
+    "mkfs."
+    "dd if="
+    ":(){:|:&};:"               # Fork bomb
+    "chmod -R 777 /"
+    "git push --force origin main"
+    "git push --force origin master"
+    "git reset --hard origin"
+    "DROP DATABASE"
+    "DROP TABLE"
+    "TRUNCATE"
+    "curl.*| sh"                # 危险的管道执行
+    "curl.*| bash"
+    "wget.*| sh"
+    "wget.*| bash"
+)
+
+# 检查每个危险模式
+for pattern in "${DANGEROUS_PATTERNS[@]}"; do
+    if [[ "$COMMAND" == *"$pattern"* ]]; then
+        echo "BLOCKED: Command matches dangerous pattern: $pattern" >&2
+        cat <<EOF
+{
+    "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "deny",
+        "permissionDecisionReason": "Blocked dangerous command pattern: $pattern. This command could cause irreversible damage."
+    }
+}
+EOF
+        exit 2
+    fi
+done
+
+# 命令安全，允许执行
+echo '{}'
+exit 0
+```
+
