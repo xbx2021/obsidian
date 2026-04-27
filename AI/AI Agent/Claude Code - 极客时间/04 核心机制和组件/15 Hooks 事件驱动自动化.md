@@ -275,7 +275,7 @@ PreToolUse 是最强大的 Hook 事件，因为它能阻止工具执行。它就
 人在清醒状态下当然不会执行它们，但 Claude 作为 AI 有时会过于“积极”——如果用户说”清理一下项目”，Claude 可能会把  rm -rf  理解得过于字面。
 
 下面这个脚本用模式匹配来拦截这些灾难性命令：（脚本位于hooks/block-dangerous.sh）
-```python
+```bash
 #!/bin/bash
 # block-dangerous.sh
 # 阻止危险的 Bash 命令
@@ -412,7 +412,7 @@ echo '{"tool_input":{"command":"git status"}}' | ./hooks/block-dangerous.sh
 这种保护需要覆盖两个维度，文件本身（.env、credentials.json 等配置文件）和密钥文件（.pem、.key、id_rsa 等加密文件）。前者包含运行时密钥，后者包含身份认证凭据。两者泄露的后果都是灾难性的。
 
 脚本位于hooks/protect-files.sh。
-```python
+```bash
 #!/bin/bash
 # protect-files.sh
 # 保护敏感文件不被修改
