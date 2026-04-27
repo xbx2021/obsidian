@@ -106,4 +106,6 @@ Research $ARGUMENTS thoroughly:
     └── validate_openapi.sh            # 脚本：规范验证
 ```
 
+每个组件都有明确的职责。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427094000913.png)
 
