@@ -211,4 +211,5 @@ AI Agent：知识（声明式） → LLM   → Agent 执行
 **趋势二：标准化大于平台锁定**。 AAIF 的成立标志着 AI Agent 行业从平台战争走向标准协作。Anthropic 开放 MCP 和 Skills，OpenAI 开放 AGENTS.md，Block 开放 goose——竞争对手在工具层竞争，在标准层合作。
 
 **趋势三：知识复用大于模型竞争**。  当所有平台的 Agent 都能用同一套 Skills，模型的差异化不再来自“Agent 知道什么”，而来自“Agent 推理有多好”。知识被标准化抽取出来后，模型竞争回归到推理能力的本质。
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427141639567.png)
 
