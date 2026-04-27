@@ -162,3 +162,18 @@ hooks                            ← 顶层容器
 
 ## Agent 类型——子代理评估
 
+这是最强大也最“重”的评估方式。**Agent Hook 会启动一个子代理**，这个子代理可以使用 Read、Grep、Glob 等工具来验证条件——不只是“看一眼就判断”，而是可以“翻代码确认”。比如验证“所有公共 API 都有文档注释”，需要子代理实际遍历代码文件才能做出准确判断。
+```json
+{
+  "type": "agent",
+  "prompt": "Verify that all unit tests pass. Run the test suite and check the results. $ARGUMENTS",
+  "timeout": 120
+}
+```
+
+## HTTP 类型
+
+还有一种  HTTP 类型——它不在本地执行逻辑，而是把事件数据以 POST 请求发送到远程 HTTP 端点，由远程服务返回决策结果。适合团队共享审计服务、集中式安全扫描等场景。我们会在下一讲详细展开。
+
+四种类型的选择策略是怎样的呢？
+
