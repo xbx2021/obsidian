@@ -192,3 +192,11 @@ Vercel 的测试场景是 Build / Lint / Test——这些是每个项目都需�
 这个升维对你作为 AI 工程师有三个实际意义。
 
 **第一，学一次，到处用**。你在 Claude Code 中精心设计的 Skill——精准的 description、合理的分层、强约束措辞——可以直接用在 Cursor、Copilot、Codex CLI 中。因为它就是一个符合行业标准的 Markdown 文件。
+
+**第二，你的 Skill 工程能力是行业级能力**。学会如何设计好的 SKILL.md 不再是“如何用好 Claude Code”的必要条件，而是“如何为 AI Agent 生态编写标准化知识包”的问题。这就像 2015 年学 REST API 设计——不是学某个框架，而是学行业通用技能。
+
+**第三，Skills 是 AI 时代的 package.json**。就像  package.json  定义了一个 Node.js 项目的依赖和行为，SKILL.md  正在成为定义 AI Agent 能力的标准格式。不同的是，package.json  是给机器读的 JSON，而  SKILL.md  是给 AI 读的 Markdown——因为 AI 的“运行时”就是自然语言。
+
+
+# 从 Skills 出圈看 AI 工程的趋势
+
