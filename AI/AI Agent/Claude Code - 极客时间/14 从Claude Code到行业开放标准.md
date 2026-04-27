@@ -74,3 +74,6 @@
 
 理解了 Skills 为什么能出圈，再看 SubAgents 为什么不能——两者的对比揭示了一个深层的架构原理。
 ![](assets/14%20从Claude%20Code到行业开放标准/file-20260427135129759.png)
+根本原因在于：**Skills 封装的是知识（Knowledge），SubAgents 封装的是行为（Behavior）**。
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427135258615.png)
+用一个简单的类比来说：Skills 像一本烹饪书，不管你用什么厨房（Claude / GPT / Gemini），只要能读懂食谱，就能做菜，换厨房带上书就行；SubAgents 像一位厨师，厨师的技能绑定在人身上，你不能把“厨师”复制到另一家餐厅的系统里，你能做的是给新厨师一本食谱。
