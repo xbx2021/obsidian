@@ -21,4 +21,10 @@
 
 中间件在请求到达最终处理函数之前插入检查和处理，实现横切关注点（Cross-cutting Concerns）。这些逻辑不属于任何一个业务功能，但又必须贯穿所有请求——认证要每个接口都检查，日志要每个操作都记录，限流要每个入口都控制。
 
-Claude Code 的 Hooks 机制与此异曲同工，但它针对的不是 HTTP 请求，而是  AI Agent 的工具调用。
+Claude Code 的 Hooks 机制与此异曲同工，但**它针对的不是 HTTP 请求，而是  AI Agent 的工具调用**。
+```markdown
+用户请求 → Claude 决策 → [PreToolUse Hook] → 工具执行 → [PostToolUse Hook] → 响应
+                              ↓                            ↓
+                         权限检查、拦截             格式化、验证、日志
+```
+
