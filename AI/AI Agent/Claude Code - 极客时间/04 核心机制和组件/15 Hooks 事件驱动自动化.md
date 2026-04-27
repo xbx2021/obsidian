@@ -599,3 +599,6 @@ exit 0
 
 **多语言策略**：通过文件扩展名自动选择格式化工具——JavaScript/TypeScript 用 Prettier，Python 用 Black，Go 用 gofmt，Rust 用 rustfmt。这意味着在一个多语言项目中，你只需要一个 Hook 脚本就能覆盖所有文件类型。
 
+**优雅降级**：每种工具的调用都先用  `command -v`  检查是否安装。如果 Prettier 没装，脚本不会报错崩溃，而是优雅地跳过并通过  `additionalContext`  告诉 Claude “Prettier not available”。这很重要——**Hook 的失败不应该阻碍正常工作流**。
+
+**反馈闭环**：格式化完成后，通过  `additionalContext`  告诉 Claude 用了什么工具格式化的。这不仅是日志记录，还让 Claude 知道格式化已经发生——它不需要自己再做一次。
