@@ -82,3 +82,10 @@
 ![](assets/14%20从Claude%20Code到行业开放标准/file-20260427135434799.png)
 **越接近“纯知识”的机制越容易跨平台，越接近“运行时行为”的机制越绑定平台**。Skills 是最纯粹的知识封装，所以它出圈了。
 
+
+# Agentic AI Foundation——AI 时代的 W3C
+
+Skills 出圈的背后，是一个更大的行业趋势：Agent 标准化运动。
+
+2025 年 12 月 9 日，Anthropic、OpenAI 和 Block（原 Square）在 Linux Foundation 下联合成立了  **Agentic AI Foundation (AAIF)**。如果你熟悉 Web 标准的历史，这就是 AI 时代的 W3C——让不同厂商的 Agent 能用同一套标准互操作。
+
