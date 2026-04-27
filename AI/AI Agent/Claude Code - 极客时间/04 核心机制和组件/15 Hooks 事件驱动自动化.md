@@ -141,4 +141,15 @@ hooks                            ← 顶层容器
 
 ## Command 类型——执行 Shell 脚本
 
+这是最常用、最可靠的类型。command可以是任何 shell 命令或脚本路径。**timeout 指定超时时间（毫秒），默认 60 秒**。**Command 类型的优势在于确定性**——同样的输入永远产生同样的输出，不存在 LLM 的随机性。一个正则表达式匹配  rm -rf /，要么匹配到，要么没匹配到，没有“可能”“大概”的中间地带。
+```json
+{
+  "type": "command",
+  "command": "./hooks/check-security.sh",
+  "timeout": 30000
+}
+```
+
+## Prompt 类型——LLM 评估
+
 
