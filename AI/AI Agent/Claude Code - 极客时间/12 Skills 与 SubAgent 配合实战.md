@@ -473,3 +473,17 @@ Return a structured report:
   └─ 输出：测试结果
 ```
 
+**阶段 1：Route Scanner**。对应 Skill route-scanning/SKILL.md：包含扫描脚本  scan-routes.py，输出 JSON 格式的路由清单。
+```markdown
+# .claude/agents/route-scanner.md
+---
+name: route-scanner
+model: haiku                    # 轻量任务用 haiku
+tools: [Read, Grep, Glob, Bash]
+skills:
+  - route-scanning              # 预加载扫描知识
+---
+You are a route scanning specialist. You are Stage 1 of a documentation pipeline.
+```
+
+阶段 2：Doc Writer。对应 Skill doc-writing/SKILL.md：包含文档模板  endpoint-doc.md，按模板生成标准化文档。
