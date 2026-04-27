@@ -562,6 +562,16 @@ python3 .claude/skills/route-scanning/scripts/scan-routes.py src/
 - 阶段 2 输出文件列表 + 路由覆盖数
 - 阶段 3 输出 PASS/NEEDS_REVISION 报告
 
-这些就是阶段间的“接口合约”。
+这些就是阶段间的“**接口合约**”。
+
 
 **要点二：每个 Skill 只关注一件事**
+
+- route-scanning  只扫描路由，不生成文档。
+- doc-writing  只生成文档，不检查质量。
+- quality-checking  只检查质量，不修改文档。
+
+**单一职责**让每个 Skill 更简洁、更可测试、更可复用。
+
+**要点三：编排逻辑集中管理**
+
