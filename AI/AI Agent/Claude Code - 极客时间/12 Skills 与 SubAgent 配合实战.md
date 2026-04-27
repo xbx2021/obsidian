@@ -561,3 +561,7 @@ python3 .claude/skills/route-scanning/scripts/scan-routes.py src/
 - 阶段 1 输出 JSON 路由清单
 - 阶段 2 输出文件列表 + 路由覆盖数
 - 阶段 3 输出 PASS/NEEDS_REVISION 报告
+
+这些就是阶段间的“接口合约”。
+
+**要点二：每个 Skill 只关注一件事**
