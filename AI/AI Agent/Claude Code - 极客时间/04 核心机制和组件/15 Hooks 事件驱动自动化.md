@@ -533,5 +533,69 @@ Claude 可能用 2 空格缩进，你团队用 4 空格；Claude 可能不加尾
 
 脚本位于hooks/auto-format.sh：
 ```python
+#!/bin/bash
+# auto-format.sh
+# 自动格式化代码文件
 
+set -e
+
+INPUT=$(cat)
+FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // ""')
+
+# 如果没有文件路径或文件不存在，跳过
+if [ -z "$FILE_PATH" ] || [ ! -f "$FILE_PATH" ]; then
+    echo '{}'
+    exit 0
+fi
+
+echo "DEBUG: Formatting file: $FILE_PATH" >&2
+
+# 获取文件扩展名
+EXTENSION="${FILE_PATH##*.}"
+
+# 根据文件类型选择格式化工具
+case "$EXTENSION" in
+    js|jsx|ts|tsx|json|md|css|scss|html)
+        if command -v npx &> /dev/null; then
+            if npx prettier --write "$FILE_PATH" 2>&1; then
+                echo '{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "Formatted with Prettier"}}'
+            else
+                echo '{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "Prettier formatting failed"}}'
+            fi
+        else
+            echo '{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "Prettier not available"}}'
+        fi
+        ;;
+    py)
+        if command -v black &> /dev/null; then
+            if black "$FILE_PATH" 2>&1; then
+                echo '{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "Formatted with Black"}}'
+            else
+                echo '{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "Black formatting failed"}}'
+            fi
+        fi
+        ;;
+    go)
+        if command -v gofmt &> /dev/null; then
+            gofmt -w "$FILE_PATH" 2>&1
+            echo '{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "Formatted with gofmt"}}'
+        fi
+        ;;
+    rs)
+        if command -v rustfmt &> /dev/null; then
+            rustfmt "$FILE_PATH" 2>&1
+            echo '{"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": "Formatted with rustfmt"}}'
+        fi
+        ;;
+    *)
+        echo '{}'
+        ;;
+esac
+
+exit 0
 ```
+
+这个脚本有几个值得注意的设计决策。
+
+**多语言策略**：通过文件扩展名自动选择格式化工具——JavaScript/TypeScript 用 Prettier，Python 用 Black，Go 用 gofmt，Rust 用 rustfmt。这意味着在一个多语言项目中，你只需要一个 Hook 脚本就能覆盖所有文件类型。
+
