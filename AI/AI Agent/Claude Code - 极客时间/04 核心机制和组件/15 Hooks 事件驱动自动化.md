@@ -258,3 +258,8 @@ Hook 脚本通过退出码和 stdout JSON 告诉 Claude 下一步做什么。
 ![](assets/15%20Hooks%20事件驱动自动化/file-20260427153941333.png)
 这四种响应方式构成了一个连续光谱：allow → ask → deny，外加一个“暗中修正”的 updatedInput。实际设计中，优先选择最温和的响应——**能 allow 的不 ask，能 ask 的不 deny**。
 
+协议讲完了，下面进入实战。
+
+本讲所有示例代码位于  06-Hooks/projects/  下两个项目中，均已配好  .claude/settings.json，脚本已有执行权限，可独立运行（依赖  jq）。
+![](assets/15%20Hooks%20事件驱动自动化/file-20260427154300565.png)
+
