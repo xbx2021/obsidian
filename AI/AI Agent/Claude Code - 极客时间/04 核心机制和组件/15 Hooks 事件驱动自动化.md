@@ -40,4 +40,7 @@ Claude Code 的 Hooks 机制与此异曲同工，但**它针对的不是 HTTP �
 
 # 17 种 Hook 事件——完整生命周期覆盖
 
+截至 2026 年 3 月，根据 [ Anthropic 官方文档](https://code.claude.com/docs/en/hooks-guide)，Claude Code 支持  17 种 Hook 事件，覆盖了从会话启动到结束的完整生命周期：
+![](assets/15%20Hooks%20事件驱动自动化/file-20260427145835713.png)
+
 
