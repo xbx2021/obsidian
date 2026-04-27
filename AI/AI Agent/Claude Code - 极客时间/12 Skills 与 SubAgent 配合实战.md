@@ -589,3 +589,28 @@ python3 .claude/skills/route-scanning/scripts/scan-routes.py src/
 首先是各种场景下的选型矩阵和反模式警告。
 ![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427104056248.png)
 ![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427104145625.png)
+说白了，还是用第一性原理区分什么时候用啥。这基于我们对于他们不同的职能的内化理解。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427104406725.png)
+这种职责划分原则，贯穿几个项目的设计：
+```markdown
+┌──────────────────────────────────────────────────────────────┐
+│                    职责划分                                    │
+│                                                              │
+│  SubAgent（.md 文件）负责：                                    │
+│  ────────────────────                                        │
+│  • WHO: "You are an API documentation specialist"            │
+│  • WHAT: "Generate API documentation for Express routes"     │
+│  • WHERE: "Write to docs/api/"                               │
+│  • OUTPUT: "Return summary with route count and warnings"    │
+│                                                              │
+│  Skill（SKILL.md + 附属文件）负责：                             │
+│  ──────────────────────────                                  │
+│  • HOW: "Step 1: Run detect-routes.py → Step 2: Analyze"    │
+│  • WITH WHAT: scripts/detect-routes.py, templates/api-doc.md │
+│  • BY WHAT STANDARD: "Check auth middleware, mark with 🔒"   │
+│  • QUALITY: "All routes documented, schemas match code"       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+这里我也给出组合过程中的排错速查表，供你参考。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427104539246.png)
