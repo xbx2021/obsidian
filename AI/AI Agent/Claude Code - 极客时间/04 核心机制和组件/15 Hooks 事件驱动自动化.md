@@ -184,3 +184,10 @@ hooks                            ← 顶层容器
 PreToolUse 是最强大的 Hook 事件，因为它能阻止工具执行。它就像机场的安检门——在你登机（工具执行）之前，先过一道检查。PreToolUse Hook 可以做三件事：**允许**（allow，放行），**拒绝**（deny，拦截），**修改**（updatedInput，改写输入参数后再执行）。
 
 第三种能力特别有趣——你不仅能“放行或拦截”，还能“偷偷改参数”。比如用户要执行  rm -rf /tmp/test，你可以把它改成  rm -rf /tmp/test --dry-run，先看看会删什么再说。
+
+要写出有效的 PreToolUse Hook，你需要理解它的通信协议——脚本从 stdin 读入什么数据、向 Claude 返回什么决策。我们快速过一遍，然后直接进入实战。
+
+每个 Hook 脚本通过 stdin 接收一个 JSON 对象，包含做出判断所需的全部上下文。
+```json
+
+```
