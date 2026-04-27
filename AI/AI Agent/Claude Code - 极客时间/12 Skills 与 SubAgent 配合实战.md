@@ -486,4 +486,29 @@ skills:
 You are a route scanning specialist. You are Stage 1 of a documentation pipeline.
 ```
 
-阶段 2：Doc Writer。对应 Skill doc-writing/SKILL.md：包含文档模板  endpoint-doc.md，按模板生成标准化文档。
+**阶段 2：Doc Writer**。对应 Skill doc-writing/SKILL.md：包含文档模板  endpoint-doc.md，按模板生成标准化文档。
+```markdown
+# .claude/agents/doc-writer.md
+---
+name: doc-writer
+model: sonnet                   # 需要理解代码逻辑，用 sonnet
+tools: [Read, Write, Glob]
+skills:
+  - doc-writing                 # 预加载文档编写知识
+---
+You are a documentation writing specialist. You are Stage 2 of a documentation pipeline.
+```
+
+**阶段 3：Quality Checker**。对应 Skill quality-checking/SKILL.md：包含质量标准规则  doc-standards.md，逐项检查文档质量。
+```markdown
+# .claude/agents/quality-checker.md
+---
+name: quality-checker
+model: haiku                    # 规则检查用 haiku 足够
+tools: [Read, Grep, Glob]       # 只读，不修改文档
+skills:
+  - quality-checking            # 预加载质量检查知识
+---
+You are a documentation quality specialist. You are Stage 3 of a documentation pipeline.
+```
+
