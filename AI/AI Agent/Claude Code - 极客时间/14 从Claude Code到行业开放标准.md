@@ -167,3 +167,14 @@ Skills 方式（Agent 调用预定义 Skill）：
 
 Vercel 的测试场景是 Build / Lint / Test——这些是每个项目都需要的高频操作。对于高频操作，Push 模型当然更好：把构建指南放在 AGENTS.md 里，Agent 每次都能看到。
 
+但如果你的场景是 15 个不同领域的 Skills（安全审查、API 文档、数据分析、性能优化……），每次只需要其中 1-2 个，全部 Push 进上下文等于 120KB+ 的 token 消耗。那 Pull 模型就是唯一可行的选择。
+```markdown
+场景矩阵：
+
+                    知识量少（<8KB）     知识量大（>50KB）
+                    ─────────────     ─────────────
+  每次都需要          Push (AGENTS.md)    Push + 压缩
+  偶尔才需要          都行               Pull (Skills)
+```
+
+正确的工程决策不是二选一，而是组合使用。AGENTS.md / CLAUDE.md 放每次都需要的、少量的项目规则（构建命令、测试命令、代码风格）；Skills 放特定场景才需要的、详细的领域知识（安全审查清单、API 文档模板、财务分析 SOP）。行业共识正在形成——AGENTS.md 和 Skills 是互补的，不是竞争的。
