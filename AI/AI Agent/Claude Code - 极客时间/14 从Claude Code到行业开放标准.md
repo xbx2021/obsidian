@@ -115,3 +115,47 @@ AAIF 有三大创始项目，每个解决 Agent 生态的一个核心问题。
 └─────────────────────────────────────────────────────────┘
 ```
 
+Agent Skills 不是 AAIF 的三大创始项目之一——它是 Anthropic 在 AAIF 成立 9 天后独立发布的开放标准。但它与 AAIF 生态密切关联。
+
+MCP 提供工具能力，Skills 提供使用知识——Agent 同时需要两者。goose 原生支持加载 Agent Skills。AGENTS.md 是项目的通用规则和指南，Skills 是特定领域的专业知识——前者是常驻全局上下文（push），后者是按需加载领域知识（pull）。
+
+这里有一个关键发现：AGENTS.md 与 Skills 的关系，完美映射到我们讲过的 CLAUDE.md 与 Skills 的关系（参考第 9 讲）。
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427135953133.png)
+这不是巧合。 Claude Code 的架构设计就是这套标准的原型。你学的不是一个产品的用法，而是行业标准的第一手实践。
+
+
+# skills.sh——Skills 的 npm
+
+有了标准，自然就需要分发机制。2026 年 1 月 20 日，Vercel 推出了  skills.sh——Agent Skills 的包管理器和目录服务。如果 Agent Skills 是“代码包”，那 skills.sh 就是“npm”。
+```markdown
+# 安装一个 Skill
+npx skills add vercel-labs/next-app-creation
+
+# 交互式搜索和发现 Skills
+npx skills find
+
+# 更新本地已安装的 Skills
+npx skills update
+```
+
+生态数据如下表所示：
+![](assets/14%20从Claude%20Code到行业开放标准/file-20260427140208553.png)
+skills.sh 的核心理念是把 Agent 推理与执行分离——给 Agent 一组预定义的、可审计的命令，而不是让它动态生成 shell 逻辑。
+```markdown
+传统方式（Agent 自由执行）：
+  Agent → 推理"我需要构建这个项目" → 自己生成 npm build 命令 → 执行
+  问题：不可预测、不可审计
+
+Skills 方式（Agent 调用预定义 Skill）：
+  Agent → 触发 "build-project" Skill → Skill 内置标准构建流程 → 执行
+  优势：可预测、可审计、可复用
+```
+
+如果你在本课程中创建了有价值的 Skill，你可以**通过 skills.sh 发布到全球生态**。你在课程项目中创建的  .claude/skills/api-generating/SKILL.md，任何人都可以通过  npx skills add your-username/api-generating  安装使用。你学到的 Skill 工程能力不仅在 Claude Code 中有用——它是跨平台的、行业标准级别的能力。
+
+
+# Push vs Pull 大辩论：AGENTS.md vs Skills
+
+有了行业标准和分发机制，一个自然的问题浮出水面：既然 AGENTS.md（Push）和 Skills（Pull）是互补的，那什么时候该用哪个？
+
+2026 年 2 月 2 日，Vercel 发布了一篇引发广泛讨论的博文——**AGENTS.md outperforms skills in our agent evals**。他们对 Build、Lint、Test 三类任务做了严格的对照实验。
