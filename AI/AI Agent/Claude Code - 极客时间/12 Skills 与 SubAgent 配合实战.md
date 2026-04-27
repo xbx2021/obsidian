@@ -84,6 +84,26 @@ Research $ARGUMENTS thoroughly:
 
 下面是两个方向的对照说明表。
 ![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427093328639.png)
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427093515602.png)
 
+# 构建 Skill：参照着用
+
+这个配套项目位于：04-Skills/projects/05-api-generator/
+
+一个生产级的 Skill 的完整架构应该包含这些组件：
+```markdown
+.claude/skills/api-generating/          # 标准 Skill 目录
+├── SKILL.md                            # 入口：路由 + 核心逻辑
+├── PATTERNS.md                         # 知识：框架识别模式
+├── STANDARDS.md                        # 规范：文档编写标准
+├── EXAMPLES.md                         # 示例：输入输出案例
+├── templates/
+│   ├── index.md                       # 模板：API 索引页
+│   ├── endpoint.md                    # 模板：端点文档
+│   └── openapi.yaml                   # 模板：OpenAPI 规范
+└── scripts/
+    ├── detect_routes.py               # 脚本：路由检测
+    └── validate_openapi.sh            # 脚本：规范验证
+```
 
 
