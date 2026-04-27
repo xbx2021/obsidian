@@ -42,5 +42,8 @@ Claude Code 的 Hooks 机制与此异曲同工，但**它针对的不是 HTTP �
 
 截至 2026 年 3 月，根据 [ Anthropic 官方文档](https://code.claude.com/docs/en/hooks-guide)，Claude Code 支持  17 种 Hook 事件，覆盖了从会话启动到结束的完整生命周期：
 ![](assets/15%20Hooks%20事件驱动自动化/file-20260427145835713.png)
+17 个事件，乍看数量不少，但它们的设计逻辑非常清晰——按照“能否阻止”这一列来看，整个事件体系分为三大阵营。
+
+**控制点——能阻止的事件**（PreToolUse、UserPromptSubmit、Stop、SubagentStop）：你可以通过它们改变 Claude 的执行路径——拦截危险操作、拒绝不合理的输入、强制 Claude 继续修复。它们是 Hooks 系统的肌肉。
 
 
