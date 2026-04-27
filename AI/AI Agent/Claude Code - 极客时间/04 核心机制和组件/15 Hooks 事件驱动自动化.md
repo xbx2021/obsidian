@@ -97,3 +97,18 @@ Claude Code 的 Hooks 机制与此异曲同工，但**它针对的不是 HTTP �
 }
 ```
 
+这个 JSON 结构有三层嵌套，初看可能有点绕。用树形图来拆解它的逻辑层次。
+```markdown
+hooks                            ← 第一层：顶层容器
+├── PreToolUse                   ← 第二层：事件类型（什么时候触发）
+│   └── [第一组规则]
+│       ├── matcher: "Bash"      ← 第三层：匹配器（针对哪个工具）
+│       └── hooks: [...]         ← 第三层：Hook 列表（执行什么）
+│           └── type: "command"
+│           └── command: "..."
+└── PostToolUse
+    └── [第二组规则]
+        ├── matcher: "Write"
+        └── hooks: [...]
+```
+
