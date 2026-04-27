@@ -297,3 +297,132 @@ Generate or update API documentation for Express.js routes.
   - Any routes that could not be fully analyzed (with reasons)
   - Warnings (missing auth, undocumented parameters, etc.)
 ```
+
+完整项目结构如下所示。
+```markdown
+06-agent-skill-combo/
+├── .claude/
+│   ├── agents/
+│   │   └── api-doc-generator.md     # SubAgent：角色 + 使命（WHO/WHAT）
+│   ├── skills/
+│   │   └── api-generating/
+│   │       ├── SKILL.md              # Skill：工作流程 + 规则（HOW）
+│   │       ├── scripts/
+│   │       │   └── detect-routes.py  # 路由检测脚本（处理链式路由）
+│   │       └── templates/
+│   │           └── api-doc.md        # 文档模板
+│   └── settings.local.json           # 权限预配置
+├── src/
+│   └── routes/
+│       ├── users.js                  # 标准 CRUD（5 条路由）
+│       └── orders.js                 # 含链式路由（5 条路由）
+├── docs/api/                         # 生成的文档（输出目录）
+└── README.md
+```
+
+在 Claude Code 中，运行 SubAgent：
+```markdown
+> 用 api-doc-generator 为 src/ 目录生成 API 文档
+```
+
+检查生成的文档：
+- docs/api/users.md  应包含 5 个端点
+- docs/api/orders.md  应包含 5 个端点（含  GET /:id/status  和  PUT /:id/status）
+- 需要认证的端点应有 🔒 标记
+
+观察它的工具调用记录，SubAgent 确实执行了脚本、使用了模板，并严格遵循了 SKILL.md 的工作流程。Skill 注入真的有效。
+
+## 模式二：Skill + context: fork（方向 B 的直接应用）
+
+Skill 自带任务指令，Skill 包含 SubAgent，通过 context: fork  派一个子代理去执行。这种模式的适用场景是一个独立完整的任务，不需要与主对话交互，执行完把结果送回来就行。
+```markdown
+---
+name: codebase-research
+description: Deep research into codebase topics
+context: fork # 关键点！
+agent: Explore
+---
+
+Research $ARGUMENTS thoroughly...
+```
+
+模式二的配套项目位于：04-Skills/projects/07-skill-fork-demo/。项目结构如下：
+```markdown
+07-skill-fork-demo/
+├── .claude/
+│   └── skills/
+│       └── code-health-check/
+│           └── SKILL.md              # context: fork + agent: general-purpose
+├── src/
+│   ├── app.js                        # 含硬编码密钥
+│   ├── routes/
+│   │   ├── products.js               # 含 SQL 注入、缺少 try/catch
+│   │   └── categories.js             # 含未使用函数、重复逻辑
+│   └── utils/
+│       └── db.js                     # 含 eval() 使用
+└── README.md
+```
+
+在这个项目中，你想做一次代码质量扫描，但不想让大量中间文件内容污染主对话。这正是  context: fork  的典型场景——**Skill 自己派一个子代理去做，做完把报告送回来。**
+
+这个项目和上一个项目（模式一）的区别是模式一（Project 05）需要 SubAgent .md  定义文件 + skills:  字段。而模式二（本项目 Project 04）**只需要 SKILL.md 一个文件**，context: fork + agent:  自动搞定其它。
+
+这个 Skill 的设计如下。
+```markdown
+---
+name: code-health-check
+description: Perform a comprehensive code health check on a directory.
+context: fork                    # ← 关键：在隔离子代理中执行
+agent: general-purpose           # ← 子代理类型
+allowed-tools: [Read, Grep, Glob] # ← 只读，不修改代码
+---
+
+# Code Health Check
+
+Analyze the codebase at `$ARGUMENTS` and produce a structured health report.
+
+## Checks to Perform
+1. File Organization - 文件大小、目录结构
+2. Error Handling - try/catch、错误传播
+3. Security Basics - 硬编码密钥、eval()、SQL 注入
+4. Code Quality - 重复代码、未使用变量
+
+## Output Format
+Return a structured report:
+- Overall health score (A/B/C/D/F)
+- Issues found (categorized by severity: CRITICAL/WARNING/INFO)
+- Top 3 recommendations
+```
+
+项目 07 的  src/  中故意埋了多个安全和质量问题。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427101831465.png)
+这些“已知答案“让你可以验证子代理的检查质量。
+```markdown
+# 进入项目目录后，在 Claude Code 中执行：
+> /code-health-check src/
+```
+
+此时 Claude Code 的执行流程如下：
+```markdown
+/code-health-check src/
+  │
+  ├─ SKILL.md 被激活（context: fork）
+  ├─ 自动创建 general-purpose 子代理
+  ├─ 子代理在隔离上下文中：
+  │   ├─ Glob 扫描 src/ 下所有 .js 文件
+  │   ├─ Read 每个文件
+  │   ├─ Grep 搜索 eval(), hardcoded secrets 等模式
+  │   └─ 生成健康报告
+  └─ 返回报告到主对话（主对话上下文干净）
+```
+
+此处的验证要点是：
+- 是否发现了 3 个 CRITICAL 问题？（硬编码密钥、SQL 注入、eval）
+- 是否发现了 WARNING 和 INFO 级别问题？
+- 主对话上下文是否干净——你看不到子代理读文件的中间过程。
+
+模式二的适用场景总结如下。
+![](assets/12%20Skills%20与%20SubAgent%20配合实战/file-20260427102013437.png)
+
+## 模式三：流水线中的 Skill 分工（方向 A 的多阶段串联）
+
