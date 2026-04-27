@@ -89,3 +89,29 @@ Skills 出圈的背后，是一个更大的行业趋势：Agent 标准化运动�
 
 2025 年 12 月 9 日，Anthropic、OpenAI 和 Block（原 Square）在 Linux Foundation 下联合成立了  **Agentic AI Foundation (AAIF)**。如果你熟悉 Web 标准的历史，这就是 AI 时代的 W3C——让不同厂商的 Agent 能用同一套标准互操作。
 
+AAIF 有三大创始项目，每个解决 Agent 生态的一个核心问题。
+```markdown
+┌─────────────────────────────────────────────────────────┐
+│                 Agentic AI Foundation                     │
+│                                                          │
+│    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│    │     MCP       │  │    goose      │  │  AGENTS.md   │  │
+│    │  (Anthropic)  │  │   (Block)     │  │  (OpenAI)    │  │
+│    │              │  │              │  │              │  │
+│    │  Agent 如何   │  │  Agent 如何   │  │  Agent 如何   │  │
+│    │  连接工具？   │  │  落地执行？   │  │  理解项目？   │  │
+│    │              │  │              │  │              │  │
+│    │  = 工具接口   │  │  = 执行框架   │  │  = 项目上下文  │  │
+│    │    标准       │  │    参考实现   │  │    标准       │  │
+│    └──────────────┘  └──────────────┘  └──────────────┘  │
+│                                                          │
+│    Platinum: AWS, Anthropic, Block, Bloomberg,            │
+│              Cloudflare, Google, Microsoft, OpenAI        │
+│                                                          │
+│    Gold:     Cisco, Datadog, Docker, IBM, JetBrains,     │
+│              Oracle, Salesforce, SAP, Shopify, ...        │
+│                                                          │
+│    共 50+ 企业会员                                        │
+└─────────────────────────────────────────────────────────┘
+```
+
