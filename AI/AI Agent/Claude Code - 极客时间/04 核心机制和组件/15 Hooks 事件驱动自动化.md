@@ -602,3 +602,9 @@ exit 0
 **优雅降级**：每种工具的调用都先用  `command -v`  检查是否安装。如果 Prettier 没装，脚本不会报错崩溃，而是优雅地跳过并通过  `additionalContext`  告诉 Claude “Prettier not available”。这很重要——**Hook 的失败不应该阻碍正常工作流**。
 
 **反馈闭环**：格式化完成后，通过  `additionalContext`  告诉 Claude 用了什么工具格式化的。这不仅是日志记录，还让 Claude 知道格式化已经发生——它不需要自己再做一次。
+
+这个 Hook 的美妙之处在于，**Claude 不需要知道项目用什么格式化工具**。无论是 Prettier、Black、gofmt 还是 rustfmt，只要本地安装了，就会自动应用。这就是中间件的力量——业务逻辑（Claude 写代码）和横切关注点（格式化）完全解耦。
+
+
+## PostToolUse 实战案例 2：自动 Lint 检查
+
