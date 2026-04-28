@@ -236,7 +236,7 @@ Bash(git * main)        # 匹配 "git checkout main", "git merge main" 等
 
 注意空格边界：`Bash(ls * )`  匹配  `ls -la ` 但不匹配  `lsof`；`Bash(ls*)`  两者都匹配。
 
-### **Read/Edit 规则路径语法：**
+### **Read/Edit 规则路径语法**
 ```json
 {
   "permissions": {
@@ -254,4 +254,24 @@ Bash(git * main)        # 匹配 "git checkout main", "git merge main" 等
 ```
 ![](assets/18%20Tools%20工具系统内核剖析/file-20260428170419414.png)
 
-### **WebFetch 和 MCP 工具规则：**
+### **WebFetch 和 MCP 工具规则**
+```json
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "mcp__puppeteer",
+      "mcp__database__query"
+    ],
+    "deny": [
+      "WebFetch(domain:internal.company.com)",
+      "mcp__database__drop_table"
+    ]
+  }
+}
+```
+
+
+# 配置文件层级
+
+权限配置可以在多个层级设置，按从高到低的优先级排序，如下表所示。
