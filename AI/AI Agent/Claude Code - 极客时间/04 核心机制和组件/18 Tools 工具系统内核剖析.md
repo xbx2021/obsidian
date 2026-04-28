@@ -292,5 +292,21 @@ claude --allowedTools "Bash(npm run *)" "Bash(git diff *)" "Read"
 # 禁用特定工具（从上下文中完全移除）
 claude --disallowedTools "Bash(curl *)" "Edit"
 ```
+![](assets/18%20Tools%20工具系统内核剖析/file-20260428171046921.png)
+这些控制机制同样适用于子代理配置：
+```markdown
+---
+name: code-reviewer
+description: Review code for security and quality issues
+tools: Read, Grep, Glob          # 只给只读工具
+model: sonnet
+---
+```
 
+# 工具扩展与架构定位
+
+## 工具能力的三个层次
+
+内置工具覆盖了大部分编码任务，但连接外部系统时需要扩展。工具能力可以分为三个层次——从内置原语到 Bash 可达到 MCP 扩展，每一层都在前一层的基础上拓展能力边界。
+![](assets/18%20Tools%20工具系统内核剖析/file-20260428171204082.png)
 
