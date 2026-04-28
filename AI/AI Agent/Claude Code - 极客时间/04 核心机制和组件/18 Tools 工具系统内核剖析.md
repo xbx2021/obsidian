@@ -326,3 +326,8 @@ model: sonnet
 
 **Agentic Loop**  是 Claude Code 的工作核心：收集上下文 → 采取行动 → 验证结果，循环往复。工具是行动的载体，没有工具的 Claude 只能输出文本。Claude Code 作为 Agentic Harness，把模型和工具连接起来。
 
+**工具设计哲学**遵循 Unix 原则——十几个精选的原语工具覆盖了五个原子操作：感知（Read）、搜索（Glob/Grep）、修改（Edit/Write）、执行（Bash）、获取（Web）。涌现公式：原语工具 × LLM 推理 × 反馈循环 = 无限复杂能力。重构、调试、部署这些高级能力不需要专门的工具，它们是原语工具在 LLM 推理驱动下的涌现行为。
+
+**权限控制**分层相当精细。权限模式从 default 到 bypassPermissions 六档可调；规则语法支持通配符、路径模式、域名限制；配置层级从 Managed（组织级）到 User（个人级）四层叠加。
+
+**工具扩展**分三个层次：内置原语 → Bash 可达 → MCP 扩展。Tools 是基础层，Sub-Agents、Skills、Hooks、MCP 这些上层建筑， 都建立在 Tools 层之上。
