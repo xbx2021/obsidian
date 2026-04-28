@@ -128,3 +128,20 @@ MCP 配置可以放在多个位置，每个位置的作用域和可见性不同�
 
 Claude Code 里面的 MCP 配置示例
 ![](assets/17%20MCP%20协议与外部工具连接/file-20260428144526573.png)
+
+在配置文件中硬编码敏感信息是危险的。MCP 配置支持通过  `${}`  语法引用环境变量：`${VAR_NAME}` 直接引用，变量不存在会报错；`${VAR_NAME:-default}`  在变量不存在时使用默认值：
+```json
+{
+  "mcpServers": {
+    "secure-api": {
+      "type": "http",
+      "url": "https://api.example.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${API_TOKEN}",
+        "X-API-Key": "${API_KEY:-default-key}"
+      }
+    }
+  }
+}
+```
+
