@@ -176,4 +176,46 @@ MCP 的生态已经非常成熟，从官方基础服务到第三方热门服务�
 
 Anthropic 维护了一套[官方 MCP 服务器集合](https://github.com/modelcontextprotocol/servers)，覆盖最常见的开发需求。这些服务器经过官方测试和维护，是入门 MCP 的最佳起点。
 ![](assets/17%20MCP%20协议与外部工具连接/file-20260428145523467.png)
+社区也贡献了大量高质量的第三方 MCP 服务器。以下是开发者最常用、真正能跑的几个。
+[GitHub MCP](https://github.com/github/github-mcp-server)
+[Context7](https://github.com/upstash/context7)
+[Notion MCP](https://developers.notion.com/docs/mcp)
+[Brave Search](https://github.com/nicobailey/brave-search-mcp)
+[Sentry MCP](https://docs.sentry.io/ai/mcp/)
+![](assets/17%20MCP%20协议与外部工具连接/file-20260428145925279.png)
+## 实战 1：Context7——实时技术文档
+
+Context7 是开发者社区最火的 MCP 服务器之一。它的价值在于，当你让 Claude 帮你写代码时，Claude 可以实时拉取你用的库的最新文档，而不是依赖训练数据中可能过时的知识。
+
+配置极其简单，一行命令搞定。
+```bash
+claude mcp add context7 -- npx -y @upstash/context7-mcp@latest
+```
+
+或者在  .mcp.json  中手动配置：
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    }
+  }
+}
+```
+
+配置完成后，你可以在提示中加上  use context7  关键词，Claude 就会自动去拉取最新的官方文档：
+```
+帮我用 Next.js 15 的 App Router 写一个带认证的 API 路由 use context7
+```
+
+Claude 会输出：
+```
+先查一下 Next.js 15 的最新文档...
+[调用 context7 MCP server → resolve_library_id → get_library_docs]
+根据最新文档，Next.js 15 的 App Router API 路由写法如下...
+```
+
+不需要 API Key，不需要付费，开箱即用。这就是为什么它成了开发者的“标配”MCP。
 
