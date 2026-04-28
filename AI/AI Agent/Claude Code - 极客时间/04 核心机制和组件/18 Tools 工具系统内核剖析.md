@@ -223,9 +223,11 @@ Claude Code 支持多种权限模式，通过  Shift+Tab  循环切换。
 }
 ```
 
-**规则评估顺序**：deny → ask → allow。deny 规则总是优先。
+### **规则评估顺序**
 
-**Bash 规则通配符：**
+deny → ask → allow。deny 规则总是优先。
+
+### **Bash 规则通配符**
 ```markdown
 Bash(npm run build)     # 精确匹配 "npm run build"
 Bash(npm run *)         # 匹配 "npm run" 后跟任意内容
@@ -234,7 +236,7 @@ Bash(git * main)        # 匹配 "git checkout main", "git merge main" 等
 
 注意空格边界：`Bash(ls * )`  匹配  `ls -la ` 但不匹配  `lsof`；`Bash(ls*)`  两者都匹配。
 
-**Read/Edit 规则路径语法：**
+### **Read/Edit 规则路径语法：**
 ```json
 {
   "permissions": {
@@ -252,3 +254,4 @@ Bash(git * main)        # 匹配 "git checkout main", "git merge main" 等
 ```
 ![](assets/18%20Tools%20工具系统内核剖析/file-20260428170419414.png)
 
+### **WebFetch 和 MCP 工具规则：**
