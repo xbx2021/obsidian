@@ -409,7 +409,7 @@ TypeScript SDK 是使用最广泛的 MCP 开发工具。安装依赖：
 npm install @modelcontextprotocol/sdk zod
 ```
 
-下面是一个完整的 Todo 管理 MCP Server（src/index.ts）。它定义了三个工具（添加、列出、完成待办）和一个资源（统计信息）。注意每个工具都有名称、描述、参数 schema 和处理函数——Claude 通过描述来决定何时调用这个工具：
+下面是一个完整的 Todo 管理 MCP Server（`src/index.ts`）。它定义了三个工具（添加、列出、完成待办）和一个资源（统计信息）。注意每个工具都有名称、描述、参数 schema 和处理函数——Claude 通过描述来决定何时调用这个工具：
 ```typescript
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -520,4 +520,64 @@ async function main() {
 }
 
 main().catch(console.error);
+```
+
+## Python SDK
+
+Python 版本使用装饰器风格，对 Python 开发者来说更加自然。
+```python
+pip install mcp
+from mcp.server.fastmcp import FastMCP
+
+server = FastMCP("my-todo-server")
+
+todos = []
+
+@server.tool("todo_add")
+async def add_todo(text: str) -> str:
+    """Add a new todo item"""
+    import random
+    import string
+    todo_id = ''.join(random.choices(string.ascii_lowercase, k=7))
+    todos.append({"id": todo_id, "text": text, "done": False})
+    return f"Added todo: {todo_id} - {text}"
+
+@server.tool("todo_list")
+async def list_todos() -> str:
+    """List all todo items"""
+    if not todos:
+        return "No todos found."
+    return "\n".join(
+        f"[{'x' if t['done'] else ' '}] {t['id']}: {t['text']}"
+        for t in todos
+    )
+
+@server.tool("todo_complete")
+async def complete_todo(id: str) -> str:
+    """Mark a todo as completed"""
+    for todo in todos:
+        if todo["id"] == id:
+            todo["done"] = True
+            return f"Completed: {todo['text']}"
+    return f"Todo not found: {id}"
+
+if __name__ == "__main__":
+    server.run()
+```
+
+# 配置自定义服务器
+
+写完代码后在  .mcp.json  中注册。TypeScript 版本先编译再运行，Python 版本直接运行：
+
+**TypeScript 版本：**
+```json
+{
+  "mcpServers": {
+    "my-todo": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["./mcp-server/build/index.js"]
+    }
+  }
+}
 ```
