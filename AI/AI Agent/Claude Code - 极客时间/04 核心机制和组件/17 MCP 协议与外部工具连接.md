@@ -145,3 +145,26 @@ Claude Code 里面的 MCP 配置示例
 }
 ```
 
+Claude Code 提供了命令行工具来管理 MCP 服务器，这比手动编辑 JSON 更方便。
+```markdown
+# 添加 HTTP 服务器
+claude mcp add --transport http github https://api.githubcopilot.com/mcp/
+
+# 添加 stdio 服务器
+claude mcp add filesystem -- npx @modelcontextprotocol/server-filesystem /path
+
+# 添加到用户级别（所有项目可用）
+claude mcp add --transport http --scope user github https://api.githubcopilot.com/mcp/
+
+# 带认证头添加
+claude mcp add --transport http --header "Authorization: Bearer ${TOKEN}" api https://api.example.com/mcp
+
+# 列出所有服务器
+claude mcp list
+
+# 查看服务器详情
+claude mcp get github
+
+# 移除服务器
+claude mcp remove github
+```
