@@ -569,7 +569,7 @@ if __name__ == "__main__":
 
 写完代码后在  .mcp.json  中注册。TypeScript 版本先编译再运行，Python 版本直接运行：
 
-**TypeScript 版本：**
+## TypeScript 版本：
 ```json
 {
   "mcpServers": {
@@ -581,3 +581,20 @@ if __name__ == "__main__":
   }
 }
 ```
+
+## Python 版本：
+```json
+{
+  "mcpServers": {
+    "my-todo": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["./mcp-server/server.py"]
+    }
+  }
+}
+```
+
+# 5 条 MCP 安全原则
+
+MCP 的强大能力也带来了安全风险。它本质上是在给 AI Agent 开放访问外部系统的权限。正如  Anthropic 官方警告里说的：
