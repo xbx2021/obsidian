@@ -317,3 +317,4 @@ model: sonnet
 
 回顾一下 Tools 与其他扩展机制的关系。
 ![](assets/18%20Tools%20工具系统内核剖析/file-20260428172459617.png)
+![](assets/18%20Tools%20工具系统内核剖析/file-20260428173156950.png)
