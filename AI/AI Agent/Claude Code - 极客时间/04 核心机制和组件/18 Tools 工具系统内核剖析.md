@@ -283,5 +283,14 @@ Bash(git * main)        # 匹配 "git checkout main", "git merge main" 等
 
 除了配置文件，还可以通过 CLI 参数临时控制工具：
 ```markdown
+# 限制可用工具集
+claude --tools "Read,Grep,Glob"
 
+# 预授权特定命令（执行时不弹窗）
+claude --allowedTools "Bash(npm run *)" "Bash(git diff *)" "Read"
+
+# 禁用特定工具（从上下文中完全移除）
+claude --disallowedTools "Bash(curl *)" "Edit"
 ```
+
+
