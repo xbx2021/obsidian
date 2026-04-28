@@ -124,4 +124,37 @@ Unix 的设计哲学是“做好一件事”（Do One Thing Well），然后通�
 **反馈循环**让二者持续交互（工具输出 → 新的理解 → 新的行动）
 ![](assets/18%20Tools%20工具系统内核剖析/file-20260428164753068.png)
 
+我们用一个具体例子说明。比方说，我们要完成“修复用户登录时偶尔出现的 500 错误”这任务，虽然没有任何一个工具能“修复 bug”，但看看它们是怎么组合的。
+```markdown
+第 1 步：Grep("500", "error", "login")
+         → 找到 3 个文件中有相关错误日志
+         → Claude 推理："日志显示错误出现在 auth-service.js"
+
+第 2 步：Read("src/auth-service.js")
+         → 读取 200 行代码
+         → Claude 推理："第 87 行的 token 验证没有 null 检查"
+
+第 3 步：Grep("validateToken", type: "files_with_matches")
+         → 找到 5 个文件引用了这个函数
+         → Claude 推理："需要同时检查调用方是否有防御性处理"
+
+第 4 步：Read("src/middleware/auth.js")
+         → 读取调用方代码
+         → Claude 推理："调用方也没有 null 检查，需要在源头修复"
+
+第 5 步：Edit("src/auth-service.js", line 87)
+         → 添加 null 检查
+
+第 6 步：Bash("npm test -- --grep 'auth'")
+         → 运行测试，2 个失败
+         → Claude 推理："测试用例需要更新"
+
+第 7 步：Edit("tests/auth.test.js")
+         → 更新测试用例
+
+第 8 步：Bash("npm test")
+         → 全部通过
+```
+
+
 
