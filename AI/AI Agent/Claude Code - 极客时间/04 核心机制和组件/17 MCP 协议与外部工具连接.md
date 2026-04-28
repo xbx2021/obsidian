@@ -236,3 +236,113 @@ Claude 会输出：
 
 ## 实战 2：GitHub MCP——仓库操作
 
+GitHub 官方推出的 MCP 服务器，支持完整的仓库管理操作：创建 Issue、管理 PR、搜索代码、查看 CI/CD 状态。
+
+### 方式一：HTTP 远程连接（推荐，GitHub 官方托管）
+```json
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+### 方式二：stdio 本地运行（更灵活，可定制参数）
+```bash
+claude mcp add github -- docker run -i --rm \
+  -e GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_TOKEN} \
+  ghcr.io/github/github-mcp-server
+```
+
+配置好之后，你可以直接在终端里操作 GitHub：
+```
+发现一个登录页面的 Bug，当用户输入超长密码时会崩溃，帮我创建一个 Issue
+```
+
+Claude 输出如下
+```markdown
+让我在 GitHub 上创建这个 Issue...
+[调用 GitHub MCP server → create_issue]
+
+已创建 Issue #142: "Login page crashes with extremely long password"
+- Labels: bug, high-priority
+- URL: https://github.com/your-org/your-repo/issues/142
+```
+
+GITHUB_TOKEN 需要事先创建。到 GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens，勾选你需要的仓库权限即可。
+
+## 实战 3：Notion MCP——文档集成
+
+Notion 官方开源了 MCP 服务器，让 Claude 可以直接读写你的 Notion 工作区。
+```json
+{
+  "mcpServers": {
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${NOTION_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+NOTION_API_KEY 在  Notion Developers  创建 Internal Integration 后获取。记得在 Notion 页面的 Connections 里添加你创建的 Integration，否则 Claude 看不到页面内容。
+```markdown
+从 Notion 里读取"Q1 产品路线图"，帮我提取其中的技术任务
+```
+
+Claude 输出如下
+```markdown
+读取 Notion 文档...
+[调用 Notion MCP server → search → get_page]
+
+从 "Q1 产品路线图" 提取的技术任务：
+1. 用户认证系统升级（2月前）
+   - 支持 OAuth 2.0
+   - 添加双因素认证
+2. 搜索功能优化（3月前）
+   - 实现全文搜索
+   - 添加搜索建议
+```
+
+
+## 实战 4：数据库——查询与分析
+
+连接数据库是 MCP 最实用的场景之一。`@bytebase/dbhub`支持 PostgreSQL、MySQL、SQLite 等多种数据库：
+```json
+{
+  "mcpServers": {
+    "database": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@bytebase/dbhub", "--dsn", "${DATABASE_URL}"]
+    }
+  }
+}
+```
+
+DATABASE_URL  格式为  `postgresql://user:password@localhost:5432/mydb`。建议使用只读账户，防止 Claude 误操作修改数据。
+```
+帮我查一下数据库里上个月的订单数量和总金额
+```
+
+Claude 输出如下
+```markdown
+查询数据库...
+[调用 database MCP server → run_query]
+
+上个月（2025年12月）的订单统计：
+- 订单数量：1,234 笔
+- 总金额：¥456,789.00
+- 平均客单价：¥370.21
+```
+
+
