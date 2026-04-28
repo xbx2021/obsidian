@@ -110,6 +110,9 @@ MCP 配置可以放在多个位置，每个位置的作用域和可见性不同�
 **敏感凭证**放到  `.claude/settings.local.json`——不提交，本地保存
 **个人常用服务**放到  `~/.claude/settings.local.json`——跨项目可用
 
+更新：
+
+
 不论使用哪种传输方式，MCP 配置都遵循同一个 JSON 结构。`mcpServers`  是顶层键，每个子键是服务器名称（可自由命名）。`type`  指定传输方式，剩余字段根据传输类型不同——stdio 需要  `command`  和  `args`，HTTP/SSE 需要  `url`  和  `headers`：
 ```json
 {
