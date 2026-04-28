@@ -8467,7 +8467,7 @@ function validateSlugName(name, label) {
 }
 
 // src/providers/claude/types/agent.ts
-var AGENT_PERMISSION_MODES = ["default", "acceptEdits", "dontAsk", "bypassPermissions", "plan", "delegate"];
+var AGENT_PERMISSION_MODES = ["default", "acceptEdits", "auto", "dontAsk", "bypassPermissions", "plan", "delegate"];
 
 // src/providers/claude/agents/AgentStorage.ts
 var KNOWN_AGENT_KEYS = /* @__PURE__ */ new Set([
@@ -25139,6 +25139,7 @@ function getEnvironmentScopeUpdates(envText, fallbackScope) {
 }
 
 // src/providers/claude/settings.ts
+var CLAUDE_SAFE_MODES = ["acceptEdits", "auto", "default"];
 var DEFAULT_CLAUDE_PROVIDER_SETTINGS = Object.freeze({
   safeMode: "acceptEdits",
   cliPath: "",
@@ -25165,11 +25166,14 @@ function normalizeHostnameCliPaths(value) {
   }
   return result;
 }
+function normalizeClaudeSafeMode(value) {
+  return CLAUDE_SAFE_MODES.includes(value) ? value : void 0;
+}
 function getClaudeProviderSettings(settings11) {
   var _a3, _b2, _c, _d2, _e, _f, _g, _h, _i, _j2, _k, _l, _m, _n, _o, _p2, _q, _r, _s, _t, _u, _v;
   const config2 = getProviderConfig(settings11, "claude");
   return {
-    safeMode: (_b2 = (_a3 = config2.safeMode) != null ? _a3 : settings11.claudeSafeMode) != null ? _b2 : DEFAULT_CLAUDE_PROVIDER_SETTINGS.safeMode,
+    safeMode: (_b2 = (_a3 = normalizeClaudeSafeMode(config2.safeMode)) != null ? _a3 : normalizeClaudeSafeMode(settings11.claudeSafeMode)) != null ? _b2 : DEFAULT_CLAUDE_PROVIDER_SETTINGS.safeMode,
     cliPath: (_d2 = (_c = config2.cliPath) != null ? _c : settings11.claudeCliPath) != null ? _d2 : DEFAULT_CLAUDE_PROVIDER_SETTINGS.cliPath,
     cliPathsByHost: normalizeHostnameCliPaths((_e = config2.cliPathsByHost) != null ? _e : settings11.claudeCliPathsByHost),
     loadUserSettings: (_g = (_f = config2.loadUserSettings) != null ? _f : settings11.loadUserClaudeSettings) != null ? _g : DEFAULT_CLAUDE_PROVIDER_SETTINGS.loadUserSettings,
@@ -25184,9 +25188,12 @@ function getClaudeProviderSettings(settings11) {
   };
 }
 function updateClaudeProviderSettings(settings11, updates) {
+  var _a3;
+  const current = getClaudeProviderSettings(settings11);
   const next = {
-    ...getClaudeProviderSettings(settings11),
-    ...updates
+    ...current,
+    ...updates,
+    safeMode: "safeMode" in updates ? (_a3 = normalizeClaudeSafeMode(updates.safeMode)) != null ? _a3 : current.safeMode : current.safeMode
   };
   setProviderConfig(settings11, "claude", next);
   return next;
@@ -25217,6 +25224,10 @@ async function probeRuntimeCommands(plugin) {
   );
   const abortController = new AbortController();
   let commands = [];
+  const extraArgs = {
+    ...claudeSettings.safeMode === "auto" ? { "enable-auto-mode": null } : {},
+    ...claudeSettings.enableChrome ? { chrome: null } : {}
+  };
   try {
     const conversation = E$$({
       prompt: "",
@@ -25228,7 +25239,7 @@ async function probeRuntimeCommands(plugin) {
         permissionMode: "bypassPermissions",
         allowDangerouslySkipPermissions: true,
         settingSources: claudeSettings.loadUserSettings ? ["user", "project"] : ["project"],
-        ...claudeSettings.enableChrome ? { extraArgs: { chrome: null } } : {},
+        ...Object.keys(extraArgs).length > 0 ? { extraArgs } : {},
         spawnClaudeCodeProcess: createCustomSpawnFunction(enhancedPath),
         persistSession: false
       }
@@ -25724,6 +25735,41 @@ function getHiddenProviderCommandSet(settings11, providerId) {
 
 // src/providers/codex/settings.ts
 init_env();
+
+// src/providers/codex/types/models.ts
+var CODEX_SPARK_MODEL = "gpt-5.3-codex-spark";
+var DEFAULT_CODEX_MINI_MODEL = "gpt-5.4-mini";
+var DEFAULT_CODEX_PRIMARY_MODEL = "gpt-5.5";
+var FAST_TIER_CODEX_MODEL = DEFAULT_CODEX_PRIMARY_MODEL;
+function formatCodexModelSuffix(suffix) {
+  return suffix.split("-").filter(Boolean).map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase()).join(" ");
+}
+function formatCodexModelLabel(model) {
+  const match = model.match(/^gpt-([^-]+)(?:-(.+))?$/i);
+  if (!match) {
+    return model;
+  }
+  const [, version2, suffix] = match;
+  return `GPT-${version2}${suffix ? ` ${formatCodexModelSuffix(suffix)}` : ""}`;
+}
+function createCodexModelOption(model, description) {
+  return {
+    value: model,
+    label: formatCodexModelLabel(model),
+    description
+  };
+}
+var DEFAULT_CODEX_MINI_MODEL_LABEL = formatCodexModelLabel(DEFAULT_CODEX_MINI_MODEL);
+var DEFAULT_CODEX_PRIMARY_MODEL_LABEL = formatCodexModelLabel(DEFAULT_CODEX_PRIMARY_MODEL);
+var FAST_TIER_CODEX_MODEL_LABEL = formatCodexModelLabel(FAST_TIER_CODEX_MODEL);
+var FAST_TIER_CODEX_DESCRIPTION = `Enable ${FAST_TIER_CODEX_MODEL_LABEL} fast mode for this conversation. Faster responses use more credits.`;
+var DEFAULT_CODEX_MODELS = [
+  createCodexModelOption(DEFAULT_CODEX_MINI_MODEL, "Fast"),
+  createCodexModelOption(DEFAULT_CODEX_PRIMARY_MODEL, "Latest")
+];
+var DEFAULT_CODEX_MODEL_SET = new Set(DEFAULT_CODEX_MODELS.map((model) => model.value));
+
+// src/providers/codex/settings.ts
 function normalizeCodexInstallationMethod(value) {
   return value === "wsl" ? "wsl" : "native-windows";
 }
@@ -25744,6 +25790,20 @@ var DEFAULT_CODEX_PROVIDER_SETTINGS = Object.freeze({
   wslDistroOverride: "",
   wslDistroOverridesByHost: {}
 });
+function shouldDisableCodexReasoningSummary(model) {
+  return model === CODEX_SPARK_MODEL;
+}
+function getEffectiveCodexReasoningSummary(settings11, model) {
+  if (shouldDisableCodexReasoningSummary(model)) {
+    return "none";
+  }
+  return getCodexProviderSettings(settings11).reasoningSummary;
+}
+function applyCodexModelDefaults(model, settings11) {
+  if (shouldDisableCodexReasoningSummary(model)) {
+    updateCodexProviderSettings(settings11, { reasoningSummary: "none" });
+  }
+}
 function normalizeHostnameCliPaths2(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return {};
@@ -56715,7 +56775,10 @@ var claudeSettingsTabRenderer = {
     });
     new import_obsidian13.Setting(container).setName(t("settings.safety")).setHeading();
     new import_obsidian13.Setting(container).setName(t("settings.claudeSafeMode.name")).setDesc(t("settings.claudeSafeMode.desc")).addDropdown((dropdown) => {
-      dropdown.addOption("acceptEdits", "acceptEdits").addOption("default", "default").setValue(claudeSettings.safeMode).onChange(async (value) => {
+      for (const mode of CLAUDE_SAFE_MODES) {
+        dropdown.addOption(mode, mode);
+      }
+      dropdown.setValue(claudeSettings.safeMode).onChange(async (value) => {
         updateClaudeProviderSettings(
           settingsBag,
           { safeMode: value }
@@ -57394,6 +57457,9 @@ async function runColdStartQuery(config2, prompt) {
   }
   if (config2.resumeSessionId) {
     options.resume = config2.resumeSessionId;
+  }
+  if (claudeSettings.safeMode === "auto") {
+    options.extraArgs = { ...options.extraArgs, "enable-auto-mode": null };
   }
   if (!((_c = config2.thinking) == null ? void 0 : _c.disabled)) {
     const effortLevel = resolveAdaptiveEffortLevel(selectedModel, settings11.effortLevel);
@@ -60161,8 +60227,99 @@ function selectContextWindowEntry(modelUsage, intendedModel) {
     (entry) => matchClaudeModelSignature(parseClaudeModelSignature(entry.model), intendedSignature, { ignoreIs1M: true })
   );
 }
+var EMPTY_PROMPT_USAGE = {
+  inputTokens: 0,
+  cacheCreationInputTokens: 0,
+  cacheReadInputTokens: 0,
+  contextTokens: 0
+};
+function normalizeTokenCount(value) {
+  return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : 0;
+}
+function hasPromptUsageField(usage) {
+  if (!usage || typeof usage !== "object" || Array.isArray(usage)) {
+    return false;
+  }
+  const record2 = usage;
+  return typeof record2.input_tokens === "number" || typeof record2.cache_creation_input_tokens === "number" || typeof record2.cache_read_input_tokens === "number";
+}
+function toPromptUsageSnapshot(usage) {
+  const inputTokens = normalizeTokenCount(usage.input_tokens);
+  const cacheCreationInputTokens = normalizeTokenCount(usage.cache_creation_input_tokens);
+  const cacheReadInputTokens = normalizeTokenCount(usage.cache_read_input_tokens);
+  return {
+    inputTokens,
+    cacheCreationInputTokens,
+    cacheReadInputTokens,
+    contextTokens: inputTokens + cacheCreationInputTokens + cacheReadInputTokens
+  };
+}
+function mergePromptUsage(current, usage) {
+  const next = toPromptUsageSnapshot(usage);
+  const inputTokens = Math.max(current.inputTokens, next.inputTokens);
+  const cacheCreationInputTokens = Math.max(current.cacheCreationInputTokens, next.cacheCreationInputTokens);
+  const cacheReadInputTokens = Math.max(current.cacheReadInputTokens, next.cacheReadInputTokens);
+  return {
+    inputTokens,
+    cacheCreationInputTokens,
+    cacheReadInputTokens,
+    contextTokens: inputTokens + cacheCreationInputTokens + cacheReadInputTokens
+  };
+}
+function samePromptUsage(a2, b10) {
+  return a2.inputTokens === b10.inputTokens && a2.cacheCreationInputTokens === b10.cacheCreationInputTokens && a2.cacheReadInputTokens === b10.cacheReadInputTokens && a2.contextTokens === b10.contextTokens;
+}
+function buildUsageInfo(promptUsage, options) {
+  var _a3;
+  const model = (_a3 = options == null ? void 0 : options.intendedModel) != null ? _a3 : "sonnet";
+  const contextWindow = getContextWindowSize(model, options == null ? void 0 : options.customContextLimits);
+  const percentage = Math.min(100, Math.max(0, Math.round(promptUsage.contextTokens / contextWindow * 100)));
+  return {
+    model,
+    inputTokens: promptUsage.inputTokens,
+    cacheCreationInputTokens: promptUsage.cacheCreationInputTokens,
+    cacheReadInputTokens: promptUsage.cacheReadInputTokens,
+    contextWindow,
+    contextTokens: promptUsage.contextTokens,
+    percentage
+  };
+}
+function createTransformUsageState() {
+  let promptUsage = { ...EMPTY_PROMPT_USAGE };
+  let lastEmittedPromptUsage = null;
+  return {
+    clear() {
+      promptUsage = { ...EMPTY_PROMPT_USAGE };
+      lastEmittedPromptUsage = null;
+    },
+    mergePromptUsage(usage) {
+      promptUsage = mergePromptUsage(promptUsage, usage);
+      return promptUsage;
+    },
+    getPromptUsage() {
+      return { ...promptUsage };
+    },
+    hasEmitted(nextPromptUsage) {
+      return lastEmittedPromptUsage !== null && samePromptUsage(lastEmittedPromptUsage, nextPromptUsage);
+    },
+    markEmitted(nextPromptUsage) {
+      lastEmittedPromptUsage = { ...nextPromptUsage };
+    }
+  };
+}
+function maybeEmitUsageFromPromptUsage(promptUsage, options, behavior = {}) {
+  var _a3, _b2;
+  if (promptUsage.contextTokens <= 0) {
+    return behavior.emitZeroUsage ? { type: "usage", usage: buildUsageInfo(promptUsage, options) } : null;
+  }
+  if ((_a3 = options == null ? void 0 : options.usageState) == null ? void 0 : _a3.hasEmitted(promptUsage)) {
+    return null;
+  }
+  (_b2 = options == null ? void 0 : options.usageState) == null ? void 0 : _b2.markEmitted(promptUsage);
+  return { type: "usage", usage: buildUsageInfo(promptUsage, options) };
+}
 function* transformSDKMessage(message, options) {
-  var _a3, _b2, _c, _d2, _e, _f, _g, _h, _i, _j2, _k, _l, _m, _n, _o, _p2, _q, _r, _s, _t, _u, _v, _w;
+  var _a3, _b2, _c, _d2, _e, _f, _g, _h, _i, _j2, _k, _l, _m, _n, _o, _p2, _q, _r, _s, _t, _u;
   switch (message.type) {
     case "system":
       if (message.subtype === "init" && message.session_id) {
@@ -60203,28 +60360,20 @@ function* transformSDKMessage(message, options) {
       (_c = options == null ? void 0 : options.streamState) == null ? void 0 : _c.clearParent(parentToolUseId);
       const usage = (_d2 = message.message) == null ? void 0 : _d2.usage;
       if (parentToolUseId === null && usage) {
-        const inputTokens = (_e = usage.input_tokens) != null ? _e : 0;
-        const cacheCreationInputTokens = (_f = usage.cache_creation_input_tokens) != null ? _f : 0;
-        const cacheReadInputTokens = (_g = usage.cache_read_input_tokens) != null ? _g : 0;
-        const contextTokens = inputTokens + cacheCreationInputTokens + cacheReadInputTokens;
-        const model = (_h = options == null ? void 0 : options.intendedModel) != null ? _h : "sonnet";
-        const contextWindow = getContextWindowSize(model, options == null ? void 0 : options.customContextLimits);
-        const percentage = Math.min(100, Math.max(0, Math.round(contextTokens / contextWindow * 100)));
-        const usageInfo = {
-          model,
-          inputTokens,
-          cacheCreationInputTokens,
-          cacheReadInputTokens,
-          contextWindow,
-          contextTokens,
-          percentage
-        };
-        yield { type: "usage", usage: usageInfo };
+        if (options == null ? void 0 : options.usageState) {
+          const promptUsage = options.usageState.mergePromptUsage(usage);
+          const usageChunk = maybeEmitUsageFromPromptUsage(promptUsage, options, { emitZeroUsage: true });
+          if (usageChunk) {
+            yield usageChunk;
+          }
+        } else {
+          yield { type: "usage", usage: buildUsageInfo(toPromptUsageSnapshot(usage), options) };
+        }
       }
       break;
     }
     case "user": {
-      const parentToolUseId = (_i = message.parent_tool_use_id) != null ? _i : null;
+      const parentToolUseId = (_e = message.parent_tool_use_id) != null ? _e : null;
       if (isBlockedMessage(message)) {
         yield {
           type: "notice",
@@ -60234,7 +60383,7 @@ function* transformSDKMessage(message, options) {
         break;
       }
       if (message.tool_use_result !== void 0 && message.parent_tool_use_id) {
-        const toolUseResult = (_j2 = message.tool_use_result) != null ? _j2 : void 0;
+        const toolUseResult = (_f = message.tool_use_result) != null ? _f : void 0;
         yield emitToolResult(parentToolUseId, {
           id: message.parent_tool_use_id,
           content: extractToolResultContent(message.tool_use_result, { fallbackIndent: 2 }),
@@ -60242,10 +60391,10 @@ function* transformSDKMessage(message, options) {
           ...toolUseResult !== void 0 ? { toolUseResult } : {}
         });
       }
-      if (((_k = message.message) == null ? void 0 : _k.content) && Array.isArray(message.message.content)) {
+      if (((_g = message.message) == null ? void 0 : _g.content) && Array.isArray(message.message.content)) {
         for (const block of message.message.content) {
           if (block.type === "tool_result") {
-            const toolUseResult = (_l = message.tool_use_result) != null ? _l : void 0;
+            const toolUseResult = (_h = message.tool_use_result) != null ? _h : void 0;
             yield emitToolResult(parentToolUseId, {
               id: block.tool_use_id || message.parent_tool_use_id || "",
               content: extractToolResultContent(block.content, { fallbackIndent: 2 }),
@@ -60258,29 +60407,59 @@ function* transformSDKMessage(message, options) {
       break;
     }
     case "stream_event": {
-      const parentToolUseId = (_m = message.parent_tool_use_id) != null ? _m : null;
+      const parentToolUseId = (_i = message.parent_tool_use_id) != null ? _i : null;
       const event = message.event;
-      if ((event == null ? void 0 : event.type) === "content_block_start" && ((_n = event.content_block) == null ? void 0 : _n.type) === "tool_use") {
+      if (parentToolUseId === null && (event == null ? void 0 : event.type) === "message_start") {
+        (_j2 = options == null ? void 0 : options.usageState) == null ? void 0 : _j2.clear();
+        const usage = (_k = event.message) == null ? void 0 : _k.usage;
+        if (usage && hasPromptUsageField(usage)) {
+          if (options == null ? void 0 : options.usageState) {
+            options.usageState.mergePromptUsage(usage);
+          } else {
+            const usageChunk = maybeEmitUsageFromPromptUsage(toPromptUsageSnapshot(usage), options);
+            if (usageChunk) {
+              yield usageChunk;
+            }
+          }
+        }
+      } else if (parentToolUseId === null && (event == null ? void 0 : event.type) === "message_delta" && hasPromptUsageField(event.usage)) {
+        if (options == null ? void 0 : options.usageState) {
+          const previousPromptUsage = options.usageState.getPromptUsage();
+          const promptUsage = options.usageState.mergePromptUsage(event.usage);
+          const shouldEmitDeltaUsage = previousPromptUsage.contextTokens <= 0 || options.usageState.hasEmitted(previousPromptUsage);
+          if (shouldEmitDeltaUsage) {
+            const usageChunk = maybeEmitUsageFromPromptUsage(promptUsage, options);
+            if (usageChunk) {
+              yield usageChunk;
+            }
+          }
+        } else {
+          const usageChunk = maybeEmitUsageFromPromptUsage(toPromptUsageSnapshot(event.usage), options);
+          if (usageChunk) {
+            yield usageChunk;
+          }
+        }
+      } else if ((event == null ? void 0 : event.type) === "content_block_start" && ((_l = event.content_block) == null ? void 0 : _l.type) === "tool_use") {
         const toolUseFields = {
           id: event.content_block.id || `tool-${Date.now()}`,
           name: event.content_block.name || "unknown",
           input: getToolInput(event.content_block.input)
         };
         if (typeof event.index === "number") {
-          (_o = options == null ? void 0 : options.streamState) == null ? void 0 : _o.registerToolUse(parentToolUseId, event.index, toolUseFields);
+          (_m = options == null ? void 0 : options.streamState) == null ? void 0 : _m.registerToolUse(parentToolUseId, event.index, toolUseFields);
         }
         yield emitToolUse(parentToolUseId, toolUseFields);
-      } else if ((event == null ? void 0 : event.type) === "content_block_start" && ((_p2 = event.content_block) == null ? void 0 : _p2.type) === "thinking") {
+      } else if ((event == null ? void 0 : event.type) === "content_block_start" && ((_n = event.content_block) == null ? void 0 : _n.type) === "thinking") {
         if (parentToolUseId === null && event.content_block.thinking) {
           yield { type: "thinking", content: event.content_block.thinking };
         }
-      } else if ((event == null ? void 0 : event.type) === "content_block_start" && ((_q = event.content_block) == null ? void 0 : _q.type) === "text") {
+      } else if ((event == null ? void 0 : event.type) === "content_block_start" && ((_o = event.content_block) == null ? void 0 : _o.type) === "text") {
         if (parentToolUseId === null && event.content_block.text) {
           yield { type: "text", content: event.content_block.text };
         }
       } else if ((event == null ? void 0 : event.type) === "content_block_delta") {
-        if (((_r = event.delta) == null ? void 0 : _r.type) === "input_json_delta" && typeof event.index === "number") {
-          const toolUseFields = (_s = options == null ? void 0 : options.streamState) == null ? void 0 : _s.applyInputJsonDelta(
+        if (((_p2 = event.delta) == null ? void 0 : _p2.type) === "input_json_delta" && typeof event.index === "number") {
+          const toolUseFields = (_q = options == null ? void 0 : options.streamState) == null ? void 0 : _q.applyInputJsonDelta(
             parentToolUseId,
             event.index,
             event.delta.partial_json
@@ -60288,18 +60467,25 @@ function* transformSDKMessage(message, options) {
           if (toolUseFields) {
             yield emitToolUse(parentToolUseId, toolUseFields);
           }
-        } else if (parentToolUseId === null && ((_t = event.delta) == null ? void 0 : _t.type) === "thinking_delta" && event.delta.thinking) {
+        } else if (parentToolUseId === null && ((_r = event.delta) == null ? void 0 : _r.type) === "thinking_delta" && event.delta.thinking) {
           yield { type: "thinking", content: event.delta.thinking };
-        } else if (parentToolUseId === null && ((_u = event.delta) == null ? void 0 : _u.type) === "text_delta" && event.delta.text) {
+        } else if (parentToolUseId === null && ((_s = event.delta) == null ? void 0 : _s.type) === "text_delta" && event.delta.text) {
           yield { type: "text", content: event.delta.text };
         }
       } else if ((event == null ? void 0 : event.type) === "content_block_stop" && typeof event.index === "number") {
-        (_v = options == null ? void 0 : options.streamState) == null ? void 0 : _v.clearContentBlock(parentToolUseId, event.index);
+        (_t = options == null ? void 0 : options.streamState) == null ? void 0 : _t.clearContentBlock(parentToolUseId, event.index);
       }
       break;
     }
     case "result":
-      (_w = options == null ? void 0 : options.streamState) == null ? void 0 : _w.clearAll();
+      (_u = options == null ? void 0 : options.streamState) == null ? void 0 : _u.clearAll();
+      if (options == null ? void 0 : options.usageState) {
+        const usageChunk = maybeEmitUsageFromPromptUsage(options.usageState.getPromptUsage(), options);
+        if (usageChunk) {
+          yield usageChunk;
+        }
+        options.usageState.clear();
+      }
       if (isResultError(message)) {
         const content = message.errors.filter((e2) => e2.trim().length > 0).join("\n");
         yield {
@@ -60554,7 +60740,9 @@ async function applyClaudeDynamicUpdates(deps, queryOptions, restartOptions, all
   if (configBeforePermissionUpdate) {
     const sdkMode = deps.resolveSDKPermissionMode(permissionMode);
     const currentSdkMode = (_e = configBeforePermissionUpdate.sdkPermissionMode) != null ? _e : null;
-    if (sdkMode !== currentSdkMode) {
+    const requiresAutoModeRestart = sdkMode === "auto" && !configBeforePermissionUpdate.enableAutoMode;
+    if (requiresAutoModeRestart) {
+    } else if (sdkMode !== currentSdkMode) {
       try {
         await persistentQuery.setPermissionMode(sdkMode);
         deps.mutateCurrentConfig((config2) => {
@@ -61004,6 +61192,7 @@ var QueryOptionsBuilder = class _QueryOptionsBuilder {
     if (currentConfig.settingSources !== newConfig.settingSources) return true;
     if (currentConfig.claudeCliPath !== newConfig.claudeCliPath) return true;
     if (currentConfig.enableChrome !== newConfig.enableChrome) return true;
+    if (currentConfig.enableAutoMode !== newConfig.enableAutoMode) return true;
     if (_QueryOptionsBuilder.pathsChanged(currentConfig.externalContextPaths, newConfig.externalContextPaths)) {
       return true;
     }
@@ -61037,7 +61226,8 @@ var QueryOptionsBuilder = class _QueryOptionsBuilder {
       externalContextPaths: externalContextPaths || [],
       settingSources: claudeSettings.loadUserSettings ? "user,project" : "project",
       claudeCliPath: ctx.cliPath,
-      enableChrome: claudeSettings.enableChrome
+      enableChrome: claudeSettings.enableChrome,
+      enableAutoMode: claudeSettings.safeMode === "auto"
     };
   }
   static buildPersistentQueryOptions(ctx) {
@@ -61129,8 +61319,11 @@ var QueryOptionsBuilder = class _QueryOptionsBuilder {
       claudeSafeMode
     );
   }
-  static applyExtraArgs(options, enableChrome) {
-    if (enableChrome) {
+  static applyExtraArgs(options, settings11) {
+    if (settings11.safeMode === "auto") {
+      options.extraArgs = { ...options.extraArgs, "enable-auto-mode": null };
+    }
+    if (settings11.enableChrome) {
       options.extraArgs = { ...options.extraArgs, chrome: null };
     }
   }
@@ -61156,7 +61349,7 @@ var QueryOptionsBuilder = class _QueryOptionsBuilder {
       },
       includePartialMessages: true
     };
-    _QueryOptionsBuilder.applyExtraArgs(options, claudeSettings.enableChrome);
+    _QueryOptionsBuilder.applyExtraArgs(options, claudeSettings);
     options.spawnClaudeCodeProcess = createCustomSpawnFunction(ctx.enhancedPath);
     return { options, claudeSettings };
   }
@@ -61513,6 +61706,7 @@ var ClaudianService = class {
     this.turnMetadata = {};
     this.bufferedUsageChunk = null;
     this.streamTransformState = createTransformStreamState();
+    this.usageTransformState = createTransformUsageState();
     var _a3, _b2, _c, _d2, _e, _f;
     this.plugin = plugin;
     const legacyPlugin = this.getLegacyPluginDeps();
@@ -61566,6 +61760,7 @@ var ClaudianService = class {
   resetTurnMetadata() {
     this.turnMetadata = {};
     this.bufferedUsageChunk = null;
+    this.usageTransformState.clear();
   }
   recordTurnMetadata(update) {
     this.turnMetadata = {
@@ -61821,6 +62016,7 @@ var ClaudianService = class {
     this.currentConfig = null;
     this.cachedSdkCommands = [];
     this.streamTransformState.clearAll();
+    this.usageTransformState.clear();
     this._autoTurnBuffer = [];
     this._autoTurnSawStreamText = false;
     this._autoTurnSawStreamThinking = false;
@@ -61976,12 +62172,13 @@ var ClaudianService = class {
     })();
   }
   /** @param modelOverride - Optional model override for cold-start queries */
-  getTransformOptions(modelOverride, streamState = this.streamTransformState) {
+  getTransformOptions(modelOverride, streamState = this.streamTransformState, usageState = this.usageTransformState) {
     const settings11 = this.getScopedSettings();
     return {
       intendedModel: modelOverride != null ? modelOverride : settings11.model,
       customContextLimits: settings11.customContextLimits,
-      streamState
+      streamState,
+      usageState
     };
   }
   /**
@@ -62489,6 +62686,7 @@ var ClaudianService = class {
     let sawStreamText = false;
     let sawStreamThinking = false;
     const streamState = createTransformStreamState();
+    const usageState = createTransformUsageState();
     try {
       const response = E$$({ prompt: queryPrompt, options });
       this.recordTurnMetadata({ wasSent: true });
@@ -62498,7 +62696,7 @@ var ClaudianService = class {
           await response.interrupt();
           break;
         }
-        for (const event of transformSDKMessage(message, this.getTransformOptions(selectedModel, streamState))) {
+        for (const event of transformSDKMessage(message, this.getTransformOptions(selectedModel, streamState, usageState))) {
           this.noteVisibleStreamContent(message, event, {
             onText: () => {
               sawStreamText = true;
@@ -65005,38 +65203,6 @@ var import_obsidian17 = require("obsidian");
 init_env();
 init_path();
 
-// src/providers/codex/types/models.ts
-var DEFAULT_CODEX_MINI_MODEL = "gpt-5.4-mini";
-var DEFAULT_CODEX_PRIMARY_MODEL = "gpt-5.5";
-var FAST_TIER_CODEX_MODEL = DEFAULT_CODEX_PRIMARY_MODEL;
-function formatCodexModelSuffix(suffix) {
-  return suffix.split("-").filter(Boolean).map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase()).join(" ");
-}
-function formatCodexModelLabel(model) {
-  const match = model.match(/^gpt-([^-]+)(?:-(.+))?$/i);
-  if (!match) {
-    return model;
-  }
-  const [, version2, suffix] = match;
-  return `GPT-${version2}${suffix ? ` ${formatCodexModelSuffix(suffix)}` : ""}`;
-}
-function createCodexModelOption(model, description) {
-  return {
-    value: model,
-    label: formatCodexModelLabel(model),
-    description
-  };
-}
-var DEFAULT_CODEX_MINI_MODEL_LABEL = formatCodexModelLabel(DEFAULT_CODEX_MINI_MODEL);
-var DEFAULT_CODEX_PRIMARY_MODEL_LABEL = formatCodexModelLabel(DEFAULT_CODEX_PRIMARY_MODEL);
-var FAST_TIER_CODEX_MODEL_LABEL = formatCodexModelLabel(FAST_TIER_CODEX_MODEL);
-var FAST_TIER_CODEX_DESCRIPTION = `Enable ${FAST_TIER_CODEX_MODEL_LABEL} fast mode for this conversation. Faster responses use more credits.`;
-var DEFAULT_CODEX_MODELS = [
-  createCodexModelOption(DEFAULT_CODEX_MINI_MODEL, "Fast"),
-  createCodexModelOption(DEFAULT_CODEX_PRIMARY_MODEL, "Latest")
-];
-var DEFAULT_CODEX_MODEL_SET = new Set(DEFAULT_CODEX_MODELS.map((model) => model.value));
-
 // src/providers/codex/modelOptions.ts
 function createCustomCodexModelOption(modelId, description) {
   return {
@@ -65841,7 +66007,7 @@ var codexSettingsTabRenderer = {
         await context.plugin.saveSettings();
         context.refreshModelSelectors();
       };
-      text.setPlaceholder("gpt-5.6-preview\no4-mini\nmy-custom-model").setValue(codexSettings.customModels).onChange((value) => {
+      text.setPlaceholder("gpt-5.4\ngpt-5.3-codex-spark").setValue(codexSettings.customModels).onChange((value) => {
         pendingCustomModels = value;
       });
       text.inputEl.rows = 4;
@@ -66335,7 +66501,11 @@ var codexChatUIConfig = {
   isDefaultModel(model) {
     return DEFAULT_CODEX_MODEL_SET.has(model);
   },
-  applyModelDefaults() {
+  applyModelDefaults(model, settings11) {
+    if (!settings11 || typeof settings11 !== "object") {
+      return;
+    }
+    applyCodexModelDefaults(model, settings11);
   },
   normalizeModelVariant(model, settings11) {
     if (getCodexModelOptions(settings11).some((option) => option.value === model)) {
@@ -68815,7 +68985,7 @@ function mapEventMsgEvent(payload, sessionId, state) {
       if (!state.emittedUsageByTurn.has(turnId)) {
         const pending = state.pendingUsageByTurn.get(turnId);
         if (pending) {
-          const usage = buildUsageInfo(
+          const usage = buildUsageInfo2(
             pending.contextTokens,
             pending.contextWindow,
             pending.contextWindowIsAuthoritative
@@ -69028,7 +69198,7 @@ function mapResponseItemEvent(event, sessionId, lineIndex, state) {
       return [];
   }
 }
-function buildUsageInfo(contextTokens, contextWindow, contextWindowIsAuthoritative) {
+function buildUsageInfo2(contextTokens, contextWindow, contextWindowIsAuthoritative) {
   return {
     inputTokens: contextTokens,
     cacheCreationInputTokens: 0,
@@ -69642,7 +69812,7 @@ User: ${turn.prompt}`
             developer_instructions: null
           }
         } : void 0;
-        const summary = getCodexProviderSettings(providerSettings).reasoningSummary;
+        const summary = getEffectiveCodexReasoningSummary(providerSettings, resolvedModel);
         const serviceTier = resolveCodexServiceTier(providerSettings.serviceTier, resolvedModel);
         (_p2 = this.notificationRouter) == null ? void 0 : _p2.beginTurn({ isPlanTurn: isPlanMode });
         const turnResult = await this.transport.request("turn/start", {
@@ -79312,7 +79482,7 @@ function renderAgentLifecycleExpanded(container, result) {
   renderLinesExpanded(container, result, 20);
 }
 function renderExpandedContent(container, toolName, result, input = {}) {
-  if (!result && toolName !== TOOL_WEB_SEARCH) {
+  if (!result && toolName !== TOOL_WEB_SEARCH && toolName !== TOOL_BASH) {
     container.createDiv({ cls: "claudian-tool-empty", text: "No result" });
     return;
   }
@@ -79323,6 +79493,8 @@ function renderExpandedContent(container, toolName, result, input = {}) {
   }
   switch (toolName) {
     case TOOL_BASH:
+      renderBashContent(container, input, resolvedResult);
+      break;
     case TOOL_WRITE_STDIN:
       renderLinesExpanded(container, resolvedResult, 20);
       break;
@@ -79412,6 +79584,9 @@ function isBlockedToolResult(content, isError) {
 }
 function createToolElementStructure(parentEl, toolCall) {
   const toolEl = parentEl.createDiv({ cls: "claudian-tool-call" });
+  if (toolCall.name === TOOL_BASH) {
+    toolEl.addClass("claudian-tool-call-bash");
+  }
   const header = toolEl.createDiv({ cls: "claudian-tool-header" });
   header.setAttribute("tabindex", "0");
   header.setAttribute("role", "button");
@@ -79513,6 +79688,20 @@ function contentFallback(container, text) {
   const resultText = resultRow.createSpan({ cls: "claudian-tool-result-text" });
   resultText.setText(text);
 }
+function renderBashContent(container, input, result, initialText) {
+  const command = input.command || "";
+  if (command) {
+    const cmdEl = container.createDiv({ cls: "claudian-tool-bash-command" });
+    cmdEl.setText(`$ ${command}`);
+  }
+  if (initialText) {
+    contentFallback(container, initialText);
+  } else if (result) {
+    renderLinesExpanded(container, result, 20);
+  } else {
+    container.createDiv({ cls: "claudian-tool-empty", text: "No result" });
+  }
+}
 function createCurrentTaskPreview(header, input) {
   const currentTaskEl = header.createSpan({ cls: "claudian-tool-current" });
   const currentTask = getCurrentTask(input);
@@ -79533,6 +79722,7 @@ function createTodoToggleHandler(currentTaskEl, statusEl, onExpandChange) {
   };
 }
 function renderToolContent(content, toolCall, initialText) {
+  var _a3;
   if (toolCall.name === TOOL_TODO_WRITE) {
     content.addClass("claudian-tool-content-todo");
     renderTodoWriteResult(content, toolCall.input);
@@ -79543,6 +79733,8 @@ function renderToolContent(content, toolCall, initialText) {
     } else if (!renderAskUserQuestionResult(content, toolCall)) {
       renderAskUserQuestionFallback(content, toolCall);
     }
+  } else if (toolCall.name === TOOL_BASH) {
+    renderBashContent(content, toolCall.input, (_a3 = toolCall.result) != null ? _a3 : "", initialText);
   } else if (initialText) {
     contentFallback(content, initialText);
   } else {

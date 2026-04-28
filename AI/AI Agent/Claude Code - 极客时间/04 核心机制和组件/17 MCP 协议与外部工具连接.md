@@ -48,3 +48,62 @@ MCP 发布后，迅速获得了行业认可：
 
 MCP 采用经典的客户端 - 服务器架构。Claude Code 充当 MCP Client，负责发现和调用工具；MCP Server 则暴露工具和资源，作为外部服务的代理。两者之间通过 JSON-RPC 2.0 协议通信。
 ![](assets/17%20MCP%20协议与外部工具连接/file-20260428141445713.png)
+这个架构的关键组件如下表所示。
+![](assets/17%20MCP%20协议与外部工具连接/file-20260428143021906.png)
+MCP 复用了  [Language Server Protocol (LSP)](https://en.wikipedia.org/wiki/Language_Server_Protocol)  的消息流思想。如果你用过 VS Code，你已经间接体验过这种架构——编辑器的智能提示、跳转定义等功能，都是通过 LSP 与语言服务器通信实现的。MCP 做了同样的事情，只不过它服务的不是代码编辑器，而是 AI Agent。
+
+MCP Server 并不只是简单地“暴露一个函数”。它可以向 Client 提供三种不同类型的能力。
+![](assets/17%20MCP%20协议与外部工具连接/file-20260428143144239.png)
+Tools 是最常用的能力类型——它让 Claude 能够“做事情“。Resources 提供只读数据，让 Claude 能够“看到东西”而不仅仅依赖你粘贴的文本。Prompts 则是一种便捷机制，让服务器预定义好特定场景的交互模板。
+
+Claude Code 会在启动时自动发现所有配置的 MCP Server 及其提供的能力。当你说“帮我查一下数据库里的用户数量”时，Claude 会自动找到数据库 MCP Server，调用对应的查询工具，解析结果并返回给你。整个过程对用户完全透明。
+
+# MCP 的三种传输方式
+
+MCP 支持三种传输方式，适用于不同场景。
+
+## Stdio 传输（本地进程）
+
+Stdio 传输（本地进程）是最简单的方式。MCP Server 作为本地子进程启动，通过标准输入（stdin）接收请求，通过标准输出（stdout）返回响应。零网络开销、零配置复杂度，适合本地工具和开发测试：
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "/home/user/projects"]
+    }
+  }
+}
+```
+
+## HTTP 传输（推荐用于远程）
+
+当 MCP Server 运行在远程服务器上时的推荐方式。通过标准 HTTP 请求 / 响应通信，支持 TLS 加密和 Bearer Token 认证。GitHub、Notion、Sentry 等云服务通常直接提供 HTTP 类型的 MCP 端点：
+```json
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+## SSE 传输（Server-Sent Events）
+
+基于 HTTP 的单向推送技术，建立持久连接，服务器可以主动向客户端推送数据。适合实时监控和流式数据场景。在实践中使用较少，大多数场景用 stdio 或 HTTP 就够了。
+
+这几种方式怎么选呢？原则是，**本地用 stdio，远程用 HTTP，实时用 SSE**。如果你拿不定主意，先试 stdio（本地服务器）或 HTTP（远程服务），这两个覆盖了 95% 的场景。
+![](assets/17%20MCP%20协议与外部工具连接/file-20260428143709994.png)
+![](assets/17%20MCP%20协议与外部工具连接/file-20260428143734787.png)
+
+# MCP 的配置与管理
+
+MCP 配置可以放在多个位置，每个位置的作用域和可见性不同。
+![](assets/17%20MCP%20协议与外部工具连接/file-20260428143823803.png)
+
