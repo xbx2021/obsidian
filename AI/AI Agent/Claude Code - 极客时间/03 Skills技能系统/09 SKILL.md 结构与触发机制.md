@@ -99,6 +99,7 @@ Claude 在加载 code-review Skill 时，所做的事情，本质上是同一个
 ![](assets/09%20SKILL.md%20结构与触发机制/file-20260427143909009.png)
 
 ## 权限规则
+
 设有  `disable-model-invocation: true`  的 Skill，其 description **不会加载到上下文**——Claude 完全看不到它，只有用户  /name  才能触发。
 
 可以采用三种方式来控制 Claude 对 Skills 的访问。
