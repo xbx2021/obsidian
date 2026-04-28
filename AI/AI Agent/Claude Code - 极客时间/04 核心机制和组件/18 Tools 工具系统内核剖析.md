@@ -318,3 +318,11 @@ model: sonnet
 回顾一下 Tools 与其他扩展机制的关系。
 ![](assets/18%20Tools%20工具系统内核剖析/file-20260428172459617.png)
 ![](assets/18%20Tools%20工具系统内核剖析/file-20260428173156950.png)
+这种分层设计让你可以在不同粒度上精确控制 Claude 的能力边界。所有你在前面学过的扩展机制 SubAgents、Skills、Commands、Hooks、MCP，都建立在 Tools 基础上。理解了工具系统，就理解了整座大厦的地基。
+
+# 小结
+
+这一讲我们像庖丁解牛般，把 Claude Code 的工具系统彻底拆开来看了看。
+
+**Agentic Loop**  是 Claude Code 的工作核心：收集上下文 → 采取行动 → 验证结果，循环往复。工具是行动的载体，没有工具的 Claude 只能输出文本。Claude Code 作为 Agentic Harness，把模型和工具连接起来。
+
