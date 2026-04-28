@@ -168,3 +168,11 @@ claude mcp get github
 # 移除服务器
 claude mcp remove github
 ```
+
+
+# 实战：连接主流 MCP 服务
+
+MCP 的生态已经非常成熟，从官方基础服务到第三方热门服务，覆盖了开发者日常所需的各个场景。
+
+Anthropic 维护了一套[官方 MCP 服务器集合](https://github.com/modelcontextprotocol/servers)，覆盖最常见的开发需求。这些服务器经过官方测试和维护，是入门 MCP 的最佳起点。
+
