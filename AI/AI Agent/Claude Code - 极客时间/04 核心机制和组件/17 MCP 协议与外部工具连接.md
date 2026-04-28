@@ -605,5 +605,22 @@ MCP 的强大能力也带来了安全风险。它本质上是在给 AI Agent 开
 
 2. **限制权限范围**——遵循最小权限原则，只给必要的目录和资源访问：
 ```json
-
+{
+  "mcpServers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-filesystem",
+        "/safe/directory/only"
+      ]
+    }
+  }
+}
 ```
+
+3. **使用只读凭证**——对于数据库等关键系统，永远不要给 MCP Server 写权限——除非你明确需要 Claude 修改数据。 
+
+4. **保护敏感凭证**——绝对不要在配置文件中硬编码 Token。使用环境变量引用，将敏感值存在不提交到 git 的文件中。
+
+5. **审计 MCP 服务器代码**——对于开源服务器，在使用前检查其代码：它请求哪些权限？它如何处理用户数据？花十分钟审计代码，可能帮你避免一次严重的安全事故。
