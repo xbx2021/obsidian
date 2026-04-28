@@ -647,6 +647,7 @@ claude --debug
 MCP 工具可能产生大量输出。因此在 Token 的控制方面，Claude Code 对 MCP 输出提供了两级保护。
 ![](assets/17%20MCP%20协议与外部工具连接/file-20260428160458897.png)
 如果需要处理大量数据，可以通过环境变量调整上限。但更好的做法是在 MCP Server 端做分页或摘要：
-```
+```powershell
 export MAX_MCP_OUTPUT_TOKENS=50000
 ```
+
