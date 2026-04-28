@@ -345,4 +345,179 @@ Claude 输出如下
 - 平均客单价：¥370.21
 ```
 
+## 整合MCP
 
+把上面几个服务组合到一起，你就拥有了一个连接多个系统的完整工具箱。
+
+以下是一个面向全栈开发者的  `.mcp.json`  配置：
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      }
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${NOTION_API_KEY}"
+      }
+    },
+    "database": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@bytebase/dbhub", "--dsn", "${DATABASE_URL}"]
+    },
+    "fetch": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-fetch"]
+    }
+  }
+}
+```
+
+对应的  .env  文件（绝对不要提交到版本控制）：
+```markdown
+GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+DATABASE_URL=postgresql://readonly:password@localhost:5432/mydb
+NOTION_API_KEY=secret_xxxxxxxxxxxxxxxxxxxx
+```
+
+有了这个配置，你在终端里的对话可以跨越多个系统而不中断上下文。你可以一边讨论代码中的 Bug，一边查数据库确认问题，一边创建 GitHub Issue，一边翻 Notion 需求文档——Claude 全程保持上下文，不需要你在五个工具间来回切换。
+![](assets/17%20MCP%20协议与外部工具连接/file-20260428154915376.png)
+![](assets/17%20MCP%20协议与外部工具连接/file-20260428154939233.png)
+
+
+# 创建自定义 MCP 服务器
+
+当现有的 MCP 服务器无法满足需求时，你可以创建自己的。MCP 官方提供了 TypeScript 和 Python 两套 SDK，开发一个基本的 MCP Server 只需要几十行代码。
+
+## TypeScript SDK
+
+TypeScript SDK 是使用最广泛的 MCP 开发工具。安装依赖：
+```bash
+npm install @modelcontextprotocol/sdk zod
+```
+
+下面是一个完整的 Todo 管理 MCP Server（src/index.ts）。它定义了三个工具（添加、列出、完成待办）和一个资源（统计信息）。注意每个工具都有名称、描述、参数 schema 和处理函数——Claude 通过描述来决定何时调用这个工具：
+```typescript
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+
+// 内存存储
+const todos: { id: string; text: string; done: boolean }[] = [];
+
+// 创建 MCP 服务器
+const server = new McpServer({
+  name: "my-todo-server",
+  version: "1.0.0",
+});
+
+// 定义工具：添加待办
+server.tool(
+  "todo_add",
+  "Add a new todo item",
+  {
+    text: z.string().describe("The todo text"),
+  },
+  async ({ text }) => {
+    const todo = {
+      id: Math.random().toString(36).substring(2, 9),
+      text,
+      done: false,
+    };
+    todos.push(todo);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Added todo: ${todo.id} - ${todo.text}`,
+        },
+      ],
+    };
+  }
+);
+
+// 定义工具：列出待办
+server.tool(
+  "todo_list",
+  "List all todo items",
+  {},
+  async () => {
+    const text = todos.length === 0
+      ? "No todos found."
+      : todos
+          .map((t) => `[${t.done ? "x" : " "}] ${t.id}: ${t.text}`)
+          .join("\n");
+
+    return {
+      content: [{ type: "text", text: `Todos:\n${text}` }],
+    };
+  }
+);
+
+// 定义工具：完成待办
+server.tool(
+  "todo_complete",
+  "Mark a todo as completed",
+  {
+    id: z.string().describe("The todo ID"),
+  },
+  async ({ id }) => {
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) {
+      return {
+        content: [{ type: "text", text: `Todo not found: ${id}` }],
+        isError: true,
+      };
+    }
+
+    todo.done = true;
+    return {
+      content: [{ type: "text", text: `Completed: ${todo.text}` }],
+    };
+  }
+);
+
+// 定义资源：统计信息
+server.resource(
+  "stats",
+  "stats://current",
+  async (uri) => {
+    return {
+      contents: [
+        {
+          uri: uri.href,
+          mimeType: "application/json",
+          text: JSON.stringify({
+            total: todos.length,
+            completed: todos.filter((t) => t.done).length,
+            pending: todos.filter((t) => !t.done).length,
+          }, null, 2),
+        },
+      ],
+    };
+  }
+);
+
+// 启动服务器
+async function main() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error("MCP Server started");
+}
+
+main().catch(console.error);
+```
