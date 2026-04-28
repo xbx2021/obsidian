@@ -106,4 +106,25 @@ Stdio 传输（本地进程）是最简单的方式。MCP Server 作为本地子
 
 MCP 配置可以放在多个位置，每个位置的作用域和可见性不同。
 ![](assets/17%20MCP%20协议与外部工具连接/file-20260428143823803.png)
+**团队共享的服务**配置放到  `.mcp.json`——提交到 git，团队成员共享
+**敏感凭证**放到  `.claude/settings.local.json`——不提交，本地保存
+**个人常用服务**放到  `~/.claude/settings.local.json`——跨项目可用
 
+不论使用哪种传输方式，MCP 配置都遵循同一个 JSON 结构。`mcpServers`  是顶层键，每个子键是服务器名称（可自由命名）。`type`  指定传输方式，剩余字段根据传输类型不同——stdio 需要  `command`  和  `args`，HTTP/SSE 需要  `url`  和  `headers`：
+```json
+{
+  "mcpServers": {
+    "server-name": {
+      "type": "stdio | sse | http",
+      "command": "...",        // stdio 专用
+      "args": ["..."],         // stdio 专用
+      "url": "...",            // sse/http 专用
+      "headers": {},           // sse/http 专用
+      "env": {}                // 环境变量
+    }
+  }
+}
+```
+
+Claude Code 里面的 MCP 配置示例
+![](assets/17%20MCP%20协议与外部工具连接/file-20260428144526573.png)
