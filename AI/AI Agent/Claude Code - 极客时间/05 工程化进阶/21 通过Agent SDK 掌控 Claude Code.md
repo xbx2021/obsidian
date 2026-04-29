@@ -478,3 +478,217 @@ async def main():
 ```
 ![](assets/21%20通过Agent%20SDK%20掌控%20Claude%20Code/file-20260429153523832.png)
 
+# 实战项目——代码分析 Agent
+
+理论讲了不少，需要结合实战消化一下，让我们动手构建一个完整的代码分析 Agent。这个项目综合运用了前面讲过的所有知识点：`ClaudeSDKClient`  的创建和配置、权限模式的选择、工具白名单的设置、消息类型的处理、元数据的收集。
+
+我们的项目需求是，构建一个 Agent，能够完成以下任务。
+
+1. 扫描指定目录的代码
+2. 识别项目结构和技术栈
+3. 发现潜在问题
+4. 生成分析报告
+
+这是一个典型的“只读分析”场景——Agent 只需要读取代码，不需要修改任何文件。因此我们使用  `plan`  权限模式，配合  `Read/Grep/Glob`  三个只读工具。这样即使 Agent 的 Prompt 被注入了恶意指令（比如“删除所有文件”），它也没有能力执行。
+
+下面是完整的代码实现。代码分为三个部分：`analyze_codebase()`  函数负责调用 Agent 并收集结果，`format_report()`  函数负责把结果格式化为可读的报告，`main()`  函数负责处理命令行参数和文件输出。
+```python
+#!/usr/bin/env python3
+"""
+代码分析 Agent
+
+使用 Claude Agent SDK 构建一个自动代码分析工具。
+"""
+
+import asyncio
+import sys
+from datetime import datetime
+from pathlib import Path
+
+from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions
+
+
+async def analyze_codebase(directory: str) -> dict:
+    """
+    使用 Claude Agent SDK 分析代码库
+
+    Args:
+        directory: 要分析的目录路径
+
+    Returns:
+        包含分析结果的字典
+    """
+    # 配置 Agent 选项
+    options = ClaudeAgentOptions(
+        # 只允许读取操作，确保安全
+        allowed_tools=["Read", "Grep", "Glob"],
+
+        # 使用只读模式
+        permission_mode="plan",
+
+        # 限制执行轮次
+        max_turns=25,
+
+        # 设置工作目录
+        cwd=directory,
+
+        # 使用 Sonnet 模型（平衡性能和成本）
+        model="sonnet"
+    )
+
+    # 构建分析提示
+    prompt = f"""请分析 {directory} 目录中的代码库。
+
+## 分析任务
+
+1. **项目结构**
+   - 识别主要目录和文件
+   - 确定项目类型（Web 应用、API、CLI 工具等）
+   - 列出使用的技术栈
+
+2. **代码质量**
+   - 检查代码组织是否合理
+   - 识别重复代码
+   - 评估命名规范
+
+3. **潜在问题**
+   - 查找可能的 bug
+   - 识别安全隐患
+   - 发现性能问题
+
+4. **改进建议**
+   - 提出具体的改进方案
+   - 优先级排序
+
+## 输出格式
+
+请以 Markdown 格式输出报告，包含上述所有部分。
+在每个问题后注明文件和行号。
+"""
+
+    # 收集结果
+    result = {
+        "directory": directory,
+        "timestamp": datetime.now().isoformat(),
+        "report": [],
+        "tools_used": [],
+        "metadata": {}
+    }
+
+    try:
+        async with ClaudeSDKClient(options=options) as client:
+            await client.query(prompt)
+
+            async for message in client.receive_response():
+                match message.type:
+                    case "text":
+                        result["report"].append(message.text)
+
+                    case "tool_use":
+                        tool_info = f"{message.tool_name}: {message.tool_input.get('file_path', message.tool_input.get('pattern', ''))}"
+                        result["tools_used"].append(tool_info)
+                        print(f"  [scanning] {tool_info}")
+
+                    case "result":
+                        result["metadata"] = {
+                            "duration_ms": message.duration_ms,
+                            "total_cost_usd": message.total_cost_usd,
+                            "num_turns": message.num_turns,
+                            "input_tokens": message.usage.get("input_tokens", 0),
+                            "output_tokens": message.usage.get("output_tokens", 0)
+                        }
+
+                    case "error":
+                        print(f"  [error] {message.error}")
+                        result["error"] = message.error
+
+    except Exception as e:
+        result["error"] = str(e)
+        print(f"Error during analysis: {e}")
+
+    return result
+
+
+def format_report(result: dict) -> str:
+    """格式化分析报告"""
+    lines = [
+        "=" * 60,
+        "           CODE ANALYSIS REPORT",
+        "=" * 60,
+        "",
+        f"Directory: {result['directory']}",
+        f"Timestamp: {result['timestamp']}",
+        ""
+    ]
+
+    if result.get("error"):
+        lines.extend([
+            "WARNING: Analysis encountered an error:",
+            result["error"],
+            ""
+        ])
+
+    lines.extend([
+        "-" * 60,
+        "                   REPORT",
+        "-" * 60,
+        ""
+    ])
+
+    # 添加报告内容
+    report_text = "\n".join(result.get("report", []))
+    lines.append(report_text)
+
+    # 添加元数据
+    if result.get("metadata"):
+        meta = result["metadata"]
+        lines.extend([
+            "",
+            "-" * 60,
+            "                 STATISTICS",
+            "-" * 60,
+            f"Duration: {meta.get('duration_ms', 0) / 1000:.2f}s",
+            f"Cost: ${meta.get('total_cost_usd', 0):.4f}",
+            f"Turns: {meta.get('num_turns', 0)}",
+            f"Tokens: {meta.get('input_tokens', 0)} in / {meta.get('output_tokens', 0)} out",
+            "=" * 60
+        ])
+
+    return "\n".join(lines)
+
+
+async def main():
+    """主函数"""
+    if len(sys.argv) < 2:
+        print("Usage: python code_analyzer.py <directory>")
+        print("Example: python code_analyzer.py ./src")
+        sys.exit(1)
+
+    directory = sys.argv[1]
+
+    if not Path(directory).is_dir():
+        print(f"Error: {directory} is not a valid directory")
+        sys.exit(1)
+
+    print(f"Analyzing codebase: {directory}")
+    print("   This may take a few minutes...")
+    print()
+
+    # 运行分析
+    result = await analyze_codebase(directory)
+
+    # 输出报告
+    report = format_report(result)
+    print(report)
+
+    # 保存报告到文件
+    report_file = f"analysis-report-{datetime.now().strftime('%Y%m%d-%H%M%S')}.md"
+    with open(report_file, "w") as f:
+        f.write(report)
+
+    print(f"\nReport saved to: {report_file}")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
