@@ -417,3 +417,40 @@ Pre-commit Hook 是另一个常见的 Headless 应用场景。与 CI/CD 流水�
 ## 基本 Pre-commit Hook
 
 下面这个 Hook 脚本在每次  `git commit`  时自动运行。它获取暂存区的文件列表，让 Claude 快速检查有没有明显问题。如果 Claude 回复“OK”，提交正常进行；如果发现问题，提交会被阻止，并显示问题列表。注意  `--max-turns 3`  和  `--allowedTools Read,Grep`  的设置——pre-commit hook 需要快速完成，不能让开发者等太久，所以限制了执行轮次，并且只允许只读操作。
+
+我们创建 ` .git/hooks/pre-commit`。
+```bash
+#!/bin/bash
+# Pre-commit hook: Claude Code 快速审查
+
+# 获取暂存的文件
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+echo "Running Claude Code review on staged files..."
+
+# 运行审查（只读工具，快速模式）
+RESULT=$(claude -p "Quick review these staged files for obvious issues:
+$STAGED_FILES
+
+Focus on: syntax errors, security issues, obvious bugs.
+Reply with 'OK' if no issues, or list the problems." \
+  --output-format text \
+  --max-turns 3 \
+  --allowedTools Read,Grep)
+
+# 检查结果
+if echo "$RESULT" | grep -qi "OK"; then
+  echo "Claude review passed"
+  exit 0
+else
+  echo "Claude found issues:"
+  echo "$RESULT"
+  echo ""
+  echo "Commit blocked. Fix the issues or use --no-verify to skip."
+  exit 1
+fi
+```
