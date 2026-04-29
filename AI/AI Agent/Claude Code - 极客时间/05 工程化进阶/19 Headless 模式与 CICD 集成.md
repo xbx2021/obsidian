@@ -352,3 +352,13 @@ jobs:
               body: comment
             });
 ```
+
+这个工作流有几个值得注意的设计决策。
+
+- `fetch-depth: 0`  确保 checkout 时拉取完整的 git 历史，这样才能正确计算 diff。
+- `concurrency`  配置确保同一个 PR 上不会同时运行多个审查，当开发者快速连续推送多个 commit 时，旧的审查会被取消，只保留最新的。
+- `--allowedTools Read,Grep,Glob`  限制 Claude 只能使用只读工具，确保审查过程不会意外修改任何文件。
+
+
+# 自动修复 Lint 错误
+
