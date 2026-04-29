@@ -458,4 +458,21 @@ paths:
 
 这就像安全不是软件中的一个模块，而是贯穿所有模块的设计原则。这里我也顺便说明一下 Rules 的正确学习路径。
 ![](assets/20%20Rules%20规则系统深度剖析/file-20260429141048198.png)
+每一讲都在从自己的角度教 Rules 的一个切面。这一讲的价值，就是帮你把这些碎片拼成全景图。
+
+# 实用模板
+
+## rules 目录的标准结构：
+```markdown
+.claude/
+├── settings.json          ← 权限规则（团队共享）
+├── settings.local.json    ← 个人权限覆盖（.gitignore）
+└── rules/
+    ├── coding.md          ← 全局编码规范（无 paths）
+    ├── frontend.md        ← 前端规范（paths: src/components/**)
+    ├── backend.md         ← 后端规范（paths: server/**)
+    ├── testing.md         ← 测试规范（paths: **/*.test.*)
+    └── security.md        ← 安全规范（无 paths，全局生效）
+```
+
 
