@@ -365,3 +365,48 @@ jobs:
 除了只读审查，Headless 模式还可以用于自动修复。
 
 下面的工作流展示了一个更激进的用例：当 lint 检查失败时，让 Claude 自动修复错误并提交。这种模式适合风格类的 lint 规则（缩进、分号、import 排序等），对于逻辑类的 lint 规则则需要更谨慎。注意这里没有设置  `--allowedTools`，因为 Claude 需要读写文件来完成修复。
+```yaml
+name: Auto Fix Lint Errors
+
+on:
+  push:
+    branches: [main, develop]
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup
+        run: |
+          npm ci
+          npm install -g @anthropic-ai/claude-code
+
+      - name: Run lint
+        id: lint
+        continue-on-error: true
+        run: npm run lint 2>&1 | tee lint-output.txt
+
+      - name: Fix with Claude
+        if: steps.lint.outcome == 'failure'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          claude -p "Fix the lint errors in lint-output.txt. Make minimal changes." \
+            --max-turns 20
+
+      - name: Commit fixes
+        run: |
+          git config user.name "Claude Bot"
+          git config user.email "claude@bot.local"
+          git add -A
+          git diff --staged --quiet || git commit -m "fix: auto-fix lint errors"
+          git push
+```
+![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429100921683.png)
+
+
