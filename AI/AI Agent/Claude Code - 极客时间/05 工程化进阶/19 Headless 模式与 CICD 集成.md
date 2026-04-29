@@ -23,4 +23,19 @@
 
 Headless 这个词来自“无头浏览器”（Headless Browser）的概念——没有图形界面，但功能完整。同样，Headless 模式下的 Claude Code 没有交互式终端界面，但拥有和交互模式完全相同的代码分析能力、工具调用能力和推理能力。唯一的区别是：**输入变成了一次性的 prompt，输出变成了 stdout 上的文本或 JSON，不再有来回对话**。
 
+启用 Headless 模式的关键是  `-p`（或  `--print`）标志。这个标志的名字很直观，print，意思是“把结果打印出来就行，不要打开交互界面”。理解这一点很重要，因为  `-p`  不只改变了输出方式，更重要的是它改变了 Claude Code 的整个运行模型——**从“持续对话”变成了“单次执行”**。
+```markdown
+# 基本 headless 执行
+claude -p "解释这段代码是做什么的"
+
+# 从 stdin 读取输入
+cat code.py | claude -p "分析这段代码"
+
+# 结合文件内容
+claude -p "找出这个文件中的 Bug" < buggy.js
+```
+
+
+
+
 
