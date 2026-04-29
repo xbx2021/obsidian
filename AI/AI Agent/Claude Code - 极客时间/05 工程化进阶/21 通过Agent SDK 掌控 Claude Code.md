@@ -391,3 +391,31 @@ async def run_agent(prompt: str) -> dict:
 
     return result
 ```
+
+这个模式的好处是，调用方可以直接从  `result["output"]`  获取 Agent 的文本输出，从  `result["tools_used"]`  获取工具调用记录（用于审计），从  `result["metadata"]`  获取成本和性能数据（用于监控）。
+
+### **会话管理**
+
+你让 Agent 分析一个项目的代码结构，分析完之后想让它基于分析结果生成文档。如果没有会话管理，Agent 在第二次调用时完全不记得它之前分析过什么，你得重新传一遍所有上下文。
+
+因此，通过会话管理保持对话上下文，或者恢复之前的会话。这对于长时间运行的任务或需要分阶段完成的工作特别有用。
+
+在同一个  `ClaudeSDKClient`  实例中，你可以进行多轮对话。Agent 会自动记住之前的上下文——它知道自己读过哪些文件、执行过哪些命令、做过哪些分析。每次新的  `query()`  调用都是在之前的上下文基础上继续，而不是从零开始。
+```python
+async with ClaudeSDKClient() as client:
+    # 第一次查询
+    await client.query("创建一个 Python 项目结构")
+    async for msg in client.receive_response():
+        print(msg)
+
+    # 获取会话 ID
+    session_id = client.session_id
+    print(f"Session ID: {session_id}")
+
+    # 继续对话（Agent 记得之前的上下文）
+    await client.query("在项目中添加一个 requirements.txt 文件")
+    async for msg in client.receive_response():
+        print(msg)
+```
+
+有时候你需要在不同的程序运行之间保持对话连续性。比如，你的 Agent 在一次 CI 运行中分析了代码，你想在下一次 CI 运行中让它继续从上次的结论出发。这时候就需要保存  `session_id`，然后在下次启动时通过  `resume`  参数恢复会话。
