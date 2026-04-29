@@ -232,4 +232,52 @@ paths:
 ```
 
 拆完之后，CLAUDE.md 从 600 行变成 80 行，但规范一条都没少——**只是按需加载了**。当 Claude 在改前端组件时，它看到的是 CLAUDE.md + frontend.md + security.md。当它在写测试时，看到的是 CLAUDE.md + testing.md + security.md。精准、高效。
+![](assets/20%20Rules%20规则系统深度剖析/file-20260429134306644.png)
+
+# 权限规则——行为管控的硬约束
+
+指令规则告诉 Claude“你应该怎么做”，权限规则告诉 Claude“你被允许做什么”。
+
+权限规则写在  .claude/settings.json  或  .claude/settings.local.json  中，由 Claude Code 客户端在工具调用前**硬拦截**。Claude 根本看不到这些规则——它只知道某个操作被允许了或被拒绝了。
+
+## 基本结构与评估逻辑
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Read"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(curl *)",
+      "Edit(.env)"
+    ]
+  }
+}
+```
+
+**评估顺序：deny → ask → allow**。  第一个匹配的规则胜出，deny 总是优先。就算你在 allow 里写了  Bash(rm -rf * )，如果 deny 里也有这条，deny 赢。安全规则应该有最高话语权。
+
+## 权限规则覆盖的工具范围
+
+```markdown
+内置工具的权限控制：
+
+  Bash(command pattern)      → 控制 Shell 命令的执行
+  Read(file pattern)         → 控制文件的读取
+  Edit(file pattern)         → 控制文件的编辑
+  Write(file pattern)        → 控制文件的创建
+
+  WebFetch(domain:pattern)   → 控制网页抓取的域名范围
+  WebSearch                  → 控制是否允许网络搜索
+
+  mcp__server__tool          → 控制 MCP 工具的使用
+  Skill(skill-name)          → 控制 Skill 的调用
+  Task(agent-name)           → 控制子代理的调用
+```
+
 
