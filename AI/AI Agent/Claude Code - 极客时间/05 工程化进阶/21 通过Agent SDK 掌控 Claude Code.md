@@ -333,3 +333,61 @@ async for message in client.receive_response():
             print(f"Cost: ${message.total_cost_usd}")
 ```
 
+当任务完成时，你会收到一个  `result`  类型的消息。这是整个 Agent 执行过程的“成绩单”，包含了你在生产环境中最关心的信息：这次调用花了多少钱、用了多少 Token、跑了多少轮、耗时多长。这些数据是你做成本监控和性能优化的基础。
+```json
+{
+    "type": "result",
+    "subtype": "success",
+    "session_id": "abc123",
+    "is_error": False,
+    "num_turns": 5,
+    "duration_ms": 12000,
+    "duration_api_ms": 10000,
+    "total_cost_usd": 0.05,
+    "usage": {
+        "input_tokens": 5000,
+        "output_tokens": 2000
+    },
+    "result": "任务完成..."
+}
+```
+
+在实际项目中，你通常不会只是把消息打印到终端，你需要把它们收集起来，形成结构化的结果，供后续的业务逻辑使用。
+
+下面这个模式是项目中反复验证过的“最佳实践”：把所有消息分类收集到一个字典中，最后返回完整的结构化结果。
+```python
+async def run_agent(prompt: str) -> dict:
+    """运行 Agent 并返回结构化结果"""
+
+    result = {
+        "output": [],
+        "tools_used": [],
+        "metadata": {}
+    }
+
+    async with ClaudeSDKClient(options) as client:
+        await client.query(prompt)
+
+        async for msg in client.receive_response():
+            if msg.type == "text":
+                result["output"].append(msg.text)
+
+            elif msg.type == "tool_use":
+                result["tools_used"].append({
+                    "tool": msg.tool_name,
+                    "input": msg.tool_input
+                })
+
+            elif msg.type == "result":
+                result["metadata"] = {
+                    "session_id": msg.session_id,
+                    "duration_ms": msg.duration_ms,
+                    "cost_usd": msg.total_cost_usd,
+                    "turns": msg.num_turns
+                }
+
+            elif msg.type == "error":
+                result["error"] = msg.error
+
+    return result
+```
