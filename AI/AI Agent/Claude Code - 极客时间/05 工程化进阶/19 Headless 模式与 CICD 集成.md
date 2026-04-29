@@ -19,6 +19,8 @@
 
 然而，软件工程中有大量任务天然不需要实时对话。CI/CD 流水线在每次提交时自动运行，Pre-commit Hook 在提交前自动检查，定时任务在每天凌晨自动生成报告。这些场景需要的是**非交互模式**，也就是 Headless 模式。
 
-> Anthropic 官方文档说：Claude Code 包含 Headless 模式，用于 CI、pre-commit hooks、构建脚本和自动化等非交互式场景。
+> [Anthropic 官方文档](https://code.claude.com/docs/en/headless)说：Claude Code 包含 Headless 模式，用于 CI、pre-commit hooks、构建脚本和自动化等非交互式场景。
+
+Headless 这个词来自“无头浏览器”（Headless Browser）的概念——没有图形界面，但功能完整。同样，Headless 模式下的 Claude Code 没有交互式终端界面，但拥有和交互模式完全相同的代码分析能力、工具调用能力和推理能力。唯一的区别是：**输入变成了一次性的 prompt，输出变成了 stdout 上的文本或 JSON，不再有来回对话**。
 
 
