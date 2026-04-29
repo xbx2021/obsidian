@@ -194,3 +194,28 @@ claude -p "检查是否有安全漏洞" --output-format json | \
 > Claude Code 的批处理（headless 模式）允许你直接从命令行执行 AI 功能，无需使用交互式 UI。通过集成到 CI/CD 流水线和自动化脚本中，你可以高效执行大规模处理任务。
 
 
+下面是一个批量代码审查脚本。它遍历  src  目录下的所有 TypeScript 文件，对每个文件运行 Claude 审查，并将结果保存到独立的报告文件中。注意 ` --max-turns 3`  的设置——对于单文件审查，3 轮通常就足够了，这样既能保证审查质量，又能控制成本和耗时。
+```bash
+#!/bin/bash
+# batch-review.sh - 批量代码审查
+
+RESULTS_DIR="review-results"
+mkdir -p "$RESULTS_DIR"
+
+# 遍历所有源文件
+find src -name "*.ts" | while IFS= read -r file; do
+  echo "Reviewing: $file"
+
+  OUTPUT_FILE="$RESULTS_DIR/$(basename "$file").review.md"
+
+  claude -p "Review $file for bugs and best practices. Be concise." \
+    --output-format text \
+    --max-turns 3 \
+    --allowedTools Read > "$OUTPUT_FILE"
+
+  echo "  -> $OUTPUT_FILE"
+done
+
+echo "Reviews complete. Results in $RESULTS_DIR/"
+```
+
