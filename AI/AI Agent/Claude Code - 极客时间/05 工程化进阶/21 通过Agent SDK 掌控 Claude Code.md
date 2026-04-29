@@ -83,3 +83,125 @@ env:
   ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
 
+
+# 两种使用方式
+
+Agent SDK 提供了两种使用方式，适用于不同场景。理解它们的区别是正确使用 SDK 的第一步。你可以把它们类比为 Python 中的  `requests.get()`  和  `requests.Session()`，前者是无状态的一次性调用，后者是有状态的会话管理。
+
+## query() 函数：简洁高效
+
+`query()`  是最简单的方式，适合轻量级用例。它接收一个 Prompt 字符串，返回一个异步迭代器，你可以逐条接收 Agent 产生的消息。整个过程不需要手动管理连接、配置选项或处理会话状态，SDK 帮你搞定一切。
+
+这种设计的好处是显而易见的：当你只想快速验证一个想法、写一个脚本、或者做一次性的分析时，不需要写二十行初始化代码。一个函数调用就够了。
+
+**Python**：
+```python
+from claude_agent_sdk import query
+import asyncio
+
+async def main():
+    # 简单查询
+    async for message in query("解释什么是递归"):
+        if message.type == "text":
+            print(message.text)
+
+asyncio.run(main())
+```
+
+**TypeScript**：
+```typescript
+import { query } from '@anthropic-ai/claude-agent-sdk';
+
+async function main() {
+  for await (const message of query("解释什么是递归")) {
+    if (message.type === 'text') {
+      console.log(message.text);
+    }
+  }
+}
+
+main();
+```
+
+`query()`  的特点是：
+- 一行代码即可调用
+- 自动处理工具调用
+- 循环适合单次、简单的任务
+
+## ClaudeSDKClient 类：完整控制
+
+当你需要更精细的控制时，比如限制 Agent 只能使用特定工具、设置最大执行轮次、管理多轮会话，就需要使用  `ClaudeSDKClient`。它提供了完整的配置能力，让你可以像搭积木一样组合 Agent 的行为。
+
+与开箱即用的`query()`  不同，`ClaudeSDKClient`  要求你显式地创建客户端、配置选项、管理连接生命周期。这种显式性是刻意为之的，在生产环境中，你需要明确知道 Agent 能做什么、不能做什么、在什么条件下停止。隐式的默认值在生产中往往是 Bug 的温床。
+
+**Python：**
+```python
+from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions
+import asyncio
+
+async def main():
+    options = ClaudeAgentOptions(
+        allowed_tools=["Read", "Grep", "Glob"],
+        max_turns=10,
+        permission_mode="plan"  # 只读模式
+    )
+
+    async with ClaudeSDKClient(options=options) as client:
+        await client.query("分析 src/ 目录的代码结构")
+
+        async for message in client.receive_response():
+            if message.type == "text":
+                print(message.text)
+            elif message.type == "tool_use":
+                print(f"Using tool: {message.tool_name}")
+
+asyncio.run(main())
+```
+
+**TypeScript：**
+```typescript
+import { ClaudeSDKClient, ClaudeAgentOptions } from '@anthropic-ai/claude-agent-sdk';
+
+async function main() {
+  const options: ClaudeAgentOptions = {
+    allowedTools: ['Read', 'Grep', 'Glob'],
+    maxTurns: 10,
+    permissionMode: 'plan'
+  };
+
+  const client = new ClaudeSDKClient(options);
+
+  try {
+    await client.connect();
+    await client.query("分析 src/ 目录的代码结构");
+
+    for await (const message of client.receiveResponse()) {
+      if (message.type === 'text') {
+        console.log(message.text);
+      } else if (message.type === 'toolUse') {
+        console.log(`Using: ${message.toolName}`);
+      }
+    }
+  } finally {
+    await client.disconnect();
+  }
+}
+
+main();
+```
+
+`ClaudeSDKClient`的特点是：
+- 完整的配置控制
+- 支持自定义工具
+- 支持 Hooks
+- 支持会话恢复
+
+选择哪种方式取决于你的具体场景。下面这张表可以帮你快速判断。
+![](assets/21%20通过Agent%20SDK%20掌控%20Claude%20Code/file-20260429150620666.png)
+
+一个简单的经验法则是，如果你在终端里用一行命令就能完成的事情，用`query()`；如果你需要在代码里做任何“配置”或“控制”，用  `ClaudeSDKClient`。
+
+在实际项目中，常见的演进路径是先用  `query()`  快速验证想法，然后在功能成型后迁移到  `ClaudeSDKClient`  进行工程化。两种方式的消息格式完全兼容，迁移成本很低。
+
+### **ClaudeAgentOptions 配置详解**
+
