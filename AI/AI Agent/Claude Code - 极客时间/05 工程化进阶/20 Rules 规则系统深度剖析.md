@@ -519,13 +519,13 @@ paths:
 错误 1: 在 rules/* .md 中写权限控制
   ❌ .claude/rules/security.md 里写："禁止执行 rm -rf 命令"
   → Claude 可能遵守，也可能忘记。这是软约束。
-  ✅ 在 settings.json 的 deny 中写：Bash(rm -rf *)
+  ✅ 在 settings.json 的 deny 中写：Bash(rm -rf * )
   → 客户端硬拦截，Claude 连尝试的机会都没有。
 
 错误 2: 在 settings.json 中写编码规范
   ❌ settings.json 无法表达"用 TypeScript 写代码"这样的指令
   → 它只能控制 allow/deny，不能传递知识
-  ✅ 在 CLAUDE.md 或 rules/*.md 中写编码规范
+  ✅ 在 CLAUDE.md 或 rules/* .md 中写编码规范
 
 错误 3: rules 文件之间互相矛盾
   ❌ coding.md 说"缩进用 2 空格"，frontend.md 说"缩进用 4 空格"
@@ -533,7 +533,7 @@ paths:
   ✅ 全局规范放 coding.md，领域规范只写领域特有的
 
 错误 4: paths 写得太宽或太窄
-  ❌ paths: ["**/*"] → 等于没写 paths，不如去掉
+  ❌ paths: ["**/* "] → 等于没写 paths，不如去掉
   ❌ paths: ["src/components/UserProfile.tsx"] → 太窄，基本不会触发
   ✅ paths: ["src/components/**"] → 合理粒度
 
@@ -542,3 +542,4 @@ paths:
   → 子代理看不到主对话的任何记忆文件
   ✅ 把关键规范写进子代理的 Markdown body 或通过 Skills 注入
 ```
+
