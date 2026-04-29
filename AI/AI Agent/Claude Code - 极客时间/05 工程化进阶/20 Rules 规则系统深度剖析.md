@@ -463,6 +463,7 @@ paths:
 # 实用模板
 
 ## rules 目录的标准结构：
+
 ```markdown
 .claude/
 ├── settings.json          ← 权限规则（团队共享）
@@ -475,4 +476,37 @@ paths:
     └── security.md        ← 安全规范（无 paths，全局生效）
 ```
 
+
+## 权限规则的安全基线（适用于大多数团队）：
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(npm run *)",
+      "Bash(pnpm *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(node *)",
+      "Bash(npx *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(* --force)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Read(~/.ssh/*)",
+      "Read(~/.aws/*)"
+    ]
+  }
+}
+```
 
