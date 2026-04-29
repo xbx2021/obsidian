@@ -543,3 +543,17 @@ paths:
   ✅ 把关键规范写进子代理的 Markdown body 或通过 Skills 注入
 ```
 
+
+# 小结
+
+这一讲我们把 Claude Code 中所有的“规则“做了一次全景梳理。
+
+**两种规则，两个世界**，明白两个规则的本质是用对它们的前提。指令规则（`CLAUDE.md`、`.claude/rules/`）是认知约束，注入 System Prompt 让 Claude 知道该怎么做；权限规则（`settings.json permissions`）是行为约束，由客户端硬拦截让 Claude 做不了不该做的事。
+
+**指令规则有两种加载模式**，无 paths 字段的全局加载，有 paths 字段的条件加载。条件加载省 token 又精准，但加载后不会卸载。`CLAUDE.md` 超过 200 行就考虑拆分，超过 500 行必须拆分。3-5 个 rules 文件是最佳规模。
+
+**权限规则重点掌握它的纵深防御设计**，`settings.json deny` → `Hooks PreToolUse` → Skill/Agent `allowed-tools` → `settings.json allow` / 用户审批，四层拦截逐级递进。高层级 deny 不可被低层级覆盖。
+
+**Rules 不是独立组件，是横切关注点**，它渗透在 Memory、Tools、Skills、SubAgents、Hooks 每一讲中。指令规则让 Claude 做对，权限规则让 Claude 做不了错。两者协同，才是完整的规则体系。
+
+到这里，我们已经完整学习了 Claude Code 的所有核心扩展机制——Memory（记忆）、SubAgents（分工）、Skills（领域能力）、Commands（标准流程）、Hooks（安全防护）、MCP（外部连接）、Tools（工具基础）、Rules（行为约束）。所有这些都有一个共同前提：需要人在终端前交互。下一讲，我们将打破这个前提。
