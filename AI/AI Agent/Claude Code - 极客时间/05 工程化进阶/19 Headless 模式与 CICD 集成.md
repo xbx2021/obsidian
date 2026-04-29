@@ -136,3 +136,13 @@ claude -p "分析代码" --output-format stream-json | while IFS= read -r line; 
 done
 ```
 
+
+# Unix 管道集成
+
+Claude Code 的一个独特优势是它可以无缝融入 Unix 管道，成为你工具链中的一环。这不是一个附加功能，而是一种**设计哲学**——**Claude Code 遵循 Unix“小工具、大组合”的传统，通过标准输入输出与其他命令行工具互联互通**。
+
+基本管道用法如  [Anthropic 工程博客](https://code.claude.com/docs/en/best-practices)所述：
+
+> “Claude Code 可以作为 Unix 风格的工具，允许你直接将数据管道到它（如  `cat foo.txt | claude -p "query"`），这对于处理日志或 CSV 特别有用。”
+
+
