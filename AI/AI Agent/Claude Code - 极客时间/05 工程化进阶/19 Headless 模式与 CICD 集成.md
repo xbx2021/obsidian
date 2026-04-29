@@ -838,3 +838,26 @@ claude-review:
     - merge_requests
 ```
 
+## CircleCI
+
+**CircleCI**：CircleCI 使用  `config.yml`，放在 ` .circleci/`  目录下。它的配置结构是 jobs -> steps，与 GitHub Actions 的 jobs -> steps 概念对应。
+```yaml
+version: 2.1
+jobs:
+  review:
+    docker:
+      - image: cimg/node:20.0
+    steps:
+      - checkout
+      - run:
+          name: Install Claude Code
+          command: npm install -g @anthropic-ai/claude-code
+      - run:
+          name: Run Review
+          command: |
+            claude -p "Review this code" --output-format text
+          environment:
+            ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+```
+
+
