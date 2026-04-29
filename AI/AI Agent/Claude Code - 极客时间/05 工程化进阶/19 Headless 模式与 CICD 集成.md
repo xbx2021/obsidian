@@ -825,4 +825,16 @@ concurrency:
 
 ## GitLab CI
 
-GitLab CI：GitLab CI 使用  .gitlab-ci.yml  配置文件，语法与 GitHub Actions 的 YAML 不同但概念相似。注意变量引用方式的差异——GitLab 使用  $VARIABLE_NAME，而不是 GitHub 的  ${{ secrets.VARIABLE_NAME }}。
+**GitLab CI**：GitLab CI 使用 ` .gitlab-ci.yml`  配置文件，语法与 GitHub Actions 的 YAML 不同但概念相似。注意变量引用方式的差异——GitLab 使用  `$VARIABLE_NAME`，而不是 GitHub 的  `${{ secrets.VARIABLE_NAME }}`。
+```yaml
+claude-review:
+  image: node:20
+  script:
+    - npm install -g @anthropic-ai/claude-code
+    - claude -p "Review the changes in this MR" --output-format text
+  variables:
+    ANTHROPIC_API_KEY: $ANTHROPIC_API_KEY
+  only:
+    - merge_requests
+```
+
