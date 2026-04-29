@@ -822,7 +822,6 @@ concurrency:
 
 虽然 GitHub Actions 有官方支持，但 Headless 模式可以在任何 CI 平台上工作。因为 Headless 模式的本质就是命令行调用——只要平台能运行  `npm install`  和  `claude -p`，就能集成。下面是三个主流 CI 平台的配置示例。
 
-
 ## GitLab CI
 
 **GitLab CI**：GitLab CI 使用 ` .gitlab-ci.yml`  配置文件，语法与 GitHub Actions 的 YAML 不同但概念相似。注意变量引用方式的差异——GitLab 使用  `$VARIABLE_NAME`，而不是 GitHub 的  `${{ secrets.VARIABLE_NAME }}`。
@@ -860,4 +859,23 @@ jobs:
             ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
 ```
 
+## Jenkins
+
+**Jenkins**：Jenkins 使用 Groovy DSL 定义 Pipeline，风格与上面两个 YAML 驱动的系统截然不同。但核心逻辑是一样的，安装 Claude Code，设置环境变量，运行 headless 命令。
+```python
+pipeline {
+    agent any
+    environment {
+        ANTHROPIC_API_KEY = credentials('anthropic-api-key')
+    }
+    stages {
+        stage('Review') {
+            steps {
+                sh 'npm install -g @anthropic-ai/claude-code'
+                sh 'claude -p "Review this code" --output-format text'
+            }
+        }
+    }
+}
+```
 
