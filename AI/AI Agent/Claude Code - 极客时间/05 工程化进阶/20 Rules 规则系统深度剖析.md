@@ -111,4 +111,26 @@ CLAUDE.md 的总长度如何？
 
 # 实战：一个全栈项目的 rules 拆分
 
-假设你有一个 React + Express + PostgreSQL 的全栈项目，CLAUDE.md 膨胀到了 600 行（示例参考）。我们如何拆分呢？
+假设你有一个 React + Express + PostgreSQL 的全栈项目，CLAUDE.md 膨胀到了 600 行（[示例参考](https://github.com/huangjia2019/claude-code-engineering/blob/main/02-Memory/projects/03-bloated-claude-md/CLAUDE.md)）。我们如何拆分呢？
+
+## 拆分后的 CLAUDE.md（精简到 80 行以内）
+```markdown
+# 项目概述
+全栈 TypeScript 项目。前端 React 18 + Tailwind，后端 Express + Prisma + PostgreSQL。
+
+# 命令
+- `pnpm dev` — 启动前后端开发服务器
+- `pnpm test` — 运行全部测试
+- `pnpm lint` — ESLint + Prettier 检查
+- `pnpm db:migrate` — 执行数据库迁移
+
+# 核心约定
+- 包管理器用 pnpm，不用 npm 或 yarn
+- commit message 用 conventional commits 格式
+- 所有 API 返回 { success: boolean, data?: T, error?: string }
+- 环境变量通过 .env 管理，不硬编码
+
+# 详细规范
+领域规范见 .claude/rules/ 目录，按文件类型自动加载。
+```
+
