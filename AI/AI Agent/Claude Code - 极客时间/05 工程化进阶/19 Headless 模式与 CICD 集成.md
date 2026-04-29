@@ -42,6 +42,26 @@ claude -p "找出这个文件中的 Bug" < buggy.js
 
 Headless 模式提供了一组命令行参数来精细控制执行行为。这些参数是你在自动化脚本和 CI 配置中最常用的控制手段。特别值得注意的是  `--allowedTools`  和  `--max-turns`  这两个参数，它们是**安全防护的第一道防线**，能有效限制 Claude 在无人监管环境中的行为边界。
 ![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429092717381.png)
+![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429092845294.png)
+
+# 输出格式与管道集成
+
+Headless 模式支持三种输出格式，适用于不同的自动化场景。选择哪种格式，取决于你的下游消费者是谁——是人类读者、是程序解析器、还是实时监控系统。
+
+## Text 格式
+
+**Text 是默认格式**，也是最简单的格式。适用场景为日志记录、简单脚本、人工审查。它直接输出 Claude 的回复文本，没有任何元数据包装。如果你只是想在终端里看结果，或者将结果写入日志文件，Text 格式就够了。
+```
+claude -p "生成一个 Python hello world 函数" --output-format text
+```
+
+输出：
+```markdown
+Here's a simple hello world function:
+
+def hello_world():
+    print("Hello, World!")
+```
 
 
 
