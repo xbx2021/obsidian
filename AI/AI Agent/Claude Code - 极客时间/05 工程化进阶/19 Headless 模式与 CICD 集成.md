@@ -454,3 +454,9 @@ else
   exit 1
 fi
 ```
+
+然后设置权限：
+```bash
+chmod +x .git/hooks/pre-commit
+```
+
