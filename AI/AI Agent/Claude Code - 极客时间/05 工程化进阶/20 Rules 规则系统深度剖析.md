@@ -336,3 +336,26 @@ model: sonnet
 }
 ```
 
+
+这三者共同构成了**权限纵深防御体系**。
+```markdown
+工具调用请求
+  ↓
+第一关：settings.json 的 deny 规则
+  → 命中？直接拦截，不可绕过
+  ↓
+第二关：Hooks 的 PreToolUse 拦截
+  → 脚本返回非零？拦截，可自定义逻辑
+  ↓
+第三关：Skill/Agent 的 allowed-tools 限制
+  → 不在白名单？拦截
+  ↓
+第四关：settings.json 的 allow 规则 / 用户交互审批
+  → 在白名单？自动放行
+  → 不在任何规则中？弹窗询问用户
+  ↓
+工具执行
+```
+
+
+# 两种规则的协同——一个完整案例
