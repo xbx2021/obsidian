@@ -641,5 +641,114 @@ echo "Report saved to: $REPORT_FILE"
 
 完整文件参见 `.github/workflows/claude-review.yml`：
 ```yaml
+name: Claude PR Review
 
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Get changed files
+        id: changed
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          echo "Changed files:"
+          echo "$FILES"
+          FILES_INLINE=$(echo "$FILES" | tr '\n' ' ')
+          echo "files=$FILES_INLINE" >> $GITHUB_OUTPUT
+          COUNT=$(echo "$FILES" | wc -l)
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+
+      - name: Run Claude Review
+        id: review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          PROMPT="Review this Pull Request:
+
+          ## Changed Files (${{ steps.changed.outputs.count }} files)
+          ${{ steps.changed.outputs.files }}
+
+          ## Review Guidelines
+          1. **Code Quality**: Clean code, proper naming, DRY principle
+          2. **Bugs**: Potential bugs, edge cases, error handling
+          3. **Security**: Security vulnerabilities, input validation
+          4. **Performance**: Inefficient code, unnecessary operations
+
+          ## Output Format
+          ### Summary
+          [1-2 sentence overview]
+
+          ### Issues Found
+          - **Critical**: [description] (file:line)
+          - **Warning**: [description] (file:line)
+          - **Suggestion**: [description] (file:line)
+
+          ### Verdict
+          Approved / Needs Changes / Request Changes"
+
+          claude -p "$PROMPT" \
+            --output-format json \
+            --max-turns 10 \
+            --allowedTools Read,Grep,Glob > review.json
+
+          RESULT=$(jq -r '.result' review.json)
+          echo "result<<EOF" >> $GITHUB_OUTPUT
+          echo "$RESULT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post Review Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('review.json', 'utf8'));
+            const review = data.result;
+
+            const comment = `## Claude Code Review\n\n${review}\n\n---\n*Automated review by Claude Code*`;
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Check for critical issues
+        env:
+          RESULT: ${{ steps.review.outputs.result }}
+        run: |
+          if echo "$RESULT" | grep -qF "**Critical**"; then
+            echo "::warning::Critical issues found in code review"
+          fi
+
+          if echo "$RESULT" | grep -qF "Request Changes"; then
+            echo "::error::Code review requests changes"
+            exit 1
+          fi
 ```
