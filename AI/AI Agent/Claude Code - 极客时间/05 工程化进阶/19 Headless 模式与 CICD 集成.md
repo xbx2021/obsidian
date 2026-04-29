@@ -416,4 +416,4 @@ Pre-commit Hook 是另一个常见的 Headless 应用场景。与 CI/CD 流水�
 
 ## 基本 Pre-commit Hook
 
-
+下面这个 Hook 脚本在每次  `git commit`  时自动运行。它获取暂存区的文件列表，让 Claude 快速检查有没有明显问题。如果 Claude 回复“OK”，提交正常进行；如果发现问题，提交会被阻止，并显示问题列表。注意  `--max-turns 3`  和  `--allowedTools Read,Grep`  的设置——pre-commit hook 需要快速完成，不能让开发者等太久，所以限制了执行轮次，并且只允许只读操作。
