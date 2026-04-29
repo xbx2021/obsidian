@@ -187,7 +187,7 @@ claude -p "检查是否有安全漏洞" --output-format json | \
 ```
 
 
-# 批量处理模式
+## 批量处理模式
 
 当你需要对大量文件执行相同的 AI 分析任务时，批量处理模式就派上用场了。[SmartScope 博客](https://smartscope.blog/en/generative-ai/claude/claude-code-batch-processing/)详细介绍了这种模式：
 
@@ -523,4 +523,5 @@ repos:
 # 实战项目：完整的 CI/CD 审查系统
 
 前面我们分别学习了 Headless 模式的各个组件——输出格式、管道集成、GitHub Actions、Pre-commit Hook。现在让我们把它们组装成一个完整的自动化审查系统。这个系统涵盖了从本地开发到远程 CI 的完整链路。
+![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429103231996.png)
 
