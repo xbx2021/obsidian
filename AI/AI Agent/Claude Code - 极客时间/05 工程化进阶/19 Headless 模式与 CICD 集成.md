@@ -460,3 +460,44 @@ fi
 chmod +x .git/hooks/pre-commit
 ```
 
+
+## 自动生成 Commit Message
+
+另一个实用的 Hook 是自动生成 commit message。很多开发者在写 commit message 时都很头疼——要么写得太笼统（fix bug），要么干脆放弃思考（update）。这个 Hook 可以利用 Claude 分析 diff 内容，帮我们自动生成符合 Conventional Commits 规范的 commit message。
+
+创建  `.git/hooks/prepare-commit-msg`：
+```bash
+#!/bin/bash
+# 自动生成 commit message
+
+# 如果用户通过 -m 提供了 commit message，跳过
+# $2 表示 commit message 的来源：message(-m)、template、merge、squash
+if [ -n "$2" ]; then
+  exit 0
+fi
+
+# 获取 diff
+DIFF=$(git diff --cached)
+
+if [ -z "$DIFF" ]; then
+  exit 0
+fi
+
+# 生成 commit message
+MESSAGE=$(claude -p "Generate a concise commit message for these changes:
+
+$DIFF
+
+Format: <type>: <description>
+Types: feat, fix, docs, style, refactor, test, chore
+Reply with ONLY the commit message, nothing else." \
+  --output-format text \
+  --max-turns 1)
+
+# 将生成的 message 写入文件开头，保留 Git 的注释模板
+TEMP_FILE=$(mktemp)
+echo "$MESSAGE" > "$TEMP_FILE"
+echo "" >> "$TEMP_FILE"
+cat "$1" >> "$TEMP_FILE"
+mv "$TEMP_FILE" "$1"
+```
