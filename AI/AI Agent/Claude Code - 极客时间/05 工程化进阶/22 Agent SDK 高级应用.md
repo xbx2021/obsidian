@@ -38,6 +38,9 @@ Claude Agent SDK 内置了文件操作、命令执行、网络搜索等工具。
 # 使用 @tool 装饰器定义工具
 
 `@tool`  装饰器是定义自定义工具的最简单方式。你只需要指定工具名称、描述和参数，然后把业务逻辑写在函数体内。SDK 会自动将这个函数注册为一个可被 Agent 调用的工具，Agent 在推理过程中会根据工具描述决定何时调用它。
+
+下面的例子定义了一个天气查询工具。注意返回值必须是包含  content  列表的字典，这是 MCP 协议要求的标准格式。
+
 ```python
 from claude_agent_sdk import tool
 
@@ -59,3 +62,5 @@ async def get_weather(args):
         ]
     }
 ```
+
+
