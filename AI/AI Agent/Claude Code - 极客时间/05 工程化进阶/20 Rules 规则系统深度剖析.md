@@ -359,3 +359,96 @@ model: sonnet
 
 
 # 两种规则的协同——一个完整案例
+
+让我们用一个真实场景把两种规则串起来：你的团队有一个支付服务项目，既需要编码规范（指令规则），也需要安全管控（权限规则）。
+
+## 指令规则部分
+
+### `CLAUDE.md`（精简版，~60 行）：
+
+```markdown
+# 支付服务
+Node.js + TypeScript + Stripe API，处理用户支付流程。
+
+# 命令
+- `pnpm dev` — 启动开发服务器
+- `pnpm test` — 运行测试
+- `pnpm lint` — 代码检查
+
+# 核心约定
+- 所有金额用 cents（整数），不用浮点数
+- 日志必须包含 requestId，便于追踪
+- 不在日志中打印卡号、CVV 等敏感信息
+```
+
+### **~.claude/rules/stripe.md**：
+
+```markdown
+---
+paths:
+  - "src/payments/**"
+  - "src/webhooks/**"
+---
+
+# Stripe 集成规范
+
+## Webhook 处理
+- 始终验证 webhook 签名（stripe.webhooks.constructEvent）
+- 幂等处理：用 event.id 去重
+- 先返回 200，再异步处理业务逻辑
+
+## 错误处理
+- StripeCardError → 返回用户友好消息
+- StripeRateLimitError → 指数退避重试
+- 其他 Stripe 错误 → 记录日志 + 告警
+```
+
+## 权限规则部分
+
+### `.claude/settings.json`（团队共享）：
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Read",
+      "Glob",
+      "Grep"
+    ],
+    "deny": [
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Edit(./.env)",
+      "Edit(./.env.*)",
+      "Bash(rm -rf *)",
+      "Bash(* --force)",
+      "Bash(stripe *)"
+    ]
+  }
+}
+```
+
+注意这个 deny 列表的设计意图：
+- 禁止  `curl/wget`——防止 Claude 自行调用外部 API（包括 Stripe API）
+- 禁止读写 ` .env`——保护 Stripe Secret Key 等敏感配置
+- 禁止  `stripe *` ——防止 Claude 用 Stripe CLI 直接操作生产环境
+- 禁止  `rm -rf`  和  `--force`——防止破坏性操作
+
+两种规则各司其职，  **指令规则**告诉 Claude“处理 webhook 要验签、金额用 cents”——**这是认知层面的约束，让 Claude 写出正确的代码**。**权限规则**告诉客户端“不许读 .env、不许执行 stripe CLI”——**这是行为层面的约束，从系统层面堵住安全漏洞**。
+
+即使 Claude“忘记”了指令规则中不在日志中打印卡号的要求，权限规则也能确保它无法读取 .env 中的 Stripe Key。**纵深防御，不依赖单一层面**。
+![](assets/20%20Rules%20规则系统深度剖析/file-20260429140727654.png)
+
+
+# 架构定位与最佳实践
+
+## Rules 在架构中的定位
+
+“规则”不是架构中的一个方块，而是渗透在每一层中的横切关注点。
+![](assets/20%20Rules%20规则系统深度剖析/file-20260429140853256.png)
