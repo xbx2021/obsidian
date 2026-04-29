@@ -491,6 +491,8 @@ async def main():
 
 这是一个典型的“只读分析”场景——Agent 只需要读取代码，不需要修改任何文件。因此我们使用  `plan`  权限模式，配合  `Read/Grep/Glob`  三个只读工具。这样即使 Agent 的 Prompt 被注入了恶意指令（比如“删除所有文件”），它也没有能力执行。
 
+## Python实现
+
 下面是完整的代码实现。代码分为三个部分：`analyze_codebase()`  函数负责调用 Agent 并收集结果，`format_report()`  函数负责把结果格式化为可读的报告，`main()`  函数负责处理命令行参数和文件输出。
 ```python
 #!/usr/bin/env python3
@@ -754,6 +756,238 @@ Report saved to: analysis-report-20250118-103045.md
 
 前面的代码分析 Agent 是用 Python 实现的。如果你的项目是Node.js/TypeScript 技术栈，下面提供了完整的 TypeScript 版本。两个版本的功能完全一致，只是语法和类型系统不同。
 
+## TypeScript实现
+
 TypeScript 版本有一个 Python 没有的优势——**类型安全**。`AnalysisResult`  接口明确定义了返回值的结构，如果你漏写了某个字段或者类型不匹配，编译器会在运行前就告诉你。这在大型项目中特别有价值。
 
+```typescript
+import { query, ClaudeAgentOptions } from '@anthropic-ai/claude-agent-sdk';
+
+async function main() {
+  const options: ClaudeAgentOptions = {
+    allowedTools: ['Read', 'Grep', 'Glob'],
+    maxTurns: 10,
+    permissionMode: 'plan'
+  };
+
+  for await (const message of query("分析代码结构", options)) {
+    switch (message.type) {
+      case 'text':
+        console.log(message.text);
+        break;
+      case 'toolUse':
+        console.log(`Using: ${message.toolName}`);
+        break;
+      case 'result':
+        console.log(`Done! Cost: $${message.totalCostUsd}`);
+        break;
+    }
+  }
+}
+
+main();
+```
+
+完整的 TypeScript Agent 如下：
+```typescript
+import {
+  ClaudeSDKClient,
+  ClaudeAgentOptions,
+  Message
+} from '@anthropic-ai/claude-agent-sdk';
+
+interface AnalysisResult {
+  output: string[];
+  toolsUsed: string[];
+  metadata: {
+    sessionId?: string;
+    durationMs?: number;
+    costUsd?: number;
+    turns?: number;
+  };
+  error?: string;
+}
+
+async function analyzeCodebase(directory: string): Promise<AnalysisResult> {
+  const options: ClaudeAgentOptions = {
+    allowedTools: ['Read', 'Grep', 'Glob'],
+    permissionMode: 'plan',
+    maxTurns: 25,
+    cwd: directory,
+    model: 'sonnet'
+  };
+
+  const result: AnalysisResult = {
+    output: [],
+    toolsUsed: [],
+    metadata: {}
+  };
+
+  const client = new ClaudeSDKClient(options);
+
+  try {
+    await client.connect();
+    await client.query(`分析 ${directory} 目录的代码结构`);
+
+    for await (const message of client.receiveResponse()) {
+      switch (message.type) {
+        case 'text':
+          result.output.push(message.text);
+          break;
+
+        case 'toolUse':
+          result.toolsUsed.push(`${message.toolName}: ${JSON.stringify(message.toolInput)}`);
+          console.log(`  [scanning] ${message.toolName}`);
+          break;
+
+        case 'result':
+          result.metadata = {
+            sessionId: message.sessionId,
+            durationMs: message.durationMs,
+            costUsd: message.totalCostUsd,
+            turns: message.numTurns
+          };
+          break;
+
+        case 'error':
+          result.error = message.error;
+          break;
+      }
+    }
+  } finally {
+    await client.disconnect();
+  }
+
+  return result;
+}
+
+// 使用
+async function main() {
+  const directory = process.argv[2] || '.';
+  console.log(`Analyzing: ${directory}`);
+
+  const result = await analyzeCodebase(directory);
+
+  console.log('\nReport:');
+  console.log(result.output.join('\n'));
+
+  console.log('\nStatistics:');
+  console.log(`Duration: ${result.metadata.durationMs}ms`);
+  console.log(`Cost: $${result.metadata.costUsd}`);
+}
+
+main().catch(console.error);
+```
+
+
+## 错误处理与监控
+
+在开发阶段，代码能跑通就行。但在生产环境中，错误处理和监控是不可或缺的。Agent 调用涉及网络通信、模型推理、工具执行三个层面，每一层都可能出错。一个健壮的 Agent 应用必须能优雅地处理这些错误，而不是在用户面前崩溃。
+
+Agent SDK 中的错误分为两类：一类是 SDK 层面的错误（如 API Key 无效、网络超时），抛出  `ClaudeAgentError`  异常；另一类是 Agent 执行层面的错误（如工具调用失败、权限被拒绝），通过消息流中的  `error`  类型消息返回。你需要同时处理这两类错误。
+```python
+from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentError
+
+async def safe_query(prompt: str):
+    """带错误处理的查询"""
+    try:
+        async with ClaudeSDKClient() as client:
+            await client.query(prompt)
+
+            async for msg in client.receive_response():
+                if msg.type == "error":
+                    # Agent 内部错误
+                    print(f"Agent error: {msg.error}")
+                    return None
+                elif msg.type == "text":
+                    print(msg.text)
+                elif msg.type == "result":
+                    return msg.result
+
+    except ClaudeAgentError as e:
+        # SDK 错误（如 API 连接失败）
+        print(f"SDK error: {e}")
+        return None
+
+    except Exception as e:
+        # 未预期的错误
+        print(f"Unexpected error: {e}")
+        return None
+```
+
+## 成本监控与控制
+
+每一次 Agent 调用都会消耗 Token，产生费用。在生产环境中，如果不对成本进行监控，很容易拿到一份让你惊吓的高额账单，一个失控的 Agent 循环可能在几分钟内消耗数十美元。下面的代码展示了如何在每次调用后检查成本，并在超过预设阈值时发出告警。
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+async def monitored_query(prompt: str, cost_limit: float = 0.10):
+    """带成本监控的查询"""
+    async with ClaudeSDKClient() as client:
+        await client.query(prompt)
+
+        turn_count = 0
+        async for msg in client.receive_response():
+            if msg.type == "tool_use":
+                turn_count += 1
+                logger.info(f"Turn {turn_count}: {msg.tool_name}")
+
+            if msg.type == "result":
+                cost = msg.total_cost_usd
+                logger.info(f"Completed in {msg.duration_ms}ms, cost: ${cost}")
+
+                if cost > cost_limit:
+                    logger.warning(f"Cost exceeded limit: ${cost} > ${cost_limit}")
+
+                return msg
+```
+
+控制 Agent 成本的核心手段有三个：**限制轮次、选择更便宜的模型、限制工具**。这三个手段可以组合使用，根据具体场景找到性能和成本的最佳平衡点。
+```markdown
+# 1. 限制轮次
+options = ClaudeAgentOptions(
+    max_turns=10  # 最多 10 轮
+)
+
+# 2. 使用更便宜的模型
+options = ClaudeAgentOptions(
+    model="haiku"  # Haiku 比 Sonnet 便宜得多
+)
+
+# 3. 限制工具（减少读取的文件数）
+options = ClaudeAgentOptions(
+    allowed_tools=["Read", "Glob"],  # 不用 Grep
+    max_turns=5
+)
+```
+
+在生产环境运行 Agent，监控关键指标：
+
+**成本**：每次调用花了多少钱
+**耗时**：任务执行了多长时间
+**轮次**：Agent 循环了多少次
+**错误率**：多少任务失败了
+
+![](assets/21%20通过Agent%20SDK%20掌控%20Claude%20Code/file-20260429160424253.png)
+![](assets/21%20通过Agent%20SDK%20掌控%20Claude%20Code/file-20260429160444343.png)
+# 小结
+
+这一讲我们学习了 Claude Agent SDK——用代码驱动 Claude Code 的能力。通过 Agent SDK，你可以在自己的应用中调用 Claude Code 的能力，为用户提供智能代码分析服务。从命令行工具到可编程 SDK，Claude Code 的应用边界被大大拓展。
+
+SDK 提供了两种使用方式。`query()`  函数是最简单的方式，一行代码就能调用 AI Agent，适合快速原型和简单任务。`ClaudeSDKClient`  类提供完整控制，支持自定义工具、Hooks、会话管理和精细的权限控制，适合构建生产级应用。
+
+`ClaudeAgentOptions`  是控制 Agent 行为的核心。
+
+- 通过  `allowed_tools`  和  `disallowed_tools`  可以精确控制 Agent 能使用哪些工具；
+- 通过  `permission_mode`  可以设置权限级别，从完全只读的  `plan`  模式到自动接受编辑的  `acceptEdits`  模式；
+- 通过  `max_turns`  可以限制执行轮次，控制成本。
+
+响应处理是使用 SDK 的关键技能。Agent 返回的消息包括  `text`（文本输出）、`tool_use`（工具调用）、`tool_result`（工具结果）、`error`（错误）和  `result`（最终结果）几种类型。`result`  消息包含丰富的元数据，如执行时间、成本、Token 使用量等。
+
+会话管理让 Agent 能够保持上下文。你可以在一个会话中进行多轮对话，也可以保存  `session_id`  以便后续恢复会话。这对于长时间运行的任务或需要分阶段完成的工作特别有用。
+
+从这一讲的学习中，你应该能感受到 Agent SDK 的设计哲学——**简单的事情简单做，复杂的事情做得到**。`query()`  满足 80% 的轻量级场景，`ClaudeSDKClient`  覆盖剩下 20% 的生产级需求。这种**“渐进式复杂度”（Progressive Complexity）是优秀 SDK 的标志**。不要一上来就用最复杂的方式——先从  `query()`  开始，遇到瓶颈再升级。
 
