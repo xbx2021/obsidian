@@ -560,7 +560,7 @@ my-project/
 - 不要修改数据库迁移文件
 ```
 
-scripts/review.sh  是一个独立的本地审查脚本，开发者可以在任何时候手动运行它来审查代码。它与 CI 中的审查使用相同的 Claude 能力，但运行在本地环境中。脚本包含了完整的错误处理——检查 API Key 是否设置、Claude Code 是否安装——以及结果保存功能，每次审查的报告都会保存为带时间戳的 Markdown 文件。
+`scripts/review.sh`  是一个独立的本地审查脚本，开发者可以在任何时候手动运行它来审查代码。它与 CI 中的审查使用相同的 Claude 能力，但运行在本地环境中。脚本包含了完整的错误处理——检查 API Key 是否设置、Claude Code 是否安装——以及结果保存功能，每次审查的报告都会保存为带时间戳的 Markdown 文件。
 ```bash
 #!/bin/bash
 # review.sh - 本地代码审查脚本
@@ -637,3 +637,9 @@ echo ""
 echo "Report saved to: $REPORT_FILE"
 ```
 
+下面是生产级的 GitHub Action 配置。与前面简化的版本相比，这个版本增加了变更文件计数、结构化的审查 prompt、以及关键问题检测逻辑。如果 Claude 在审查中标记了 Critical 级别的问题或请求变更，工作流会以失败状态退出，从而阻止 PR 合并。
+
+完整文件参见 `.github/workflows/claude-review.yml`：
+```yaml
+
+```
