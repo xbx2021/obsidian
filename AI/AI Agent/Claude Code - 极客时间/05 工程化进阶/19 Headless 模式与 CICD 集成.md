@@ -242,3 +242,39 @@ Anthropic 提供了[官方 GitHub Action](https://github.com/anthropics/claude-c
     prompt: "审查这个 PR 的所有变更，检查安全漏洞"
 ```
 
+最简单的设置方式是在 Claude Code 终端中运行  `/install-github-app`，它会引导你完成整个配置过程，包括创建 GitHub App、配置 Webhook、设置权限等。
+
+如果你更喜欢手动配置，或者需要定制化的工作流，可以按以下步骤操作：
+
+第一步是在 GitHub 仓库的 Settings -> Secrets -> Actions 中添加  ANTHROPIC_API_KEY——这是唯一需要的密钥。
+
+第二步是创建工作流文件，定义触发条件和执行步骤。创建  `.github/workflows/claude.yml`：
+```yaml
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  claude:
+    runs-on: ubuntu-latest
+    # 只在 @claude 提及时触发
+    if: contains(github.event.comment.body, '@claude')
+
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+```
+
+
