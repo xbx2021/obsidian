@@ -452,3 +452,10 @@ paths:
 
 “规则”不是架构中的一个方块，而是渗透在每一层中的横切关注点。
 ![](assets/20%20Rules%20规则系统深度剖析/file-20260429140853256.png)
+- **指令层**有指令规则（CLAUDE.md、.claude/rules/）
+- **能力层**有能力规则（Skills 的 allowed-tools、Agent 的 tools）
+- **管控层**有权限规则（settings.json、Hooks、CLI 参数）
+
+这就像安全不是软件中的一个模块，而是贯穿所有模块的设计原则。这里我也顺便说明一下 Rules 的正确学习路径。
+![](assets/20%20Rules%20规则系统深度剖析/file-20260429141048198.png)
+
