@@ -134,3 +134,102 @@ CLAUDE.md 的总长度如何？
 领域规范见 .claude/rules/ 目录，按文件类型自动加载。
 ```
 
+## 拆分出的 rules 文件
+
+### `.claude/rules/frontend.md`：
+
+```markdown
+---
+paths:
+  - "src/components/**"
+  - "src/pages/**"
+  - "src/hooks/**"
+---
+
+# 前端规范
+
+## 组件
+- 函数式组件，不用 class 组件
+- Props 用 interface 定义，命名 XxxProps
+- 组件文件和样式文件同名同目录
+
+## 状态管理
+- 局部状态用 useState
+- 跨组件状态用 Zustand
+- 服务端状态用 TanStack Query
+
+## 样式
+- Tailwind 优先，复杂样式用 CSS Modules
+- 响应式断点：sm(640) md(768) lg(1024) xl(1280)
+```
+
+### `.claude/rules/backend.md`：
+
+```markdown
+---
+paths:
+  - "server/**"
+  - "src/api/**"
+  - "prisma/**"
+---
+
+# 后端规范
+
+## 路由
+- RESTful 风格，资源名用复数
+- 路由文件放 server/routes/，一个资源一个文件
+
+## 数据库
+- 所有查询通过 Prisma ORM，不写原生 SQL
+- 迁移文件不手动编辑
+- 关联查询用 include，不用多次查询
+
+## 错误处理
+- 业务错误抛 AppError(code, message)
+- 统一在 errorHandler 中间件中捕获
+```
+
+### `.claude/rules/testing.md`：
+
+```markdown
+---
+paths:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+---
+
+# 测试规范
+
+## 工具
+- 单元测试：Vitest
+- 组件测试：Testing Library
+- E2E：Playwright
+
+## 结构
+- Arrange-Act-Assert 模式
+- 每个 describe 对应一个函数或组件
+- Mock 外部依赖，不 mock 内部模块
+
+## 覆盖率
+- 业务逻辑 > 80%
+- 工具函数 > 90%
+- UI 组件关注交互，不关注快照
+```
+
+
+### `.claude/rules/security.md`：
+（注意，没有 paths，全局生效）
+```markdown
+# 安全规范
+
+- 用户输入在使用前必须 validate + sanitize
+- SQL 参数化（Prisma 默认做到了）
+- XSS 防护：不使用 dangerouslySetInnerHTML
+- CORS 只允许白名单域名
+- 敏感信息（API Key、数据库密码）只放 .env
+- 认证 token 用 httpOnly cookie，不存 localStorage
+```
+
+拆完之后，CLAUDE.md 从 600 行变成 80 行，但规范一条都没少——**只是按需加载了**。当 Claude 在改前端组件时，它看到的是 CLAUDE.md + frontend.md + security.md。当它在写测试时，看到的是 CLAUDE.md + testing.md + security.md。精准、高效。
+
