@@ -157,4 +157,16 @@ curl https://api.example.com/data | claude -p "提取所有用户的邮箱地址
 cat old-code.js | claude -p "将这段 JavaScript 转换为 TypeScript"
 ```
 
+管道的真正威力在于**组合**。下面这些例子展示了 Claude Code 如何与  find、git、grep  等经典 Unix 工具协作。每个组合都解决了一个真实的开发场景——批量检查类型提示、总结提交变更、将散落的 TODO 转换为规范的 Issue 格式。
+```bash
+# 结合 find 和 xargs 批量处理
+find src -name "*.py" | xargs -I {} claude -p "检查 {} 中的类型提示是否完整"
+
+# 结合 git 工作流
+git diff HEAD~1 | claude -p "总结这次提交的变更"
+
+# 结合 grep 预过滤
+grep -r "TODO" src/ | claude -p "将这些 TODO 转换为 GitHub Issue 格式"
+```
+![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429094941377.png)
 
