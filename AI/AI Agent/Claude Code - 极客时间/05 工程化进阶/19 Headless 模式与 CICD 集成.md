@@ -170,3 +170,19 @@ grep -r "TODO" src/ | claude -p "将这些 TODO 转换为 GitHub Issue 格式"
 ```
 ![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429094941377.png)
 
+Claude 不仅可以接收管道输入，它的输出同样可以**通过管道流向下游**。这样你就能构建完整的自动化链路：**数据获取 -> AI 分析 -> 结果处理 -> 通知或存储**。
+
+下面的例子展示了三种典型的下游处理模式——用  jq  解析 JSON 结果、直接写入文件以及发送邮件通知。
+```bash
+# Claude 输出 -> jq 解析 -> 下游处理
+claude -p "列出所有函数名" --output-format json | jq -r '.result' | sort | uniq
+
+# Claude 生成代码 -> 直接写入文件
+claude -p "生成一个 Express 路由处理函数" --output-format text > routes/user.js
+
+# Claude 分析 -> 发送通知
+claude -p "检查是否有安全漏洞" --output-format json | \
+  jq -r '.result' | \
+  mail -s "安全扫描报告" security@company.com
+```
+
