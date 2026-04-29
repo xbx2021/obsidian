@@ -171,3 +171,31 @@ async def query_database(args: DatabaseQueryParams):
         ]
     }
 ```
+
+![](assets/22%20Agent%20SDK%20高级应用/file-20260429165612360.png)
+
+下面是一个存在 SQL 注入风险的工具调用示例以及相应的调整。
+```python
+# 危险：直接执行 SQL
+@tool("run_sql", "Run any SQL", {"sql": str})
+async def run_sql(args):
+    return await db.execute(args["sql"])  # SQL 注入风险！
+```
+
+```python
+# 安全：限制操作类型
+@tool("query_users", "Query user table", {"user_id": int})
+async def query_users(args):
+    return await db.execute(
+        "SELECT * FROM users WHERE id = ?",
+        [args["user_id"]]
+    )
+```
+
+这个安全示例的核心在于，**不要把工具当“能力接口”，而要当“受控权限边界”来设计**。
+
+危险版本把任意 SQL 执行权直接暴露给 Agent，相当于让一个不完全可信的系统拥有数据库 root 权限，一旦被误导或注入就可能造成严重破坏；而安全版本通过限制操作范围（只允许查询特定表）、使用参数化查询、防止注入，并对参数进行类型约束，把“无限能力”收敛为“可控动作”。本质上，这体现的是 Agent 系统的一个关键原则，**模型可以自由推理，但工具必须严格受限。**
+
+
+# Agent SDK Hooks 系统概述
+
