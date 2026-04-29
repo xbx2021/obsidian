@@ -277,4 +277,5 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
 
+这份配置只有二十几行，但它实现了一个完整的 AI 审查工作流：监听 PR 和 Issue 中的评论，在检测到 @claude 提及时触发，检出代码，然后让 Claude 分析并回复。`permissions`  部分遵循最小权限原则——`contents: read`  只允许读取代码，`pull-requests: write`  和  `issues: write`  允许发表评论。
 
