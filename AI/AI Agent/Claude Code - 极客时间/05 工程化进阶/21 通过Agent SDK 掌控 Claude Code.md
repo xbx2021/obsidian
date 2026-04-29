@@ -78,7 +78,7 @@ os.environ["ANTHROPIC_API_KEY"] = "sk-ant-api03-..."
 ```
 
 如果你在 CI/CD 中使用，可以用 Secrets 管理：
-```markdown
+```
 env: 
   ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
@@ -204,4 +204,132 @@ main();
 在实际项目中，常见的演进路径是先用  `query()`  快速验证想法，然后在功能成型后迁移到  `ClaudeSDKClient`  进行工程化。两种方式的消息格式完全兼容，迁移成本很低。
 
 ### **ClaudeAgentOptions 配置详解**
+
+`ClaudeAgentOptions`  是控制 Agent 行为的核心配置类。你可以把它理解为 Agent 的“说明书”，它告诉 Agent 该用什么模型、能用什么工具、最多跑几轮、在什么目录下工作。每一个配置项都会直接影响 Agent 的行为和成本。
+
+下面是完整的配置项。不需要一次记住所有配置，你可以先关注最常用的四个：`allowed_tools`、`permission_mode`、`max_turns`、`model`。其余的在需要时查阅即可。
+```python
+from claude_agent_sdk import ClaudeAgentOptions
+
+options = ClaudeAgentOptions(
+    # === 模型选择 ===
+    model="sonnet",  # "sonnet" | "opus" | "haiku"
+
+    # === 工具控制 ===
+    allowed_tools=["Read", "Write", "Bash", "Grep", "Glob"],
+    disallowed_tools=["Task"],
+
+    # === 权限模式 ===
+    permission_mode="default",  # "default" | "acceptEdits" | "plan" | "bypass"
+
+    # === 执行控制 ===
+    max_turns=20,
+    cwd="/path/to/project",
+
+    # === 输出格式 ===
+    output_format="stream-json",  # "text" | "json" | "stream-json"
+
+    # === 会话管理 ===
+    continue_conversation=True,
+    resume="session-id",
+
+    # === 系统提示 ===
+    system_prompt="You are a helpful coding assistant.",
+
+    # === MCP 服务器 ===
+    mcp_servers={
+        "my-server": {...}
+    },
+
+    # === Hooks ===
+    hooks={
+        "PreToolUse": [...],
+        "PostToolUse": [...]
+    }
+)
+```
+
+
+### **权限模式详解**
+
+权限模式决定了 Agent 执行操作时的确认行为。这是安全性与自动化程度之间的一个权衡——你给 Agent 越多的自主权，它就能越快地完成任务，但风险也越高。
+
+选择权限模式时，问自己一个问题：如果 Agent 做了一件错事，最坏的结果是什么？如果最坏结果“改错了一个文件，我  `git checkout`  恢复一下”，那可以放宽权限；如果最坏结果是“删除了生产数据库”，那必须严格控制。
+![](assets/21%20通过Agent%20SDK%20掌控%20Claude%20Code/file-20260429151546645.png)
+
+下面的代码展示了两种典型场景下的权限配置。代码审查只需要读取代码，不需要任何修改能力，所以用  `plan`  模式加上只读工具；自动修复则需要编辑文件的能力，但不需要执行任意命令，所以用  `acceptEdits`  模式搭配  `Read/Write/Edit`  工具。
+```python
+# 代码审查场景：只读
+options = ClaudeAgentOptions(
+    permission_mode="plan",
+    allowed_tools=["Read", "Grep", "Glob"]
+)
+
+# 自动修复场景：接受编辑
+options = ClaudeAgentOptions(
+    permission_mode="acceptEdits",
+    allowed_tools=["Read", "Write", "Edit"]
+)
+```
+
+你可以精确控制 Agent 能使用哪些工具。SDK 提供了两种控制方式，白名单（`allowed_tools`）和黑名单（`disallowed_tools`）。
+
+白名单是“只允许这些”，黑名单是“除了这些都允许”。在安全敏感的场景中，推荐使用白名单，明确列出 Agent 能用的工具，而不是试图列出所有它不能用的工具。
+
+**内置工具列表：**
+![](assets/21%20通过Agent%20SDK%20掌控%20Claude%20Code/file-20260429151811369.png)
+
+下面展示了三种不同的工具限制策略。注意第三个例子——你可以用  Bash(git:* )  这样的语法来限制 Bash 工具只能执行特定前缀的命令，这比完全禁用 Bash 更加灵活。
+```python
+# 只允许读取操作
+options = ClaudeAgentOptions(
+    allowed_tools=["Read", "Grep", "Glob"]
+)
+
+# 禁用危险工具
+options = ClaudeAgentOptions(
+    disallowed_tools=["Bash", "Write"]
+)
+
+# 限制 Bash 命令（只允许 git 和 npm）
+options = ClaudeAgentOptions(
+    allowed_tools=["Bash(git:*)", "Bash(npm:*)"]
+)
+```
+
+![](assets/21%20通过Agent%20SDK%20掌控%20Claude%20Code/file-20260429151940709.png)
+
+
+### **消息类型与响应处理**
+
+理解消息类型是正确处理 Agent 响应的关键。Agent 不是一次性返回结果的——它是一个**异步流**，在执行过程中会源源不断地产生不同类型的消息。你的代码需要根据消息类型分别处理，就像处理不同类型的网络事件一样。
+
+Agent 在执行过程中会产生五种类型的消息。
+
+`text`  是 Claude 生成的文本内容，比如分析结论、代码解释；`tool_use`  表示 Agent 正在调用某个工具；`tool_result`  是工具执行后返回的结果；`error`  表示执行过程中遇到了错误；`result`  是最终的汇总消息，包含执行时间、成本等元数据。
+```python
+async for message in client.receive_response():
+    match message.type:
+        case "text":
+            # 文本响应
+            print(message.text)
+
+        case "tool_use":
+            # 工具调用（Agent 正在使用工具）
+            print(f"Tool: {message.tool_name}")
+            print(f"Input: {message.tool_input}")
+
+        case "tool_result":
+            # 工具执行结果
+            print(f"Result: {message.result}")
+
+        case "error":
+            # 错误信息
+            print(f"Error: {message.error}")
+
+        case "result":
+            # 最终结果（任务完成）
+            print(f"Final: {message.result}")
+            print(f"Cost: ${message.total_cost_usd}")
+```
 
