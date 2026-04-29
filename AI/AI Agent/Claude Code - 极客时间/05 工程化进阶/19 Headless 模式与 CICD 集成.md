@@ -218,3 +218,27 @@ done
 echo "Reviews complete. Results in $RESULTS_DIR/"
 ```
 
+
+# GitHub Actions 集成
+
+GitHub Actions 是 Headless 模式最常见的应用场景。GitHub 是最大的代码托管平台，而 Actions 是它的原生 CI/CD 系统。Claude Code 与 GitHub Actions 的集成，让“AI 驱动的代码审查”不再停留于概念，而是几行 YAML 配置就能实现。
+![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429095714864.png)
+Anthropic 提供了[官方 GitHub Action](https://github.com/anthropics/claude-code-action)，让集成变得极其简单。相比于手动安装 Claude Code 然后编写 Shell 命令调用，官方 Action 封装了安装、认证、权限管理等底层细节，你只需要提供 API Key 和 prompt 就能开始使用。
+
+> Claude Code GitHub Actions 为你的 GitHub 工作流带来 AI 驱动的自动化。只需在任何 PR 或 Issue 中 @claude，Claude 就能分析你的代码、创建 Pull Request、实现功能、修复 Bug——同时遵循你的项目规范。
+
+官方 Action 支持两种模式，分别对应不同的使用场景。**Tag Mode** 适合开发者主动请求帮助的场景——你在 PR 评论中 @claude，它就会响应。**Agent Mode** 适合完全自动化的场景——每次 PR 创建时自动触发，不需要人工干预。
+![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429100024190.png)
+
+**Tag Mode 示例：**
+
+在 PR 评论中输入  `@claude 帮我审查这段代码`，Claude 会自动响应并提供审查意见。
+
+**Agent Mode 示例：**
+```markdown
+- uses: anthropics/claude-code-action@v1
+  with:
+    anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+    prompt: "审查这个 PR 的所有变更，检查安全漏洞"
+```
+
