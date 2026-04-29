@@ -31,11 +31,11 @@ Claude Agent SDK 内置了文件操作、命令执行、网络搜索等工具。
 
 上图中的架构就是 **Agent → MCP Server → Tools 的三层解耦调用链**。
 
-左侧的 Agent（大模型 + 记忆 + 推理）并不直接调用具体工具，而是通过统一的 `tool_use` 请求，将意图表达为标准化的工具调用（如` mcp_{server}_{tool}`）。中间的 MCP Server 相当于一个“工具路由中枢”，负责根据命名规范解析请求、完成权限控制与路由分发，并调用对应的工具函数。
+左侧的 Agent（大模型 + 记忆 + 推理）并不直接调用具体工具，而是通过统一的 `tool_use` 请求，将意图表达为标准化的工具调用（如` mcp__{server}__{tool}`）。中间的 MCP Server 相当于一个“工具路由中枢”，负责根据命名规范解析请求、完成权限控制与路由分发，并调用对应的工具函数。
 
 右侧的各类自定义工具只专注于执行具体能力（如查询、搜索、发送等），执行完成后将结果返回给 MCP Server，再统一回传给 Agent。通过标准命名 + 中间层路由，实现 Agent 与工具的解耦、可扩展和可治理，从而让系统可以像“插 USB 设备”一样动态接入新能力。
 
-# 使用 @tool 装饰器定义工具
+## 使用 @tool 装饰器定义工具
 
 `@tool`  装饰器是定义自定义工具的最简单方式。你只需要指定工具名称、描述和参数，然后把业务逻辑写在函数体内。SDK 会自动将这个函数注册为一个可被 Agent 调用的工具，Agent 在推理过程中会根据工具描述决定何时调用它。
 
@@ -68,7 +68,7 @@ async def get_weather(args):
 ![](assets/22%20Agent%20SDK%20高级应用/file-20260429163926139.png)
 其中  `description`  尤为关键，它不是给人看的注释，而是给 AI 看的使用指南。写得清晰准确，Agent 才能在正确的时机调用正确的工具。
 
-# 创建 SDK MCP 服务器承载工具
+## 创建 SDK MCP 服务器承载工具
 
 定义好工具函数之后，下一步是创建一个 MCP 服务器来承载它们。你可以把多个工具注册到同一个服务器中，服务器会统一管理这些工具的生命周期和调用路由。
 
@@ -108,4 +108,28 @@ server = create_sdk_mcp_server(
     tools=[greet_user, calculate]
 )
 ```
+
+服务器创建后，还不能直接使用。你需要把它注入到 Agent 的配置中，Agent 才能“看到”并调用这些工具。
+
+## 注入并使用自定义工具
+
+将 MCP 服务器注入 Agent 的方式很直观，通过  `mcp_servers`  选项传入服务器实例，然后在  `allowed_tools`  中声明允许使用的工具。工具名称遵循 ` mcp__{服务器名}__{工具名}`  的命名格式，这个双下划线的命名规则确保了不同服务器之间的工具名不会冲突。
+```python
+from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions
+
+options = ClaudeAgentOptions(
+    mcp_servers={"tools": server},
+    # 工具名称格式：mcp__{服务器名}__{工具名}
+    allowed_tools=[
+        "mcp__tools__greet",
+        "mcp__tools__calculate"
+    ]
+)
+
+async with ClaudeSDKClient(options=options) as client:
+    await client.query("Say hello to Alice and calculate 2 + 3 * 4")
+    async for msg in client.receive_response():
+        print(msg)
+```
+
 
