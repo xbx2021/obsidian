@@ -68,3 +68,44 @@ async def get_weather(args):
 ![](assets/22%20Agent%20SDK%20高级应用/file-20260429163926139.png)
 其中  `description`  尤为关键，它不是给人看的注释，而是给 AI 看的使用指南。写得清晰准确，Agent 才能在正确的时机调用正确的工具。
 
+# 创建 SDK MCP 服务器承载工具
+
+定义好工具函数之后，下一步是创建一个 MCP 服务器来承载它们。你可以把多个工具注册到同一个服务器中，服务器会统一管理这些工具的生命周期和调用路由。
+
+下面的例子创建了一个包含两个工具的服务器。注意  `@tool`  装饰器的简写形式，当参数简单时，可以直接用位置参数传入名称、描述和参数字典。
+```python
+from claude_agent_sdk import tool, create_sdk_mcp_server
+
+@tool("greet", "Greet a user by name", {"name": str})
+async def greet_user(args):
+    return {
+        "content": [
+            {"type": "text", "text": f"Hello, {args['name']}!"}
+        ]
+    }
+
+@tool("calculate", "Perform a calculation", {"expression": str})
+async def calculate(args):
+    try:
+        result = eval(args["expression"])  # 生产环境请用安全的表达式解析器
+        return {
+            "content": [
+                {"type": "text", "text": f"Result: {result}"}
+            ]
+        }
+    except Exception as e:
+        return {
+            "content": [
+                {"type": "text", "text": f"Error: {e}"}
+            ],
+            "isError": True
+        }
+
+# 创建 MCP 服务器
+server = create_sdk_mcp_server(
+    name="my-tools",
+    version="1.0.0",
+    tools=[greet_user, calculate]
+)
+```
+
