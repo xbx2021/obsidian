@@ -145,4 +145,16 @@ Claude Code 的一个独特优势是它可以无缝融入 Unix 管道，成为�
 
 > “Claude Code 可以作为 Unix 风格的工具，允许你直接将数据管道到它（如  `cat foo.txt | claude -p "query"`），这对于处理日志或 CSV 特别有用。”
 
+管道的核心思想是：前一个命令的输出，成为后一个命令的输入。当 Claude Code 站在管道中间时，它接收上游数据，用 AI 理解和处理这些数据，然后把结果传给下游。这意味着你**可以把 Claude 插入到任何现有的 Shell 工作流中，而不需要改变工作流的结构**。
+```bash
+# 分析日志文件
+cat server.log | claude -p "找出所有错误并总结原因"
+
+# 解析 JSON
+curl https://api.example.com/data | claude -p "提取所有用户的邮箱地址"
+
+# 代码转换
+cat old-code.js | claude -p "将这段 JavaScript 转换为 TypeScript"
+```
+
 
