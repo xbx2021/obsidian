@@ -189,3 +189,8 @@ claude -p "检查是否有安全漏洞" --output-format json | \
 
 # 批量处理模式
 
+当你需要对大量文件执行相同的 AI 分析任务时，批量处理模式就派上用场了。[SmartScope 博客](https://smartscope.blog/en/generative-ai/claude/claude-code-batch-processing/)详细介绍了这种模式：
+
+> Claude Code 的批处理（headless 模式）允许你直接从命令行执行 AI 功能，无需使用交互式 UI。通过集成到 CI/CD 流水线和自动化脚本中，你可以高效执行大规模处理任务。
+
+
