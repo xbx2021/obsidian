@@ -410,3 +410,10 @@ jobs:
 ![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429100921683.png)
 
 
+# Pre-commit Hook 集成
+
+Pre-commit Hook 是另一个常见的 Headless 应用场景。与 CI/CD 流水线不同，Pre-commit Hook 运行在开发者的本地机器上，在代码提交之前进行检查。它的**优势是即时反馈**——你不需要等到代码推送到远端才知道有问题，在  git commit  的那一刻就能得到 AI 的审查意见。
+
+## 基本 Pre-commit Hook
+
+
