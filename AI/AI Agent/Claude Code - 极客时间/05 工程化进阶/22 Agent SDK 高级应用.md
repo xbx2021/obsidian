@@ -132,4 +132,42 @@ async with ClaudeSDKClient(options=options) as client:
         print(msg)
 ```
 
+当 Agent 收到上面的提示时，它会自动识别出需要调用两个工具：先用  `greet`  向 Alice 打招呼，再用  `calculate`  计算表达式。这种自动编排能力正是 Agent SDK 的核心价值。
 
+## 使用 Pydantic 进行参数验证
+
+对于简单工具，字典式参数定义已经够用。但当参数变得复杂——比如有默认值、范围限制、可选字段时，Pydantic 模型是更好的选择。它不仅提供自动验证，还能生成更详细的 JSON Schema 供 Agent 参考，从而提高参数传递的准确性。
+
+下面的例子定义了一个数据库查询工具。Pydantic 模型中的  `Field`  描述会被自动转换为工具参数说明，`ge`  和  `le`  约束则确保 Agent 传入的  `limit`  值在合理范围内。
+```python
+from pydantic import BaseModel, Field
+from claude_agent_sdk import tool
+
+class DatabaseQueryParams(BaseModel):
+    """数据库查询参数"""
+    table: str = Field(..., description="Table name")
+    columns: list[str] = Field(default=["*"], description="Columns to select")
+    where: str | None = Field(default=None, description="WHERE clause")
+    limit: int = Field(default=100, ge=1, le=1000, description="Max rows")
+
+@tool(
+    name="query_database",
+    description="Execute a SELECT query on the database",
+    parameters=DatabaseQueryParams
+)
+async def query_database(args: DatabaseQueryParams):
+    # args 已经通过 Pydantic 验证
+    query = f"SELECT {', '.join(args.columns)} FROM {args.table}"
+    if args.where:
+        query += f" WHERE {args.where}"
+    query += f" LIMIT {args.limit}"
+
+    # 执行查询
+    results = await db.execute(query)
+
+    return {
+        "content": [
+            {"type": "text", "text": f"Query: {query}\nResults: {results}"}
+        ]
+    }
+```
