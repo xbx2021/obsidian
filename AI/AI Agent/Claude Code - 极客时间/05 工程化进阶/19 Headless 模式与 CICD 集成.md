@@ -525,3 +525,38 @@ repos:
 前面我们分别学习了 Headless 模式的各个组件——输出格式、管道集成、GitHub Actions、Pre-commit Hook。现在让我们把它们组装成一个完整的自动化审查系统。这个系统涵盖了从本地开发到远程 CI 的完整链路。
 ![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429103231996.png)
 
+下面的目录结构展示了一个完整的 CI/CD 审查系统需要哪些文件。`.github/workflows/ ` 下是 GitHub Actions 配置，`scripts/`  下是本地审查脚本，`.git/hooks/`  下是 pre-commit hook，`CLAUDE.md`  则为所有环节提供统一的审查规范。
+```markdown
+my-project/
+├── .github/
+│   └── workflows/
+│       └── claude-review.yml    # GitHub Action 配置
+├── scripts/
+│   └── review.sh                # 本地审查脚本
+├── .git/
+│   └── hooks/
+│       └── pre-commit           # Pre-commit Hook
+└── CLAUDE.md                    # Claude 记忆文件
+```
+
+**CLAUDE.md 在 Headless 模式中扮演着关键角色**。无论是 pre-commit hook 还是 GitHub Actions 中的 Claude，都会读取项目根目录的 CLAUDE.md 来了解审查规范。这意味着你可以通过一份配置文件，统一所有环节的审查标准。
+```markdown
+# 代码审查规范
+
+## 审查重点
+1. 代码质量：命名规范、DRY 原则、复杂度
+2. 安全问题：输入验证、SQL 注入、XSS
+3. 性能问题：N+1 查询、内存泄漏
+4. 测试覆盖：关键路径必须有测试
+
+## 输出格式
+- Critical: 必须修复
+- Warning: 应该修复
+- Suggestion: 建议改进
+
+## 禁止操作
+- 不要修改 .env 文件
+- 不要执行 npm publish
+- 不要修改数据库迁移文件
+```
+
