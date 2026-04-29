@@ -280,7 +280,7 @@ jobs:
 这份配置只有二十几行，但它实现了一个完整的 AI 审查工作流：监听 PR 和 Issue 中的评论，在检测到 @claude 提及时触发，检出代码，然后让 Claude 分析并回复。`permissions`  部分遵循最小权限原则——`contents: read`  只允许读取代码，`pull-requests: write`  和  `issues: write`  允许发表评论。
 
 
-# 自动化 PR 审查
+## 自动化 PR 审查
 
 自动化 PR 审查是最常见的用例——每次 PR 创建或更新时自动审查。和上面的 Tag Mode 不同，这里不需要任何人工触发，PR 一创建就会自动开始审查。这个工作流稍微复杂一些，因为它需要获取变更文件列表、构建审查 prompt、运行 Claude、然后将结果发布为 PR 评论。
 ```yaml
@@ -360,7 +360,7 @@ jobs:
 - `--allowedTools Read,Grep,Glob`  限制 Claude 只能使用只读工具，确保审查过程不会意外修改任何文件。
 
 
-# 自动修复 Lint 错误
+## 自动修复 Lint 错误
 
 除了只读审查，Headless 模式还可以用于自动修复。
 
@@ -503,4 +503,22 @@ mv "$TEMP_FILE" "$1"
 ```
 
 ## 使用 pre-commit 框架
+
+如果你的团队使用  [pre-commit  框架](https://pre-commit.com/)来管理 Git hooks，可以将 Claude 审查集成为框架中的一个 hook。这样的好处是，hook 的安装和更新由框架统一管理，团队成员不需要手动拷贝 hook 脚本。
+
+配置  `.pre-commit-config.yaml`：
+```yaml
+repos:
+  - repo: local
+    hooks:
+      - id: claude-review
+        name: Claude Code Review
+        entry: bash -c 'claude -p "Review staged changes for issues" --max-turns 3 --output-format text'
+        language: system
+        types: [python, javascript, typescript]
+        stages: [pre-commit]
+```
+
+
+# 实战项目：完整的 CI/CD 审查系统
 
