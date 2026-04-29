@@ -501,3 +501,6 @@ echo "" >> "$TEMP_FILE"
 cat "$1" >> "$TEMP_FILE"
 mv "$TEMP_FILE" "$1"
 ```
+
+## 使用 pre-commit 框架
+
