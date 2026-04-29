@@ -886,4 +886,8 @@ pipeline {
 
 Headless 模式的核心是  `-p`  标志。它告诉 Claude Code 不要打开交互界面，直接执行任务并输出结果。配合  `--output-format`  可以选择 text、json 或 stream-json 三种输出格式，分别适用于人类阅读、程序解析和实时监控。
 
-Claude Code 的一个独特优势是它能无缝融入 Unix 管道。你可以用  cat file | claude -p "分析"  将文件内容传给 Claude，也可以将 Claude 的输出通过管道传给其他工具。这种设计让 Claude 成为你工具链中的一环，而不是一个孤立的应用。
+Claude Code 的一个独特优势是它能无缝融入 Unix 管道。你可以用  `cat file | claude -p` "分析"  将文件内容传给 Claude，也可以将 Claude 的输出通过管道传给其他工具。这种设计让 Claude 成为你工具链中的一环，而不是一个孤立的应用。
+
+GitHub Actions 是 Headless 模式最常见的应用场景。Anthropic 提供了官方 Action，支持 @claude 提及触发和自动化 prompt 两种模式。通过配置工作流，你可以实现 PR 自动审查、lint 错误自动修复、文档自动生成等功能。
+
+安全是 CI/CD 集成的关键考量。应该限制 Claude 可用的工具（用  `--allowedTools`）、控制执行轮次（用  `--max-turns`）、使用 Secrets 管理 API Key，并在让 Claude 自动修改代码前加入人工审查步骤。
