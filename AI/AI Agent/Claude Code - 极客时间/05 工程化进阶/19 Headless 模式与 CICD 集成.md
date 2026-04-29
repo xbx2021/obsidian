@@ -759,3 +759,61 @@ jobs:
           fi
 ```
 
+
+# 安全与成本控制
+
+在 CI/CD 中运行 AI 代理，安全是绕不开的话题。与人类开发者不同，AI 代理不会主动判断“这个操作是否安全”，它只会尽力完成你给它的任务。所以安全的责任在配置端——你需要通过参数和权限设置，确保 Claude 只能做你允许它做的事。
+
+根据  [eesel.ai](https://www.eesel.ai/blog/claude-code-automation) 的指南，在 CI/CD 中运行 Claude Code 时应该限制权限。最小权限原则的核心思想是：只给 Claude 完成任务所需的最少权限，不多给一分。对于只读审查任务，只允许 Read、Grep、Glob 三个工具就够了；如果不需要执行任意命令，明确禁用 Bash 工具；对于简单任务，限制执行轮次以防止无限循环。
+```bash
+# 只读操作
+claude -p "分析代码" --allowedTools Read,Grep,Glob
+
+# 禁用危险工具
+claude -p "任务" --disallowedTools Bash
+
+# 限制执行轮次
+claude -p "快速任务" --max-turns 3
+```
+
+API Key 是访问 Claude 服务的凭证，泄露它意味着别人可以用你的账号消耗 API 额度。在 CI/CD 配置中，**永远不要硬编码 API Key**，而是使用平台提供的 Secrets 管理机制。
+```yaml
+# 不要这样做
+env:
+  ANTHROPIC_API_KEY: "sk-ant-xxx"  # 硬编码
+
+# 正确做法
+env:
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+```
+
+[Skywork AI](https://skywork.ai/blog/how-to-integrate-claude-code-ci-cd-guide-2025/) 的指南中有这样的警告：
+
+> 在 CI/CD 流水线中使用无人监督的 Claude Code 自动化的主要风险是：AI 可能引入细微 Bug、误解核心目标，或在尝试完成任务时增加技术债务。最好从有监督的任务开始，并在让 AI 对生产代码库进行无监督修改之前加入人工审查步骤。
+
+这段警告值得反复阅读。AI 代理在无人监管环境中的最大风险不是“做错事”，而是看起来做对了，但引入了微妙的问题。一个 AI 自动修复的 Bug 可能通过了所有现有测试，但在某个边缘条件下引入了新的问题。比如 AI 可能自动“优化”了一段缓存逻辑，代码更简洁了，也通过了所有测试。但它不小心去掉了一个过期清除的判断逻辑，结果缓存数据长期不更新，线上就会悄悄变脏。
+
+建议采用渐进式采纳策略。
+
+1. **从只读开始**：先让 Claude 只做审查，不做修改。
+2. **人工审批**：Claude 的修改建议需要人工确认后才能合并。
+3. **限制范围**：不要让 Claude 自动修改核心业务逻辑。
+4. **审计日志**：记录所有 Claude 的操作。
+
+![](assets/19%20Headless%20模式与%20CICD%20集成/file-20260429104927981.png)
+
+每次 CI 运行都会消耗 API tokens，而 tokens 意味着真金白银。在高频迭代的项目中，如果每次推送都触发完整的 AI 审查，成本可能会快速累积。通过合理的触发条件和并发控制，可以在保持审查覆盖率的同时有效控制成本。
+```yaml
+# 只在特定条件下运行
+on:
+  pull_request:
+    types: [opened]  # 不包括 synchronize，减少运行次数
+    paths:
+      - 'src/**'     # 只在 src 目录变更时运行
+
+# 限制并发
+concurrency:
+  group: claude-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+```
+
