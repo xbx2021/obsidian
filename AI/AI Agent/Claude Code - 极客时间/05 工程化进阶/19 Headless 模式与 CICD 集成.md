@@ -186,3 +186,6 @@ claude -p "检查是否有安全漏洞" --output-format json | \
   mail -s "安全扫描报告" security@company.com
 ```
 
+
+# 批量处理模式
+
