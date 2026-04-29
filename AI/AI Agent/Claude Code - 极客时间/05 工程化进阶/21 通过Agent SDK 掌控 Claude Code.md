@@ -419,3 +419,60 @@ async with ClaudeSDKClient() as client:
 ```
 
 有时候你需要在不同的程序运行之间保持对话连续性。比如，你的 Agent 在一次 CI 运行中分析了代码，你想在下一次 CI 运行中让它继续从上次的结论出发。这时候就需要保存  `session_id`，然后在下次启动时通过  `resume`  参数恢复会话。
+```python
+# 保存会话 ID
+saved_session_id = "abc123"
+
+# 稍后恢复
+options = ClaudeAgentOptions(
+    resume=saved_session_id
+)
+
+async with ClaudeSDKClient(options=options) as client:
+    # 在之前的上下文中继续
+    await client.query("继续刚才的任务")
+    async for msg in client.receive_response():
+        print(msg)
+```
+
+下面是一个完整的会话持久化方案。它把  `session_id`  保存到本地 JSON 文件中，支持按名称存取多个会话。这个方案适用于开发环境和小型项目。
+
+在生产环境中，你可能需要把会话 ID 存到 Redis 或数据库中，并设置过期时间——长时间不活跃的会话应该被清理，否则会累积大量上下文，导致 Token 消耗急剧增加。
+```python
+import json
+from pathlib import Path
+
+SESSIONS_FILE = Path("sessions.json")
+
+def save_session(name: str, session_id: str):
+    """保存会话"""
+    sessions = {}
+    if SESSIONS_FILE.exists():
+        sessions = json.loads(SESSIONS_FILE.read_text())
+    sessions[name] = session_id
+    SESSIONS_FILE.write_text(json.dumps(sessions, indent=2))
+
+def load_session(name: str) -> str | None:
+    """加载会话"""
+    if not SESSIONS_FILE.exists():
+        return None
+    sessions = json.loads(SESSIONS_FILE.read_text())
+    return sessions.get(name)
+
+# 使用
+async def main():
+    # 尝试恢复会话
+    session_id = load_session("project-review")
+
+    options = ClaudeAgentOptions(
+        resume=session_id  # None 则开始新会话
+    )
+
+    async with ClaudeSDKClient(options=options) as client:
+        await client.query("继续代码审查")
+
+        async for msg in client.receive_response():
+            if msg.type == "result":
+                # 保存会话以便下次恢复
+                save_session("project-review", msg.session_id)
+```
