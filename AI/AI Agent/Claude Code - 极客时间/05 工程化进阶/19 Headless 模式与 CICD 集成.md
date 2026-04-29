@@ -817,3 +817,12 @@ concurrency:
   cancel-in-progress: true
 ```
 
+
+# 其它 CI 平台集成
+
+虽然 GitHub Actions 有官方支持，但 Headless 模式可以在任何 CI 平台上工作。因为 Headless 模式的本质就是命令行调用——只要平台能运行  `npm install`  和  `claude -p`，就能集成。下面是三个主流 CI 平台的配置示例。
+
+
+## GitLab CI
+
+GitLab CI：GitLab CI 使用  .gitlab-ci.yml  配置文件，语法与 GitHub Actions 的 YAML 不同但概念相似。注意变量引用方式的差异——GitLab 使用  $VARIABLE_NAME，而不是 GitHub 的  ${{ secrets.VARIABLE_NAME }}。
