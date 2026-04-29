@@ -476,3 +476,5 @@ async def main():
                 # 保存会话以便下次恢复
                 save_session("project-review", msg.session_id)
 ```
+![](assets/21%20通过Agent%20SDK%20掌控%20Claude%20Code/file-20260429153523832.png)
+
