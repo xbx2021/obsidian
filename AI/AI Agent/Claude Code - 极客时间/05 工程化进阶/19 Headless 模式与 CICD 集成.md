@@ -51,18 +51,88 @@ Headless 模式支持三种输出格式，适用于不同的自动化场景。�
 ## Text 格式
 
 **Text 是默认格式**，也是最简单的格式。适用场景为日志记录、简单脚本、人工审查。它直接输出 Claude 的回复文本，没有任何元数据包装。如果你只是想在终端里看结果，或者将结果写入日志文件，Text 格式就够了。
-```
+```bash
 claude -p "生成一个 Python hello world 函数" --output-format text
 ```
 
 输出：
-```markdown
+```python
 Here's a simple hello world function:
 
 def hello_world():
     print("Hello, World!")
 ```
 
+## JSON 格式
 
+当你需要在程序中解析 Claude 的输出时，JSON 格式是更好的选择。它不仅包含回复文本本身，还包含执行的元数据——耗时多久、花了多少钱、用了多少 tokens。这些元数据对于成本监控和性能调优至关重要。在生产环境的 CI/CD 流水线中，你几乎总是应该使用 JSON 格式，因为它让你能够用程序化的方式验证执行结果、追踪成本、检测异常。
+```bash
+claude -p "列出当前目录文件" --output-format json
+```
 
+输出：
+```json
+{
+  "type": "result",
+  "subtype": "success",
+  "session_id": "abc123",
+  "is_error": false,
+  "duration_ms": 1500,
+  "duration_api_ms": 1200,
+  "num_turns": 1,
+  "total_cost_usd": 0.005,
+  "usage": {
+    "input_tokens": 150,
+    "output_tokens": 200
+  },
+  "result": "文件列表：\n- file1.py\n- file2.js\n..."
+}
+```
+
+下面是一个 Python 解析示例。这段代码展示了如何在脚本中调用 Claude Code 并提取结构化结果。注意  `subprocess.run`  的用法——它是在 Python 中调用外部命令的标准方式，`capture_output=True`  确保我们能拿到 stdout 的内容。
+```python
+import subprocess
+import json
+
+result = subprocess.run(
+    ["claude", "-p", "列出文件", "--output-format", "json"],
+    capture_output=True,
+    text=True
+)
+
+data = json.loads(result.stdout)
+print(f"结果: {data['result']}")
+print(f"耗时: {data['duration_ms']}ms")
+print(f"费用: ${data['total_cost_usd']}")
+```
+
+## Stream-JSON 格式
+
+对于长时间运行的任务，你可能不想等到执行完成才看到输出，因此这种格式适用于实时进度显示、长时间任务监控、流式处理。Stream-JSON 格式以 JSONL（每行一个 JSON 对象）的方式实时输出执行过程中的每个事件——Claude 的每段回复、每次工具调用、每个工具返回结果。
+
+这种格式特别适合需要实时进度显示的场景，比如在 CI 日志中实时展示 Claude 正在做什么。
+```bash
+claude -p "分析代码" --output-format stream-json
+```
+
+输出里（每行一个事件）：
+```json
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"正在分析..."}]}}
+{"type":"tool_use","tool":"Read","input":{"file_path":"/path/to/file"}}
+{"type":"tool_result","tool":"Read","result":"file content..."}
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"分析完成。"}]}}
+{"type":"result","session_id":"abc123","is_error":false,"result":"最终结果"}
+```
+
+下面这段 Bash 脚本展示了如何逐行读取 Stream JSON 输出，并根据事件类型做出不同响应。你可以在此基础上扩展，比如在检测到  tool use  事件时，更新进度条，在检测到  result  事件时触发下游通知。
+```bash
+claude -p "分析代码" --output-format stream-json | while IFS= read -r line; do
+  type=$(echo "$line" | jq -r '.type')
+  if [ "$type" = "result" ]; then
+    echo "最终结果: $(echo "$line" | jq -r '.result')"
+  elif [ "$type" = "tool_use" ]; then
+    echo "正在使用工具: $(echo "$line" | jq -r '.tool')"
+  fi
+done
+```
 
