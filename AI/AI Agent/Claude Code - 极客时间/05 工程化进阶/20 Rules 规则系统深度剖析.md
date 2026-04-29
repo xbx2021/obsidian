@@ -284,4 +284,55 @@ paths:
 
 权限配置可以在四个层级设置，**高优先级覆盖低优先级**。
 ![](assets/20%20Rules%20规则系统深度剖析/file-20260429134812971.png)
+**关键规则：高层级的 deny 不可被低层级覆盖**。  如果组织策略禁止了  Bash(curl * )，项目配置和个人配置都无法解除这个限制。这是企业级安全管控的基石。
+
+## 权限规则在扩展机制中的渗透
+
+权限规则不仅存在于 settings.json 中，它还渗透到了 Claude Code 的各个扩展机制里。
+
+### **Skills 中的 allowed-tools**
+
+Skill 被触发时只能使用白名单中的工具：
+```markdown
+---
+name: code-reviewing
+description: Review code for quality and security issues
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+---
+```
+
+### **Sub-Agents 中的 tools**
+
+子代理的工具集更加严格，甚至拿不到主对话的 CLAUDE.md。
+```markdown
+---
+name: code-reviewer
+tools: Read, Grep, Glob
+model: sonnet
+---
+```
+
+### **Hooks 中的动态拦截**
+
+最灵活的权限控制，可以根据动态条件决定是否放行。
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/block-dangerous.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
 
