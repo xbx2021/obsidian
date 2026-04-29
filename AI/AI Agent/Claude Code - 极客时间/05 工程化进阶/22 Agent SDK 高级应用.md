@@ -33,3 +33,29 @@ Claude Agent SDK 内置了文件操作、命令执行、网络搜索等工具。
 
 左侧的 Agent（大模型 + 记忆 + 推理）并不直接调用具体工具，而是通过统一的 `tool_use` 请求，将意图表达为标准化的工具调用（如` mcp_{server}_{tool}`）。中间的 MCP Server 相当于一个“工具路由中枢”，负责根据命名规范解析请求、完成权限控制与路由分发，并调用对应的工具函数。
 
+右侧的各类自定义工具只专注于执行具体能力（如查询、搜索、发送等），执行完成后将结果返回给 MCP Server，再统一回传给 Agent。通过标准命名 + 中间层路由，实现 Agent 与工具的解耦、可扩展和可治理，从而让系统可以像“插 USB 设备”一样动态接入新能力。
+
+# 使用 @tool 装饰器定义工具
+
+`@tool`  装饰器是定义自定义工具的最简单方式。你只需要指定工具名称、描述和参数，然后把业务逻辑写在函数体内。SDK 会自动将这个函数注册为一个可被 Agent 调用的工具，Agent 在推理过程中会根据工具描述决定何时调用它。
+```python
+from claude_agent_sdk import tool
+
+@tool(
+    name="get_weather",
+    description="Get current weather for a city",
+    parameters={"city": str, "units": str}
+)
+async def get_weather(args):
+    city = args["city"]
+    units = args.get("units", "celsius")
+
+    # 调用天气 API（示例）
+    weather = await fetch_weather_api(city, units)
+
+    return {
+        "content": [
+            {"type": "text", "text": f"Weather in {city}: {weather}"}
+        ]
+    }
+```
