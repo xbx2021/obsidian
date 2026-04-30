@@ -723,3 +723,72 @@ test_tools_server = create_sdk_mcp_server(
 )
 ```
 
+## Hooks 配置：安全控制
+
+测试修复 Agent 需要修改源代码文件，这是一个高风险操作。我们通过 Hooks 实现两个关键的安全控制：第一，限制 Agent 只能修改  `tests/`、`src/`、`lib/`  目录下的文件，禁止修改  `setup.py`、`pyproject.toml`  等项目配置文件；第二，记录所有文件修改操作到日志文件，便于事后审计和回滚。
+```python
+# 允许修改的文件模式
+ALLOWED_EDIT_PATTERNS = [
+    "tests/",
+    "src/",
+    "lib/"
+]
+
+# 禁止修改的文件
+FORBIDDEN_FILES = [
+    "setup.py",
+    "pyproject.toml",
+    "requirements.txt",
+    ".github/",
+    "conftest.py"
+]
+
+async def check_file_modification(input_data, tool_use_id, context):
+    """检查文件修改权限"""
+    tool_name = input_data["tool_name"]
+    tool_input = input_data["tool_input"]
+
+    if tool_name in ["Write", "Edit"]:
+        file_path = tool_input.get("file_path", "")
+
+        # 检查禁止列表
+        for forbidden in FORBIDDEN_FILES:
+            if forbidden in file_path:
+                return {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": f"Modification of {forbidden} is not allowed"
+                    }
+                }
+
+        # 检查允许列表
+        allowed = any(file_path.startswith(p) for p in ALLOWED_EDIT_PATTERNS)
+        if not allowed:
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "ask",
+                    "permissionDecisionReason": f"File {file_path} is outside allowed directories"
+                }
+            }
+
+    return {}
+
+
+async def log_modifications(input_data, tool_use_id, context):
+    """记录所有修改"""
+    tool_name = input_data["tool_name"]
+    tool_input = input_data["tool_input"]
+
+    if tool_name in ["Write", "Edit"]:
+        file_path = tool_input.get("file_path", "")
+
+        # 记录到修改日志
+        with open("modification-log.txt", "a") as f:
+            from datetime import datetime
+            f.write(f"[{datetime.now().isoformat()}] {tool_name}: {file_path}\n")
+
+    return {}
+```
+
