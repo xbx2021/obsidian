@@ -602,5 +602,9 @@ async with ClaudeSDKClient(options=options) as client:
 
 ## 自定义工具：测试运行器
 
+首先，我们需要一个能够运行测试并返回结构化结果的自定义工具。这个工具会调用 pytest，解析 JSON 报告，提取失败测试的详细信息（测试名称、错误信息），然后以标准 MCP 格式返回给 Agent。
+
+Agent 拿到这些结构化数据后，就能精确定位需要分析的文件和代码行。
+
 
 
