@@ -792,3 +792,146 @@ async def log_modifications(input_data, tool_use_id, context):
     return {}
 ```
 
+这两个 Hook 分别挂载在  `PreToolUse`  和  `PostToolUse`  事件上，前者在文件修改前做准入检查，后者在修改成功后记录审计日志。
+
+下面是完整的测试修复 Agent 代码。它综合运用了自定义工具、Hooks、流式会话和动态权限切换，实现了“先分析后修复”的两阶段工作流。第一阶段使用  `default`  权限模式，Agent 只分析不修改；用户确认修复方案后，切换到  `acceptEdits`  模式执行修复。
+```python
+#!/usr/bin/env python3
+"""
+自动化测试修复 Agent
+
+运行测试、分析失败、修复代码、验证修复。
+"""
+
+import asyncio
+from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions, HookMatcher
+
+# 导入自定义工具和 Hooks（见上文定义）
+# from tools import test_tools_server
+# from hooks import check_file_modification, log_modifications
+
+
+async def run_test_fixer():
+    """运行测试修复 Agent"""
+
+    # 配置选项
+    options = ClaudeAgentOptions(
+        # 模型选择
+        model="sonnet",
+
+        # MCP 服务器
+        mcp_servers={"test-tools": test_tools_server},
+
+        # 允许的工具
+        allowed_tools=[
+            "Read",
+            "Write",
+            "Edit",
+            "Grep",
+            "Glob",
+            "Bash(pytest:*)",  # 只允许 pytest 命令
+            "mcp__test-tools__run_tests",
+            "mcp__test-tools__get_test_history"
+        ],
+
+        # 权限模式：先分析，确认后再修改
+        permission_mode="default",
+
+        # 最大轮次
+        max_turns=30,
+
+        # Hooks
+        hooks={
+            "PreToolUse": [
+                HookMatcher(matcher="Write", hooks=[check_file_modification]),
+                HookMatcher(matcher="Edit", hooks=[check_file_modification])
+            ],
+            "PostToolUse": [
+                HookMatcher(matcher="Write", hooks=[log_modifications]),
+                HookMatcher(matcher="Edit", hooks=[log_modifications])
+            ]
+        }
+    )
+
+    # 系统提示
+    system_prompt = """你是一个专业的测试修复助手。你的任务是：
+
+1.运行测试套件，识别失败的测试
+2.分析每个失败测试的原因
+3.确定是代码 bug 还是测试本身的问题
+4.提出具体的修复方案
+5.在获得确认后执行修复
+6.重新运行测试验证修复
+
+修复原则：
+- 最小化修改：只改必要的代码
+- 优先修复代码：除非测试本身有问题
+- 保持测试覆盖：不要删除测试来"修复"问题
+- 记录修改：说明每个修改的原因
+
+输出格式：
+- 先运行测试，报告结果
+- 对每个失败的测试，分析原因
+- 提出修复方案，等待确认
+- 执行修复后，重新验证
+"""
+
+    async with ClaudeSDKClient(options=options) as client:
+        print("Test Fixer Agent Started")
+        print("=" * 50)
+
+        # 第一阶段：运行测试并分析
+        print("\nPhase 1: Running tests and analyzing failures...")
+
+        await client.query(f"""{system_prompt}
+
+请开始：
+1. 首先运行测试套件
+2. 分析所有失败的测试
+3. 为每个失败提出修复方案
+
+注意：在这个阶段只分析，不要修改任何文件。
+""")
+
+        analysis_result = []
+        async for msg in client.receive_response():
+            if msg.type == "text":
+                print(msg.text)
+                analysis_result.append(msg.text)
+            elif msg.type == "tool_use":
+                print(f"  [Tool] {msg.tool_name}...")
+
+        # 等待用户确认
+        print("\n" + "=" * 50)
+        print("Analysis complete. Review the proposed fixes above.")
+        confirm = input("Proceed with fixes? (y/n): ")
+
+        if confirm.lower() != "y":
+            print("Aborted by user")
+            return
+
+        # 第二阶段：执行修复
+        print("\nPhase 2: Applying fixes...")
+
+        # 切换到接受编辑模式
+        await client.update_options(permission_mode="acceptEdits")
+
+        await client.query("""
+现在请执行你提出的修复方案。
+修复完成后，重新运行测试验证。
+""")
+
+        async for msg in client.receive_response():
+            if msg.type == "text":
+                print(msg.text)
+            elif msg.type == "tool_use":
+                print(f"  [Tool] {msg.tool_name}: {msg.tool_input.get('file_path', msg.tool_input.get('command', ''))}")
+            elif msg.type == "result":
+                print(f"\nCompleted in {msg.duration_ms/1000:.1f}s")
+                print(f"   Cost: ${msg.total_cost_usd:.4f}")
+                print(f"   Turns: {msg.num_turns}")
+
+
+if __name__ == "__main__":
+    asyncio.run(run_test_fixer())
+```
