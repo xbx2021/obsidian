@@ -1040,3 +1040,66 @@ async def resilient_query(client, prompt, max_retries=3):
                 raise
 ```
 
+## 超时处理
+
+Agent 任务可能因为各种原因卡住，等待一个永远不会返回的 API 调用，或者陷入无意义的推理循环。设置合理的超时时间是防止资源浪费的重要手段。Python 3.11 引入的 ` asyncio.timeout`  上下文管理器，让超时处理变得非常优雅。
+```python
+import asyncio
+
+async def query_with_timeout(client, prompt, timeout=300):
+    """带超时的查询"""
+    try:
+        await client.query(prompt)
+
+        async with asyncio.timeout(timeout):
+            results = []
+            async for msg in client.receive_response():
+                results.append(msg)
+            return results
+
+    except asyncio.TimeoutError:
+        await client.interrupt()
+        logger.error(f"Query timed out after {timeout}s")
+        raise
+```
+
+## 审计日志
+
+在企业环境中，所有 Agent 操作都应该被记录下来。审计日志不仅用于调试，更是合规要求。下面的  `AuditLogger`  以 JSONL 格式（每行一个 JSON 对象）记录所有工具调用，包括时间戳、工具名称、输入参数和调用 ID。这种格式便于后续用 ELK Stack 或 Splunk 等日志分析工具处理。
+```python
+import json
+from datetime import datetime
+
+class AuditLogger:
+    def __init__(self, log_file="agent-audit.jsonl"):
+        self.log_file = log_file
+
+    def log(self, event_type, data):
+        entry = {
+            "timestamp": datetime.now().isoformat(),
+            "event": event_type,
+            "data": data
+        }
+        with open(self.log_file, "a") as f:
+            f.write(json.dumps(entry) + "\n")
+
+audit = AuditLogger()
+
+async def audited_tool_usage(input_data, tool_use_id, context):
+    """审计所有工具使用"""
+    audit.log("tool_use", {
+        "tool": input_data["tool_name"],
+        "input": input_data["tool_input"],
+        "tool_use_id": tool_use_id
+    })
+    return {}
+
+options = ClaudeAgentOptions(
+    hooks={
+        "PreToolUse": [
+            HookMatcher(matcher="*", hooks=[audited_tool_usage])
+        ]
+    }
+)
+```
+
