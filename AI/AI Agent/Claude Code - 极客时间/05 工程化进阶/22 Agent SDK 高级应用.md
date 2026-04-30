@@ -794,6 +794,9 @@ async def log_modifications(input_data, tool_use_id, context):
 
 这两个 Hook 分别挂载在  `PreToolUse`  和  `PostToolUse`  事件上，前者在文件修改前做准入检查，后者在修改成功后记录审计日志。
 
+
+## 完整的测试修复 Agent
+
 下面是完整的测试修复 Agent 代码。它综合运用了自定义工具、Hooks、流式会话和动态权限切换，实现了“先分析后修复”的两阶段工作流。第一阶段使用  `default`  权限模式，Agent 只分析不修改；用户确认修复方案后，切换到  `acceptEdits`  模式执行修复。
 ```python
 #!/usr/bin/env python3
@@ -935,3 +938,52 @@ async def run_test_fixer():
 if __name__ == "__main__":
     asyncio.run(run_test_fixer())
 ```
+
+执行测试修复 Agent ，可以看到它自动完成了从运行测试、分析失败、到修复代码、验证结果的完整流程。整个过程中，Agent 精准识别了两个失败测试的根因，一个是模型默认值变更，一个是 API 路径更新，并提出了合理的修复方案。
+```markdown
+$ python test_fixer.py
+
+Test Fixer Agent Started
+==================================================
+
+Phase 1: Running tests and analyzing failures...
+  [Tool] mcp__test-tools__run_tests...
+
+Test Results:
+- Total: 200
+- Passed: 198
+- Failed: 2
+
+Failed Tests Analysis:
+
+1. tests/test_user.py::test_user_creation
+   Error: AssertionError: expected 'active' but got 'pending'
+   Analysis: The User model's default status was changed from 'active' to 'pending'
+             in commit abc123, but the test wasn't updated.
+   Proposed Fix: Update the test to expect 'pending' status, OR restore the
+                 default to 'active' if that was unintentional.
+
+2. tests/test_api.py::test_get_user_endpoint
+   Error: 404 Not Found
+   Analysis: The endpoint path was changed from /api/user to /api/users (plural)
+             but the test still uses the old path.
+   Proposed Fix: Update the test to use /api/users
+
+==================================================
+Analysis complete. Review the proposed fixes above.
+Proceed with fixes? (y/n): y
+
+Phase 2: Applying fixes...
+  [Tool] Edit: tests/test_user.py
+  [Tool] Edit: tests/test_api.py
+  [Tool] mcp__test-tools__run_tests...
+
+All tests passed! (200/200)
+
+Completed in 45.3s
+   Cost: $0.0821
+   Turns: 12
+```
+
+
+# 生产环境最佳实践
