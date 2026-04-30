@@ -606,5 +606,120 @@ async with ClaudeSDKClient(options=options) as client:
 
 Agent 拿到这些结构化数据后，就能精确定位需要分析的文件和代码行。
 
+我们还额外定义了一个  `get_test_history`  工具，用于查询最近的测试运行历史。这能帮助 Agent 判断测试失败是偶发性的还是持续性的，从而做出更准确的修复决策。
+```python
+from claude_agent_sdk import tool, create_sdk_mcp_server
+import subprocess
+import json
 
+@tool(
+    name="run_tests",
+    description="Run the test suite and return results",
+    parameters={
+        "test_path": str,  # 可选：指定测试路径
+        "verbose": bool    # 可选：详细输出
+    }
+)
+async def run_tests(args):
+    """运行 pytest 测试"""
+    test_path = args.get("test_path", "tests/")
+    verbose = args.get("verbose", False)
+
+    cmd = ["pytest", test_path, "--tb=short", "-q"]
+    if verbose:
+        cmd.append("-v")
+
+    # 添加 JSON 输出
+    cmd.extend(["--json-report", "--json-report-file=test-results.json"])
+
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=300  # 5 分钟超时
+        )
+
+        # 读取 JSON 报告
+        try:
+            with open("test-results.json") as f:
+                report = json.load(f)
+        except:
+            report = None
+
+        output = {
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+            "return_code": result.returncode,
+            "success": result.returncode == 0
+        }
+
+        if report:
+            output["summary"] = {
+                "total": report.get("summary", {}).get("total", 0),
+                "passed": report.get("summary", {}).get("passed", 0),
+                "failed": report.get("summary", {}).get("failed", 0),
+                "errors": report.get("summary", {}).get("errors", 0)
+            }
+            output["failed_tests"] = [
+                {
+                    "name": t["nodeid"],
+                    "message": t.get("call", {}).get("longrepr", "")
+                }
+                for t in report.get("tests", [])
+                if t.get("outcome") == "failed"
+            ]
+
+        return {
+            "content": [
+                {"type": "text", "text": json.dumps(output, indent=2)}
+            ]
+        }
+
+    except subprocess.TimeoutExpired:
+        return {
+            "content": [
+                {"type": "text", "text": "Error: Test execution timed out after 5 minutes"}
+            ],
+            "isError": True
+        }
+    except Exception as e:
+        return {
+            "content": [
+                {"type": "text", "text": f"Error running tests: {e}"}
+            ],
+            "isError": True
+        }
+
+
+@tool(
+    name="get_test_history",
+    description="Get recent test run history",
+    parameters={"limit": int}
+)
+async def get_test_history(args):
+    """获取测试历史（示例实现）"""
+    limit = args.get("limit", 5)
+
+    # 实际实现中，这里会从数据库或日志读取
+    history = [
+        {"timestamp": "2025-01-18 10:00", "passed": 198, "failed": 2},
+        {"timestamp": "2025-01-18 09:30", "passed": 200, "failed": 0},
+        {"timestamp": "2025-01-18 09:00", "passed": 195, "failed": 5}
+    ][:limit]
+
+    return {
+        "content": [
+            {"type": "text", "text": json.dumps(history, indent=2)}
+        ]
+    }
+
+
+# 创建测试工具服务器
+test_tools_server = create_sdk_mcp_server(
+    name="test-tools",
+    version="1.0.0",
+    tools=[run_tests, get_test_history]
+)
+```
 
