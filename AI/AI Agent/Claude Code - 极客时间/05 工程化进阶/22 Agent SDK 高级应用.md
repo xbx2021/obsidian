@@ -600,5 +600,7 @@ async with ClaudeSDKClient(options=options) as client:
 4. 在确认后执行修复
 5. 重新运行测试验证
 
+## 自定义工具：测试运行器
+
 
 
