@@ -911,3 +911,20 @@ git push -u origin main --tags
 }
 ```
 
+用户可以添加你的市场，然后从中安装插件：
+```bash
+/plugin marketplace add our-company/claude-plugins
+```
+
+然后就可以安装市场中的插件：
+```bash
+/plugin install team-toolkit@our-company
+```
+
+发布新版本时，需要同步更新四个地方：
+
+1. 更新  plugin.json  中的版本号
+2. 更新  README.md  中的更新日志
+3. 创建新的 Git tag
+4. 如果有私有市场，更新  marketplace.json
+
