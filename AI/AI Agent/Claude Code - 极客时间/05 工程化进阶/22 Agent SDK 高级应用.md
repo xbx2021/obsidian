@@ -987,3 +987,56 @@ Completed in 45.3s
 
 
 # 生产环境最佳实践
+
+## 成本控制
+
+将 Agent 部署到生产环境时，成本控制是第一个需要关注的问题。Agent 的每一轮工具调用都会消耗 token，而不受控的 Agent 可能在一次任务中消耗大量 API 额度。以下策略能帮助你有效控制成本：选择合适的模型（简单任务用 Haiku 而非 Sonnet）、限制最大轮次、限制工具集（减少不必要的操作），以及在运行时监控累计成本。
+```python
+from claude_agent_sdk import ClaudeAgentOptions
+
+options = ClaudeAgentOptions(
+    # 使用更便宜的模型处理简单任务
+    model="haiku",
+
+    # 限制轮次
+    max_turns=20,
+
+    # 限制工具（减少不必要的操作）
+    allowed_tools=["Read", "Grep", "Glob"],  # 只读
+)
+
+# 监控成本
+async for msg in client.receive_response():
+    if msg.type == "result":
+        if msg.total_cost_usd > 0.50:
+            logger.warning(f"High cost query: ${msg.total_cost_usd}")
+```
+
+## 错误重试
+
+网络波动、API 限流、临时性服务中断——这些问题在生产环境中不可避免。一个健壮的 Agent 应用需要内置重试机制。下面的实现使用指数退避策略：第一次失败后等 1 秒重试，第二次等 2 秒，第三次等 4 秒。这种策略既避免了对 API 的过度请求，又在大多数临时性故障中能自动恢复。
+```python
+import asyncio
+from claude_agent_sdk import ClaudeAgentError
+
+async def resilient_query(client, prompt, max_retries=3):
+    """带重试的查询"""
+    for attempt in range(max_retries):
+        try:
+            await client.query(prompt)
+            results = []
+            async for msg in client.receive_response():
+                results.append(msg)
+                if msg.type == "error":
+                    raise ClaudeAgentError(msg.error)
+            return results
+
+        except ClaudeAgentError as e:
+            if attempt < max_retries - 1:
+                wait_time = 2 ** attempt  # 指数退避
+                logger.warning(f"Attempt {attempt + 1} failed, retrying in {wait_time}s...")
+                await asyncio.sleep(wait_time)
+            else:
+                raise
+```
+
