@@ -545,3 +545,47 @@ async with ClaudeSDKClient(options=options) as client:
             print(msg)
 ```
 
+## 中断和取消
+
+流式会话支持在任意时刻中断 Agent 的执行。这在 Agent 陷入无意义循环、执行时间过长、或用户改变主意时非常有用。调用  `client.interrupt()`  后，Agent 会停止当前操作，但会话上下文仍然保留，你可以继续发送新的查询。
+```python
+import asyncio
+
+async def interruptible_session():
+    async with ClaudeSDKClient(options=options) as client:
+        await client.query("分析整个代码库")
+
+        try:
+            async for msg in client.receive_response():
+                print(msg)
+
+                # 检查是否需要中断
+                if should_interrupt():
+                    await client.interrupt()
+                    print("Task interrupted by user")
+                    break
+
+        except asyncio.CancelledError:
+            print("Session cancelled")
+```
+
+## 动态切换设置
+
+流式模式还有一个独特的能力：在会话中途动态切换设置。最典型的场景是“先分析后执行”模式，先用只读模式让 Agent 分析问题并制定计划，用户确认后再切换到可编辑模式执行修改。这种两阶段工作流在生产环境中非常常见，它既保证了安全性，又保持了效率。
+```python
+async with ClaudeSDKClient(options=options) as client:
+    # 开始时使用只读模式
+    await client.update_options(permission_mode="planMode")
+    await client.query("分析代码并制定修复计划")
+    async for msg in client.receive_response():
+        print(msg)
+
+    # 用户确认后，切换到可编辑模式
+    await client.update_options(permission_mode="acceptEdits")
+    await client.query("执行刚才的修复计划")
+    async for msg in client.receive_response():
+        print(msg)
+```
+![](assets/22%20Agent%20SDK%20高级应用/file-20260430145724723.png)
+
+
