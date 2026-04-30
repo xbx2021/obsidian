@@ -506,3 +506,41 @@ async def streaming_session():
         async for msg in client.receive_response():
             print(msg)
 ```
+
+这三轮对话共享同一个会话上下文。Agent 在第二轮能引用第一轮列出的文件，在第三轮能基于第二轮的分析结果执行修复。
+
+## 处理权限请求
+
+在流式模式中，当 Agent 试图执行需要权限的操作时，SDK 不会自动处理，而是将权限请求发送给你的代码。你可以根据工具类型、命令内容等信息做出自动决策，也可以将决策权交给用户。
+
+下面的例子展示了一种混合策略：对于测试命令自动批准，对于其他命令则询问用户。
+```python
+async def handle_permission_request(request):
+    """处理权限请求"""
+    tool_name = request.get("tool_name")
+    tool_input = request.get("tool_input")
+
+    print(f"\nPermission Request:")
+    print(f"   Tool: {tool_name}")
+    print(f"   Input: {tool_input}")
+
+    # 自动决策或询问用户
+    if tool_name == "Bash":
+        command = tool_input.get("command", "")
+        if command.startswith("npm test") or command.startswith("pytest"):
+            return {"approved": True}
+
+    # 询问用户
+    response = input("   Approve? (y/n): ")
+    return {"approved": response.lower() == "y"}
+
+async with ClaudeSDKClient(options=options) as client:
+    await client.query("运行测试并修复失败的测试")
+
+    async for msg in client.receive_response():
+        if msg.type == "permission_request":
+            decision = await handle_permission_request(msg)
+            await client.respond_to_permission(msg.id, decision)
+        else:
+            print(msg)
+```
