@@ -349,3 +349,53 @@ options = ClaudeAgentOptions(
     }
 )
 ```
+
+自动格式化这个 Hook 特别实用。Agent 生成的代码虽然逻辑正确，但缩进、换行、引号风格可能不符合项目规范。有了这个 Hook，你再也不需要手动跑格式化了。
+
+# canUseTool 回调：运行时权限控制
+
+除了 Hooks，SDK 还提供了  `canUseTool`  回调作为另一种权限控制方式。它比 Hooks 更简单，只负责回答一个问题：“这个工具调用是否被允许？”不涉及输入修改、日志记录等复杂逻辑，适合纯粹的权限判断场景。
+
+下面的例子展示了一个保护敏感文件和限制网络操作的  `canUseTool`  回调。当 Agent 试图读写受保护的文件或执行网络命令时，回调会返回拒绝并附带原因说明。
+```python
+# 受保护的文件列表
+PROTECTED_FILES = [
+    ".env",
+    "secrets.json",
+    "config/production.yaml",
+    "database/migrations/"
+]
+
+async def can_use_tool(tool_name: str, tool_input: dict) -> dict:
+    """运行时权限检查"""
+
+    # 检查文件操作
+    if tool_name in ["Write", "Edit", "Read"]:
+        file_path = tool_input.get("file_path", "")
+
+        for protected in PROTECTED_FILES:
+            if protected in file_path:
+                return {
+                    "allowed": False,
+                    "reason": f"Access to {protected} is not allowed"
+                }
+
+    # 检查 Bash 命令
+    if tool_name == "Bash":
+        command = tool_input.get("command", "")
+
+        # 禁止网络操作
+        network_commands = ["curl", "wget", "nc", "ssh"]
+        for cmd in network_commands:
+            if cmd in command:
+                return {
+                    "allowed": False,
+                    "reason": f"Network command '{cmd}' is not allowed"
+                }
+
+    return {"allowed": True}
+
+options = ClaudeAgentOptions(
+    can_use_tool=can_use_tool
+)
+```
