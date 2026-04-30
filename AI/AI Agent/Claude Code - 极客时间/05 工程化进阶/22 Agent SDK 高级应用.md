@@ -588,4 +588,7 @@ async with ClaudeSDKClient(options=options) as client:
 ```
 ![](assets/22%20Agent%20SDK%20高级应用/file-20260430145724723.png)
 
+# 实战项目：自动化测试修复 Agent
+
+
 
