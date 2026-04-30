@@ -252,3 +252,47 @@ options = ClaudeAgentOptions(
     }
 )
 ```
+
+注意  `HookMatcher`  的  `matcher`  参数，它指定这个 Hook 只对  `Bash`  工具生效。你也可以用  `"*"`  来匹配所有工具。
+
+## PreToolUse Hook：修改输入参数
+
+从 Claude Code v2.0.10 开始，PreToolUse Hook 获得了一个强大的新能力——修改工具输入。这意味着你可以在工具执行前对参数进行转换、规范化或补充，而 Agent 对此完全无感知。
+
+一个典型的应用场景是路径规范化。Agent 生成的文件路径有时是相对路径，但你的工具可能要求绝对路径。通过 PreToolUse Hook，你可以在调用发生前自动完成转换，避免工具报错。
+```python
+async def normalize_file_paths(input_data, tool_use_id, context):
+    """规范化文件路径"""
+    tool_name = input_data["tool_name"]
+    tool_input = input_data["tool_input"]
+
+    if tool_name in ["Read", "Write", "Edit"]:
+        file_path = tool_input.get("file_path", "")
+
+        # 将相对路径转为绝对路径
+        if not file_path.startswith("/"):
+            import os
+            absolute_path = os.path.abspath(file_path)
+
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "allow",
+                    "updatedInput": {
+                        **tool_input,
+                        "file_path": absolute_path
+                    }
+                }
+            }
+
+    return {}
+
+options = ClaudeAgentOptions(
+    hooks={
+        "PreToolUse": [
+            HookMatcher(matcher="*", hooks=[normalize_file_paths])
+        ]
+    }
+)
+```
+
