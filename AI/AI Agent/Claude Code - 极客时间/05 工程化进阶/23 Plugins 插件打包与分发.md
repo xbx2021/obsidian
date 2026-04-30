@@ -171,3 +171,743 @@ description: 添加 TODO 注释，支持优先级和指派人
 2. 插入到光标位置或相关代码附近
 3. 如果没有文件上下文，询问位置
 ```
+
+## 添加子代理
+
+子代理是插件中的“专业助手”。在  `agents/`  目录下创建 Markdown 文件，每个文件定义一个具有特定职责、工具权限和行为准则的代理。这与我们在第 3-8 讲学习的子代理概念完全一致，区别在于现在它被打包进了插件，可以随插件一起安装和分发。
+
+下面是一个安全扫描代理的完整定义。注意它只使用了 Read、Grep、Glob 三个只读工具——遵循我们在第 4 讲强调的最小权限原则。
+
+**agents/security-scanner.md**
+```markdown
+---
+name: security-scanner
+description: 扫描代码中的安全漏洞
+tools: Read, Grep, Glob
+model: sonnet
+---
+
+你是一个安全专家，专门识别代码中的安全漏洞。
+
+## 扫描范围
+
+重点检查：
+1. **注入漏洞**：SQL 注入、命令注入、XSS
+2. **认证问题**：弱密码、硬编码凭证、会话管理
+3. **数据暴露**：敏感信息日志、不安全传输
+4. **访问控制**：权限检查、路径遍历
+5. **依赖风险**：已知漏洞的依赖包
+
+## 工作流程
+
+1. 使用 Glob 获取所有源代码文件
+2. 使用 Grep 搜索可疑模式
+3. 使用 Read 深入分析可疑代码
+4. 生成结构化报告
+
+## 输出格式
+
+```markdown
+# 安全扫描报告
+
+**扫描时间**: {timestamp}
+**扫描范围**: {directory}
+
+## 发现的漏洞
+
+### 🔴 高危 (立即修复)
+
+#### [漏洞名称]
+- **文件**: path/to/file.js:42
+- **类型**: SQL Injection
+- **描述**: [详细描述]
+- **修复建议**: [具体建议]
+
+### 🟡 中危 (尽快修复)
+...
+
+### 🔵 低危 (建议修复)
+...
+
+## 统计
+
+- 高危: X 个
+- 中危: Y 个
+- 低危: Z 个
+
+## 注意事项
+- 只报告有实际证据的问题，不要臆测
+- 提供具体的修复建议，不只是指出问题
+- 如果不确定是否是漏洞，标注为"疑似"
+```
+
+代理的 frontmatter 支持以下配置字段。其中  `model`  字段值得特别关注，对于只做扫描和分析的代理，使用 sonnet 模型就够了；对于需要快速修复简单问题的代理，haiku 更合适，速度更快、成本更低。
+![](assets/23%20Plugins%20插件打包与分发/file-20260430160539436.png)
+
+与安全扫描代理不同，快速修复代理需要写入权限（Edit 工具），因为它的职责是直接修改代码。但它被严格限定在“小问题”范围内——拼写错误、缺失导入、简单语法错误。任何复杂的架构变更或安全问题都不在它的职责范围内，这是通过 prompt 中的明确边界来约束的。
+
+**agents/quick-fix.md**
+```markdown
+---
+name: quick-fix
+description: 快速修复小问题：拼写错误、缺失导入、简单 bug
+tools: Read, Edit, Grep, Glob
+model: haiku
+---
+
+你是快速修复专家。你的任务是**又快又准**地修复小问题。
+
+## 你处理的问题
+
+- 拼写错误
+- 缺失的 import/require
+- 简单语法错误
+- 明显的空值检查遗漏
+- 缺失的 return 语句
+- Off-by-one 错误
+
+## 你不处理的问题
+
+- 架构变更
+- 复杂重构
+- 性能优化
+- 安全问题（上报这些！）
+
+## 工作流程
+
+1. **识别问题**：阅读错误信息或用户描述
+2. **定位问题**：找到确切的位置
+3. **最小修复**：只改必要的代码
+4. **验证语法**：确保不引入新错误
+
+## 输出格式
+
+\```markdown
+## 已修复
+
+**文件**: path/to/file.js
+**行号**: 42
+**问题**: 变量名拼写错误
+
+\```diff
+- const usrName = user.name;
++ const userName = user.name;
+\```
+
+**完成。** 修正了变量名拼写。
+\```
+
+## 原则
+
+- **快**：不要过度解释
+- **小**：最小化修改
+- **诚实**：问题复杂就直说，不要硬修
+```
+
+
+## 添加 Skills
+
+Skills 放在 ` skills/`  目录下，每个 Skill 是一个子目录。这与我们在第 9-14 讲学习的 Skills 系统完全一致，包含一个  SKILL.md  主文件，以及可选的  chapters/  子目录用于渐进式披露。当 Skill 的知识量较大时，章节化结构可以避免一次性加载所有内容，节省上下文窗口。
+```markdown
+skills/
+└── react-patterns/
+    ├── SKILL.md           # 主文件
+    └── chapters/          # 可选：分章节
+        ├── hooks.md
+        ├── context.md
+        └── performance.md
+```
+
+下面是一个 React 最佳实践 Skill 的示例。注意  `description`  字段的写法，它不是给人看的说明文档，而是给 Claude 看的触发器。当用户的请求与 description 中的关键词匹配时，Claude 会自动加载这个 Skill。
+
+**skills/react-patterns/SKILL.md**
+```markdown
+---
+name: React 最佳实践
+description: React 组件设计模式、Hooks 使用指南、性能优化技巧
+---
+
+# React 最佳实践
+
+本技能包含 React 开发的最佳实践，帮助你编写高质量的 React 代码。
+
+## 目录
+
+- [Hooks 使用指南](./chapters/hooks.md)
+- [Context 最佳实践](./chapters/context.md)
+- [性能优化](./chapters/performance.md)
+
+## 核心原则
+
+1. **组件单一职责**：一个组件做一件事
+2. **状态提升最小化**：状态放在需要它的最近公共祖先
+3. **避免过早优化**：先让它工作，再让它快
+4. **优先组合而非继承**：使用 children 和 render props
+
+## 快速参考
+
+### 自定义 Hook 命名
+
+```javascript
+// 好的命名
+useUser()
+useLocalStorage()
+useDebounce()
+
+// 不好的命名
+fetchUser()      // 不是 use 开头
+useData()        // 太模糊
+
+## 组件文件结构
+ComponentName/
+├── index.ts           # 导出
+├── ComponentName.tsx  # 组件实现
+├── ComponentName.test.tsx
+├── ComponentName.styles.ts
+└── types.ts           # 类型定义
+
+```
+
+## 添加 Hooks
+
+Hooks 是插件中的自动触发器。在  `hooks/`  目录下创建 ` hooks.json`  配置文件，定义在 Claude 执行工具前后自动运行的检查脚本。这与 Hooks 事件驱动机制（参考第 15 讲）完全一致，只是现在它被封装在插件中，随插件安装自动生效。
+
+**hooks/hooks.json**
+```json
+{
+  "hooks": [
+    {
+      "event": "PreToolUse",
+      "matcher": "Bash",
+      "command": ["bash", "./hooks/check-bash.sh"]
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "Write",
+      "command": ["bash", "./hooks/auto-format.sh"]
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "Edit",
+      "command": ["bash", "./hooks/auto-format.sh"]
+    }
+  ]
+}
+```
+
+这个配置做了两件事，在每次 Bash 命令执行前检查是否包含危险模式（PreToolUse），在每次文件写入或编辑后自动格式化代码（PostToolUse）。
+
+下面是两个 Hook 脚本的完整实现。第一个脚本是安全守门员，它从 stdin 读取 Claude 即将执行的 Bash 命令，与危险模式列表逐一比对，发现匹配就拒绝执行。这是一道看不见的防线，防止 Claude 在深夜加班时不小心执行了  `rm -rf /`等危险命令。
+
+**hooks/check-bash.sh**
+```bash
+#!/bin/bash
+# 检查 Bash 命令是否安全
+
+# 从 stdin 读取输入
+INPUT=$(cat)
+
+# 提取命令
+COMMAND=<!--§§MATH_0§§-->INPUT" | jq -r '.tool_input.command // empty')
+
+# 危险模式列表
+DANGEROUS_PATTERNS=(
+    "rm -rf /"
+    "rm -rf ~"
+    "sudo rm"
+    "> /dev/"
+    "chmod 777"
+    "curl.*|.*sh"
+    "wget.*|.*sh"
+)
+
+# 检查每个危险模式
+for pattern in "${DANGEROUS_PATTERNS[@]}"; do
+    if echo "<!--§§MATH_1§§-->pattern"; then
+        # 输出拒绝决定
+        cat << EOF
+{
+  "decision": "deny",
+  "reason": "Blocked potentially dangerous command pattern: $pattern"
+}
+EOF
+        exit 0
+    fi
+done
+
+# 允许执行
+echo '{"decision": "allow"}'
+```
+
+
+第二个脚本是自动格式化器，它检测被写入文件的扩展名，自动调用对应的格式化工具。Python 文件用 black，JavaScript/TypeScript 用 prettier，Go 文件用 gofmt。这样团队成员不需要记住各种格式化命令，也不会因为忘记格式化而产生风格不一致的代码。
+
+**hooks/auto-format.sh**
+```bash
+#!/bin/bash
+# 文件写入后自动格式化
+
+INPUT=$(cat)
+FILE_PATH=<!--§§MATH_2§§-->INPUT" | jq -r '.tool_input.file_path // empty')
+
+if [ -z "$FILE_PATH" ]; then
+    exit 0
+fi
+
+# 根据文件类型格式化
+case "$FILE_PATH" in
+    *.py)
+        if command -v black &> /dev/null; then
+            black "$FILE_PATH" 2>/dev/null
+        fi
+        ;;
+    *.js|*.ts|*.jsx|*.tsx)
+        if command -v prettier &> /dev/null; then
+            prettier --write "$FILE_PATH" 2>/dev/null
+        fi
+        ;;
+    *.go)
+        if command -v gofmt &> /dev/null; then
+            gofmt -w "$FILE_PATH" 2>/dev/null
+        fi
+        ;;
+esac
+
+echo '{"decision": "allow"}'
+```
+
+## 添加 MCP 服务器
+
+MCP（Model Context Protocol）是插件中最强大也最敏感的组件。它让 Claude 能够连接数据库、调用 API、访问文件系统等外部资源。在插件根目录创建  `.mcp.json`  文件来配置 MCP 服务器。
+
+**.mcp.json**
+```json
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-postgres"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-filesystem"],
+      "env": {
+        "ALLOWED_PATHS": "${HOME}/projects"
+      }
+    }
+  }
+}
+```
+
+MCP 配置中可以使用  `${VAR_NAME}`  引用环境变量。这是一个关键的设计决策——不要在配置文件中硬编码数据库密码或 API Token。用户安装插件后，需要在自己的环境中设置这些变量：
+```bash
+export DATABASE_URL="postgres://user:pass@localhost/db"
+export GITHUB_TOKEN="ghp_xxxxxxxxxxxx"
+```
+![](assets/23%20Plugins%20插件打包与分发/file-20260430161506310.png)
+
+# 实战项目：团队能力包
+
+前面我们逐一介绍了插件的各个组件。现在，让我们把它们组合在一起，构建一个完整的团队能力包插件。
+
+## 项目概况
+
+项目背景是假设你在一个使用以下技术栈的团队：
+
+- **前端**：React + TypeScript
+- **后端**：Node.js + PostgreSQL
+- **测试**：Jest + Cypress
+- **部署**：Docker + Kubernetes
+
+你要创建一个插件，包含代码审查命令、测试运行命令、部署命令、安全扫描代理、快速修复代理、React 最佳实践 Skill、安全检查 Hook，以及数据库查询 MCP。这些组件覆盖了开发流程的各个环节——从编码到审查，从测试到部署，从安全到知识沉淀。
+![](assets/23%20Plugins%20插件打包与分发/file-20260430161702224.png)
+
+下面是这个团队能力包的完整目录树。每个文件的内容我们在前面的章节中都已经详细介绍过，这里把它们按照插件规范组织在一起。
+```markdown
+team-toolkit/
+├── .claude-plugin/
+│   └── plugin.json
+├── commands/
+│   ├── review.md
+│   ├── test.md
+│   └── deploy.md
+├── agents/
+│   ├── security-scanner.md
+│   └── quick-fix.md
+├── skills/
+│   └── react-patterns/
+│       ├── SKILL.md
+│       └── chapters/
+│           ├── hooks.md
+│           ├── context.md
+│           └── performance.md
+├── hooks/
+│   ├── hooks.json
+│   ├── check-bash.sh
+│   └── auto-format.sh
+├── .mcp.json
+└── README.md
+```
+
+## plugin.json
+```json
+{
+  "name": "team-toolkit",
+  "version": "2.0.0",
+  "description": "团队标准开发工具包：代码审查、测试、部署、安全扫描一体化",
+  "author": "Platform Team",
+  "repository": "https://github.com/our-company/team-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "team",
+    "devops",
+    "code-review",
+    "testing",
+    "deployment",
+    "security"
+  ]
+}
+```
+
+## 代码审查命令
+
+这是团队能力包中最常用的命令。它不仅检查代码质量，还覆盖了 TypeScript 类型安全、React 特定规范和安全问题。审查报告的结构化输出让团队成员能快速定位和修复问题。
+
+**commands/review.md**
+```markdown
+---
+name: review
+description: 对代码进行全面审查，输出结构化报告
+---
+
+当用户运行 `/review [target]` 时，执行代码审查。
+
+## 审查维度
+
+1. **代码质量**
+   - 命名规范（camelCase/PascalCase）
+   - DRY 原则（重复代码）
+   - 函数长度（建议 < 30 行）
+   - 圈复杂度（建议 < 10）
+
+2. **TypeScript 特定**
+   - 类型安全（避免 any）
+   - 空值处理（可选链、空值合并）
+   - 接口设计
+
+3. **React 特定**
+   - Hooks 规则
+   - 组件拆分
+   - 状态管理
+
+4. **安全**
+   - 输入验证
+   - XSS 防护
+   - 敏感数据处理
+
+5. **测试**
+   - 测试覆盖率
+   - 边界条件
+
+## 输出格式
+
+# 代码审查报告
+
+**目标**: {target}
+**时间**: {timestamp}
+**审查者**: Claude (team-toolkit v2.0.0)
+
+## 总览
+
+| 类别 | 发现 | 严重性 |
+|------|------|--------|
+| 代码质量 | X | 中 |
+| 安全 | Y | 高 |
+| 性能 | Z | 低 |
+
+## 必须修复
+
+### [问题标题]
+**文件**: path/to/file.ts:42
+**类型**: 安全漏洞
+
+**问题**:
+[详细描述]
+
+**修复建议**:
+
+// 建议的修复代码
+## 建议修复
+...
+
+## 可选改进
+...
+
+## 亮点
+
+[做得好的地方]
+
+---
+*由 team-toolkit 生成*
+```
+
+## 测试命令
+
+测试命令不只是运行测试，它还会分析失败原因，判断是代码 bug 还是测试过时，并提供具体的修复建议。这个命令的  `--fix`  选项让 Claude 尝试自动修复失败的测试，把“发现问题”和“解决问题”合二为一。
+
+**commands/test.md**
+```markdown
+---
+name: test
+description: 运行测试并分析结果，失败时提供修复建议
+---
+
+用法：`/test [scope] [options]`
+
+## 参数
+
+- `scope`（可选）：
+  - `unit` - 只运行单元测试
+  - `e2e` - 只运行端到端测试
+  - `all` - 运行全部（默认）
+
+- `options`：
+  - `--fix` - 尝试自动修复失败的测试
+  - `--coverage` - 生成覆盖率报告
+
+## 工作流程
+
+1. 运行指定范围的测试
+2. 收集测试结果
+3. 对失败的测试：
+   - 分析失败原因
+   - 检查是代码 bug 还是测试过时
+   - 提供修复建议
+4. 如果指定了 --fix，尝试自动修复
+
+## 输出格式
+
+# 测试报告
+
+## 结果
+
+| 指标 | 值 |
+|------|------|
+| 总计 | 150 |
+| 通过 | 147 |
+| 失败 | 3 |
+| 跳过 | 0 |
+| 覆盖率 | 85% |
+
+## 失败的测试
+
+### test_user_creation
+**文件**: tests/user.test.ts:42
+**错误**: AssertionError: expected 'active' but got 'pending'
+
+**分析**: User 模型的默认状态在 commit abc123 中从 'active' 改为 'pending'，但测试未更新。
+
+**建议**: 更新测试以期望 'pending' 状态。
+
+\```diff
+- expect(user.status).toBe('active');
++ expect(user.status).toBe('pending');
+\```
+
+---
+*由 team-toolkit 生成*
+
+```
+
+## 部署命令
+
+部署是最需要规范化的操作之一。手动部署时，每个人的步骤可能不同，遗漏检查项的风险很高。这个命令把部署流程固化为标准步骤，并内置了安全检查，确保没有硬编码密钥、没有已知漏洞的依赖、所有环境变量都已配置。
+
+**commands/deploy.md**
+```markdown
+---
+name: deploy
+description: 部署应用到指定环境
+---
+
+用法：`/deploy [environment]`
+
+## 环境
+
+- `staging` - 测试环境（默认）
+- `production` - 生产环境（需要额外确认）
+
+## 部署流程
+
+### Staging
+
+1. 运行 lint 检查
+2. 运行单元测试
+3. 构建 Docker 镜像
+4. 推送到 staging 集群
+5. 运行冒烟测试
+6. 报告部署状态
+
+### Production
+
+1. 确认 staging 部署成功
+2. 确认所有测试通过
+3. 请求用户确认
+4. 创建 Git tag
+5. 构建生产镜像
+6. 蓝绿部署到生产集群
+7. 健康检查
+8. 报告部署状态
+
+## 安全检查
+
+部署前自动检查：
+- [ ] 没有硬编码的密钥
+- [ ] 依赖没有已知漏洞
+- [ ] 所有环境变量已配置
+
+## 回滚
+
+如果部署失败，自动提供回滚命令：
+\```
+kubectl rollout undo deployment/app -n production
+\```
+```
+
+## 团队能力包的 README.md
+
+README 是插件的门面。它决定了用户是否愿意安装你的插件，也是安装后的第一份参考文档。一个好的 README 应该让用户在 30 秒内了解插件**能做什么、怎么安装、怎么使用。**
+```markdown
+# Team Toolkit
+
+团队标准开发工具包，提供代码审查、测试、部署、安全扫描一体化解决方案。
+
+## 安装
+
+\```bash
+/plugin install team-toolkit@our-company
+\```
+
+## 功能
+
+### 命令
+
+| 命令 | 说明 |
+|------|------|
+| `/review [target]` | 代码审查 |
+| `/test [scope]` | 运行测试 |
+| `/deploy [env]` | 部署应用 |
+
+### 代理
+
+| 代理 | 说明 |
+|------|------|
+| `security-scanner` | 安全漏洞扫描 |
+| `quick-fix` | 快速修复小问题 |
+
+### Skills
+
+| Skill | 说明 |
+|-------|------|
+| `react-patterns` | React 最佳实践 |
+
+### MCP 服务器
+
+| 服务器 | 说明 |
+|--------|------|
+| `postgres` | 数据库查询 |
+| `github` | GitHub API |
+
+## 环境变量
+
+\```bash
+# 数据库连接（用于 postgres MCP）
+export DATABASE_URL="postgres://..."
+
+# GitHub Token（用于 github MCP）
+export GITHUB_TOKEN="ghp_..."
+\```
+
+## 更新日志
+
+### v2.0.0
+
+- 新增：`/deploy` 命令
+- 新增：`security-scanner` 代理
+- 改进：`/review` 输出格式
+- 修复：Hook 脚本兼容性问题
+
+### v1.0.0
+
+- 初始版本
+
+## 贡献
+
+欢迎提交 PR！请确保：
+1. 代码通过 lint 检查
+2. 更新相关文档
+3. 添加测试（如适用）
+
+## 许可证
+
+MIT
+```
+
+## 发布与分发
+
+插件开发完成后，下一步是让别人能够使用它。Claude Code 的插件分发基于 Git，插件本质上就是一个 Git 仓库。
+
+在发布前，使用  `--plugin-dir`  参数从本地目录加载插件进行测试。这个步骤很重要，它让你在不发布的情况下验证所有组件是否正常工作。
+```bash
+claude --plugin-dir ./team-toolkit
+```
+
+加载成功后，你可以测试所有命令（`/team-toolkit:review`、`/team-toolkit:test`、`/team-toolkit:deploy`），确认代理和 Skills 是否被正确识别，以及 Hooks 是否在预期时机触发。
+
+插件发布就是推送到远程 Git 仓库。使用 Git tag 标记版本号，让用户可以安装特定版本。
+```bash
+cd team-toolkit
+git init
+git add .
+git commit -m "Initial release v1.0.0"
+git tag v1.0.0
+git remote add origin https://github.com/our-company/team-toolkit
+git push -u origin main --tags
+```
+
+## 创建私有市场
+
+如果你的团队有多个插件需要管理，可以创建一个私有市场。私有市场本身也是一个 Git 仓库，包含一个  `marketplace.json`  文件，列出所有可用的插件及其版本。
+
+**marketplace.json**
+```json
+{
+  "name": "Our Company Plugins",
+  "description": "内部插件市场",
+  "plugins": [
+    {
+      "name": "team-toolkit",
+      "description": "团队标准开发工具包",
+      "repository": "https://github.com/our-company/team-toolkit",
+      "version": "2.0.0"
+    },
+    {
+      "name": "db-tools",
+      "description": "数据库操作工具",
+      "repository": "https://github.com/our-company/db-tools",
+      "version": "1.2.0"
+    }
+  ]
+}
+```
+
