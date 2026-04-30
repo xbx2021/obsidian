@@ -399,3 +399,110 @@ options = ClaudeAgentOptions(
     can_use_tool=can_use_tool
 )
 ```
+
+# Hooks 与 canUseTool 的选择
+
+Hooks 和 canUseTool 都能控制工具的使用权限，但它们的能力范围差异很大。理解这个差异对于选择合适的机制至关重要。
+![](assets/22%20Agent%20SDK%20高级应用/file-20260430143607857.png)
+
+简单来说，只需要权限检查，用  `canUseTool`；需要修改输入、记录日志、执行后处理，用 Hooks。在实际项目中，两者经常配合使用，`canUseTool`  负责快速的权限判断，Hooks 负责更复杂的拦截和处理逻辑。
+
+# Agent SDK 权限管理：四道防线
+
+安全是构建生产级 Agent 的核心议题。Agent SDK 提供了四种互补的权限控制机制，**权限模式、canUseTool 回调、Hooks、settings.json 中的权限规则**。它们构成了一个分层防御体系。
+
+## 权限模式：全局基调
+
+权限模式是最粗粒度的控制，它设定了整个会话的安全基调。一共有四种模式可选，从宽松到严格，你需要根据使用场景选择合适的模式。
+```python
+options = ClaudeAgentOptions(
+    permission_mode="acceptEdits"  # 自动接受文件编辑
+)
+```
+![](assets/22%20Agent%20SDK%20高级应用/file-20260430143924424.png)
+## 工具白名单与黑名单
+
+第二道防线是工具级别的准入控制。通过  `allowed_tools`  和  `disallowed_tools`，你可以精确控制 Agent 能使用哪些工具。这比权限模式更细粒度，你可以允许文件读取但禁止网络搜索，或者只允许运行特定的 Bash 命令。
+```python
+options = ClaudeAgentOptions(
+    # 只允许这些工具
+    allowed_tools=["Read", "Grep", "Glob", "Bash(pytest:*)"],
+
+    # 禁用这些工具
+    disallowed_tools=["Task", "WebSearch"]
+)
+```
+
+注意  `Bash(pytest:*)`  这个语法，它表示只允许以  pytest  开头的 Bash 命令。这种细粒度的 Bash 命令过滤是生产环境中非常实用的安全特性。
+
+## 动态权限检查
+
+第三道防线是运行时动态权限检查（`canUseTool`）
+
+## Hooks 控制
+
+第四道防线是最细粒度的 Hooks 控制。
+
+## 项目综合使用
+
+在实际项目中，这四道防线应该配合使用，形成纵深防御。下面的代码展示了一个完整的四层安全配置。请注意每一层防线各司其职：**权限模式设定基调，白名单限制工具集，canUseTool  保护敏感资源，Hooks 提供细粒度控制和审计**。
+```python
+options = ClaudeAgentOptions(
+    # 第一道：权限模式
+    permission_mode="acceptEdits",
+
+    # 第二道：工具白名单
+    allowed_tools=["Read", "Write", "Edit", "Bash", "Grep", "Glob"],
+    disallowed_tools=["WebSearch"],  # 禁止网络搜索
+
+    # 第三道：运行时检查
+    can_use_tool=can_use_tool,
+
+    # 第四道：Hooks
+    hooks={
+        "PreToolUse": [
+            HookMatcher(matcher="Bash", hooks=[check_bash_command]),
+            HookMatcher(matcher="*", hooks=[log_all_tools])
+        ],
+        "PostToolUse": [
+            HookMatcher(matcher="Write", hooks=[auto_format])
+        ]
+    }
+)
+```
+
+# 流式会话：为什么以及怎么用
+
+到目前为止，我们的示例都使用的是单次查询模式——发送一个请求，接收一个响应。但在生产环境中，你往往需要多轮对话、中途干预、动态调整参数。这就是流式会话（Streaming Session）的价值。流式输入模式是使用 Claude Agent SDK 的首选方式。它允许 Agent 作为长时间运行的进程，接收用户输入、处理中断、显示权限请求、管理会话。
+
+下表清晰展示了两种模式的差异。
+![](assets/22%20Agent%20SDK%20高级应用/file-20260430144531972.png)
+
+**流式会话的核心优势是保持上下文**。在同一个  `async with`  块内，你可以发送多次查询，每次查询都能“看到”之前的对话历史。这让 Agent 能够执行复杂的多步骤任务，而不需要你手动管理上下文。
+```python
+from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions
+
+async def streaming_session():
+    options = ClaudeAgentOptions(
+        allowed_tools=["Read", "Write", "Bash"],
+        permission_mode="default"
+    )
+
+    async with ClaudeSDKClient(options=options) as client:
+        # 第一轮对话
+        await client.query("列出当前目录的 Python 文件")
+        async for msg in client.receive_response():
+            if msg.type == "text":
+                print(msg.text)
+
+        # 继续对话（保持上下文）
+        await client.query("分析第一个文件的代码质量")
+        async for msg in client.receive_response():
+            if msg.type == "text":
+                print(msg.text)
+
+        # 再次继续
+        await client.query("修复发现的问题")
+        async for msg in client.receive_response():
+            print(msg)
+```
