@@ -199,3 +199,56 @@ async def query_users(args):
 
 # Agent SDK Hooks 系统概述
 
+Hooks 让你能够在 Agent 执行的各个阶段插入自定义逻辑。如果说自定义工具是扩展了 Agent 能做什么，那么 Hooks 就是控制 Agent 怎么做。它们提供对 Agent 行为的确定性控制——不是建议 Agent 遵守某个规则，而是在系统层面强制执行。
+
+下表列出了 SDK 支持的所有 Hook 事件。每个事件对应 Agent 执行流程中的一个关键节点，你可以在这些节点插入安全检查、日志记录、数据转换等逻辑。
+![](assets/22%20Agent%20SDK%20高级应用/file-20260430142037800.png)
+## PreToolUse Hook：执行前拦截
+
+PreToolUse 是最常用的 Hook，它在工具执行前触发。你可以在这里做三件事，允许执行、拒绝执行、或修改输入参数。这给了你对 Agent 行为的完全控制权。
+
+下面的例子展示了一个 Bash 命令安全检查器。它会拦截所有 Bash 工具调用，检查命令是否包含危险模式（如  rm -rf、sudo），如果发现危险则拒绝执行。对于不在白名单中的命令，它会要求用户手动确认。
+```python
+from claude_agent_sdk import ClaudeAgentOptions, HookMatcher
+
+async def check_bash_command(input_data, tool_use_id, context):
+    """检查 Bash 命令是否安全"""
+    tool_name = input_data["tool_name"]
+    tool_input = input_data["tool_input"]
+
+    if tool_name == "Bash":
+        command = tool_input.get("command", "")
+
+        # 阻止危险命令
+        dangerous_patterns = ["rm -rf", "sudo", "chmod 777", "> /dev/"]
+        for pattern in dangerous_patterns:
+            if pattern in command:
+                return {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": f"Blocked dangerous command: {pattern}"
+                    }
+                }
+
+        # 只允许特定命令
+        allowed_prefixes = ["npm", "python", "git", "pytest", "ls", "cat"]
+        if not any(command.strip().startswith(p) for p in allowed_prefixes):
+            return {
+                "hookSpecificOutput": {
+                    "hookEventName": "PreToolUse",
+                    "permissionDecision": "ask",
+                    "permissionDecisionReason": f"Command requires approval: {command}"
+                }
+            }
+
+    return {}  # 允许执行
+
+options = ClaudeAgentOptions(
+    hooks={
+        "PreToolUse": [
+            HookMatcher(matcher="Bash", hooks=[check_bash_command])
+        ]
+    }
+)
+```
