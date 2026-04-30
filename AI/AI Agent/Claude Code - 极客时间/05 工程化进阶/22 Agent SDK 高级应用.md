@@ -296,3 +296,56 @@ options = ClaudeAgentOptions(
 )
 ```
 
+返回值中的  `updatedInput`  字段就是修改后的工具输入。SDK 会用它替换原始输入，然后继续执行工具。
+
+## PostToolUse Hook：执行后处理
+
+PostToolUse 在工具执行成功后触发，适合做日志记录、结果格式化、自动化后处理等工作。与 PreToolUse 不同，PostToolUse 无法改变已经发生的工具调用，但它可以基于调用结果执行额外操作。
+
+下面展示了两个实用的 PostToolUse Hook。第一个记录所有工具的使用日志，用于审计和调试。第二个在文件写入后自动运行代码格式化工具，确保 Agent 生成的代码符合团队代码风格规范。
+```python
+import logging
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
+async def log_tool_usage(input_data, tool_use_id, context):
+    """记录工具使用日志"""
+    tool_name = input_data["tool_name"]
+    tool_input = input_data.get("tool_input", {})
+    tool_response = input_data.get("tool_response", {})
+
+    logger.info(f"[{datetime.now().isoformat()}] Tool: {tool_name}")
+    logger.info(f"  Input: {tool_input}")
+    logger.info(f"  Response: {str(tool_response)[:200]}...")
+
+    return {}
+
+async def auto_format_code(input_data, tool_use_id, context):
+    """文件写入后自动格式化"""
+    tool_name = input_data["tool_name"]
+    tool_input = input_data.get("tool_input", {})
+
+    if tool_name in ["Write", "Edit"]:
+        file_path = tool_input.get("file_path", "")
+
+        # 根据文件类型运行格式化
+        if file_path.endswith(".py"):
+            import subprocess
+            subprocess.run(["black", file_path], capture_output=True)
+        elif file_path.endswith((".ts", ".js")):
+            import subprocess
+            subprocess.run(["prettier", "--write", file_path], capture_output=True)
+
+    return {}
+
+options = ClaudeAgentOptions(
+    hooks={
+        "PostToolUse": [
+            HookMatcher(matcher="*", hooks=[log_tool_usage]),
+            HookMatcher(matcher="Write", hooks=[auto_format_code]),
+            HookMatcher(matcher="Edit", hooks=[auto_format_code])
+        ]
+    }
+)
+```
