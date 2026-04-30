@@ -57,3 +57,25 @@ my-plugin/
 └── README.md              # 插件文档
 ```
 
+**咖哥发言**：只有  `plugin.json`  放在  `.claude-plugin/`  目录内，其他所有目录（commands、agents、skills、hooks）都在插件根目录下。注意不要把 commands 等目录也放进  `.claude-plugin/`  里。
+
+## plugin.json：插件的身份证
+
+每个插件必须有  .claude-plugin/plugin.json  文件。这个文件的作用类似于 npm 的  package.json——它定义了插件的身份、版本和描述信息，是 Claude Code 识别和管理插件的唯一入口：
+```json
+{
+  "name": "team-toolkit",
+  "version": "1.0.0",
+  "description": "团队标准开发工具包：代码审查、测试、部署一体化",
+  "author": "DevOps Team",
+  "repository": "https://github.com/our-company/team-toolkit",
+  "license": "MIT",
+  "keywords": ["team", "devops", "workflow", "code-review"]
+}
+```
+
+各字段的含义和说明如下表。
+![](assets/23%20Plugins%20插件打包与分发/file-20260430155739180.png)
+![](assets/23%20Plugins%20插件打包与分发/file-20260430155754177.png)
+
+
