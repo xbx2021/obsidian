@@ -121,3 +121,11 @@ docker push geektimehellocloud.azurecr.io/fiboapp:1.0.0
 ![](assets/14%20云上容器服务：从Docker到Kubernetes，迎接云原生浪潮/file-20260509150946906.png)
 
 这就大功告成了。我们用 curl 工具测试一下运行在云容器中的斐波那契服务，一切正常：
+```bash
+client@clientVM:~$ curl http://fiboapp.japaneast.azurecontainer.io/fibo/30
+Fibo(30) = 1346269
+Computed by wk-caas-3fa7a6b99b-7703b0c1f33ab2xxxxxxxx with private ip 10.244.32.63
+```
+
+至此，我们把斐波那契数列应用就成功地迁移到了容器实例服务上。你可以看到，这个服务为我们准备好了容器运行所需的一切环境，我们需要做的，就只是简单地把镜像打包上传而已。
+
