@@ -23,3 +23,21 @@
 这里所谓的非结构化数据，指的是图像、视频、语音、文本等包含丰富信息的常见数字化内容。对于这些内容的理解，用传统的程序逻辑很难解决，但这恰好是人工智能的强项，它可以深入分析这些内容，并进行信息提取和转换。
 
 不同的非结构化数据类型，对应着不同的人工智能研究领域，也对应着相关的各种云上 AI 服务。
+
+比如**计算机视觉**，就擅长处理图形图像，它衍生出了人脸识别、物体检测、OCR（光学字符识别）、安全扫描等很多细分的能力，也催生出了多种多样的云上图片分析服务。你可以想象，从线下的安防监控和门禁闸机，到线上对用户上传图片证照的扫描和处理，图片服务的应用场景是非常广泛的。
+
+在近期疫情肆虐的背景下，有云厂商还迅速推出了人脸口罩检测的 AI 服务，体现了云厂商的快速应变能力和社会责任感。下面的 Java 代码片段，就展示了通过官方 SDK 来调用阿里云上人脸口罩检测 API，这可以判断给定图片中的人物有没有佩戴口罩。
+```java
+//设定账号的AccessKey和地域信息
+DefaultProfile profile = DefaultProfile.getProfile("cn-shanghai", "<accessKeyId>", "<accessSecret>");
+IAcsClient client = new DefaultAcsClient(profile);
+//构造人脸口罩识别请求
+DetectMaskRequest request = new DetectMaskRequest();
+request.setRegionId("cn-shanghai");
+//设置待识别的图片路径
+request.setImageURL("http://yourbucket.oss-cn-shanghai.aliyuncs.com/mytestimage1.jpg");
+//发送请求，获取识别结果
+DetectMaskResponse response = client.getAcsResponse(request);
+System.out.println(new Gson().toJson(response));
+```
+
