@@ -96,3 +96,21 @@ EXPOSE 80
 CMD [ "node", "app.js" ]
 ```
 
+可以用一个简单的打包命令，来获得本地的 Docker 镜像，我们就叫它 fiboapp：
+```bash
+docker build --rm -f dockerfile -t fiboapp:1.0.0 .
+```
+
+然后，我们在 Azure 上新建一个容器注册表，也就是前面提到的容器镜像服务。云上会为我们分配一个镜像服务器的域名：
+![](assets/14%20云上容器服务：从Docker到Kubernetes，迎接云原生浪潮/file-20260509150638874.png)
+
+接着我们就可以用标准 Docker 命令登录，并且将镜像上传到这个私有的镜像仓库：
+```bash
+docker login geektimehellocloud.azurecr.io        
+docker tag fiboapp:1.0.0 geektimehellocloud.azurecr.io/fiboapp:1.0.0
+docker push geektimehellocloud.azurecr.io/fiboapp:1.0.0
+```
+
+推送完成后，界面上就显示出了这个镜像的信息。
+![](assets/14%20云上容器服务：从Docker到Kubernetes，迎接云原生浪潮/file-20260509150758345.png)
+
