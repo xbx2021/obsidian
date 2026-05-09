@@ -114,3 +114,10 @@ docker push geektimehellocloud.azurecr.io/fiboapp:1.0.0
 推送完成后，界面上就显示出了这个镜像的信息。
 ![](assets/14%20云上容器服务：从Docker到Kubernetes，迎接云原生浪潮/file-20260509150758345.png)
 
+然后，我们就可以创建一个容器实例，并且指向相关的镜像了：
+![](assets/14%20云上容器服务：从Docker到Kubernetes，迎接云原生浪潮/file-20260509150910983.png)
+
+随后通过一些特别简单的配置，我们就可以让容器在云上跑起来了。它还贴心地“赠送”给我们一个域名：fiboapp.japaneast.azurecontainer.io。
+![](assets/14%20云上容器服务：从Docker到Kubernetes，迎接云原生浪潮/file-20260509150946906.png)
+
+这就大功告成了。我们用 curl 工具测试一下运行在云容器中的斐波那契服务，一切正常：
