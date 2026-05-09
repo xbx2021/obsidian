@@ -69,4 +69,20 @@ updating: package.json (deflated 30%)
 updating: .deployment (stored 0%)
 ```
 
+接下来十分关键的一步，是我们要用 Azure CLI 中的 webapp 相关命令，完成 zip 文件的上传。
+```bash
+[client@clientVM fiboapp]$ az webapp deployment source config-zip --resource-group geektime-hellocloud --name fibonodejs --src ./fiboapp.zip
+Getting scm site credentials for zip deployment
+Starting zip deployment. This operation can take a while to complete ...
+```
 
+我们需要做的就只有这些。当 Azure 应用服务收到 zip 包后，就会在一个隔离环境中自动解压、安装相关依赖项，并开始运行我们的应用了。
+
+尝试一下网站服务，已经在正常地工作了：
+```bash
+[client@clientVM ~]$ curl https://fibonodejs.azurewebsites.net/
+I am healthy
+[client@clientVM ~]$ curl https://fibonodejs.azurewebsites.net/fibo/35
+Fibo(35) = 14930352
+Computed by 49fe1eef783e with private ip 172.16.1.4
+```
