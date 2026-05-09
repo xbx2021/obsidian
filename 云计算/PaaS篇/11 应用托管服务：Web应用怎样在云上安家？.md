@@ -35,8 +35,25 @@ Web 应用，显然是一个极为普遍的需求，也是一个巨大的市场�
 实例创建完毕后，就相当于我们已经建好了房子，接下来的关键就是要邀请应用入住。
 
 我们在第 7 讲中使用过的 app.js 中的源码，在这里基本不需要修改就可以直接使用了，唯一需要适配一下的是最后监听的端口号，我们需要从固定值 80 修改为动态值 `process.env.PORT`。这个动态值会在应用运行时，从 PaaS 服务的环境变量中得到。
-```python
+```javascript
 app.listen(process.env.PORT);
 ```
+
+随后，我们只需要把应用的代码打包上传就可以了。我们这个 Node 应用比较简单，只是包含一个 `app.js` 和 `package.json` 配置文件。`package.json` 配置文件的内容也很简洁，只有少数包依赖，以及一个初始化的启动命令：
+```json
+{
+  "name": "fibo-app",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "dependencies": {
+    "express": "4.0.0",
+    "ip":"1.1.5"
+  }
+}
+```
+
 
 
