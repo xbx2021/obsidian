@@ -41,3 +41,20 @@ DetectMaskResponse response = client.getAcsResponse(request);
 System.out.println(new Gson().toJson(response));
 ```
 
+这段并不复杂的调用代码，也大致说明了使用一个云上 AI 服务的过程，主要就是设置好输入的图片和一些辅助参数，然后就能通过 Web 请求来进行图片分析了。这里我测试了一张网络上路人佩戴口罩的照片，执行之后的结果输出如下所示：
+```java
+{
+    "RequestId": "F24CXXXX-14B6-4E46-AAF8-C11E2E54XXXX",
+    "Data": {
+        "Mask": 2,
+        "FaceProbability": "0.76107993841171265"
+    }
+}
+```
+
+可以看到，返回的 JSON 格式结果中，Mask 字段的值为 2，就说明了图片中检测出了人脸并且佩戴了口罩。
+
+> 补充：该 API 返回值为 0 代表未检出人脸，1 代表人脸未佩戴口罩。甚至它还能判断有口罩但没有正确佩戴的场景，相应的返回值为 3。具体请参见阿里云相关文档。
+
+
+
