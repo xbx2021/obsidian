@@ -29,6 +29,21 @@
 
 当然，后来编排框架大战的结果你已经都知道了，Kubernetes 最终一统天下，成为了事实标准。所以各大厂商又很快地调转方向，纷纷为云上 Kubernetes 的支持加码，推出面向 Kubernetes 的专属服务了，比如 AWS 的 Elastic Kubernetes Service（EKS）和 Azure 的 Azure Kubernetes Service（AKS）。阿里云呢，同样也逐渐停止了旗下容器服务对 Swarm 的支持，而把发展重点聚焦在容器服务 Kubernetes 版（ACK）上。
 
+你看，云对容器技术的支持，是伴随着容器生态发展而发展的，所以很多时候，云也是容器生态重要的参与者和推动者。就像 Google Cloud 中的 GKE（Google Kubernetes Engine），由于“根正苗红”，也一直是云上 Kubernetes 服务的标杆之一。
 
+> 补充：如果说之后的技术潮流还有什么变化，我想你在云上也一样会看到领域内的最新进展。比如 Service Mesh（服务网格），也有越来越多的云服务正在探索和提供相关的支持与服务。这也是云与时俱进的魅力所在。
 
+所以，就现在最新的形势而言，如果要容器上云，那我想你几乎不用犹豫，直接选择各大云上最新的针对 Kubernetes 的服务即可。
+
+## 云上 Kubernetes 服务的特点
+
+关于 Kubernetes 本身，它是一个非常庞大的技术体系，我建议你通过专门的课程来系统学习。但在这里你需要重点了解一下，相对于自建 Kubernetes 集群，云上 Kubernetes 服务的几个独有特点。
+
+首先，很多云上的 Kubernetes 服务，由于**云端的多租户特性**，可以免除你在 Master 节点方面的开销。换句话说，你只需要创建 Worker 节点，并为之付费就行了。**云平台会统一为你提供和托管 Master 节点，降低你的资源和运维成本**。
+
+另外，我们都知道 **Kubernetes 虽然复杂性较高，但抽象设计出色，能够支持大量灵活的扩展**。所以云厂商在这个方面花了很多功夫，能够让很多云平台上的 IaaS 或 PaaS 功能组件，渗透到 Kubernetes 的体系中来，这样可以让两边有一个更紧密的集成。
+
+比如说，在常用来引导外部流量的 **Ingress Controller（入口控制器）** 方面，就有 AWS 的 ALB Ingress Controller，和 Azure 的 AKS Application Gateway Ingress Controller 等基于云上负载均衡器的控制器实现。它们会创建相应的 PaaS 服务实例，来为 Kubernetes 集群服务。
+
+再比如，我们可以在 Kubernetes 中定义动态存储卷分配策略的 StorageClass 层面，指定使用云端的块存储服务，来按需创建和挂载持久化存储。下面的配置文件片段（注意它的 provisioner 和 parameters 字段），就展示了一个使用 AWS EBS 服务来提供的 SSD 云硬盘的例子。
 
