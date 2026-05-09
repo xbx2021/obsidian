@@ -55,5 +55,18 @@ app.listen(process.env.PORT);
 }
 ```
 
+我们再新建一个 .deployment 文件，其中，设置 `SCM_DO_BUILD_DURING_DEPLOYMENT` 参数为 true。这个设置会告诉 Azure PaaS 端，在部署时帮我们自动执行 `npm install` 来安装依赖项。
+```
+[config]
+SCM_DO_BUILD_DURING_DEPLOYMENT=true
+```
+
+然后，我们把上面提到的这三个文本文件一起打包为 zip：
+```bash
+[client@clientVM fiboapp]$ zip fiboapp.zip app.js package.json .deployment
+updating: app.js (deflated 48%)
+updating: package.json (deflated 30%)
+updating: .deployment (stored 0%)
+```
 
 
