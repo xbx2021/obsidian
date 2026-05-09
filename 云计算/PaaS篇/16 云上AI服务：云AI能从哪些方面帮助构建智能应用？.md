@@ -128,3 +128,76 @@ estimator.set_hyperparamters(...)
 estimator.fit('s3://bucket/path/to/training/data')
 ```
 
+即使你是第一次接触使用 SageMaker 这样的工具，也很容易理解上面代码片段中语句的含义。其中，SageMaker 的核心概念 Estimator，就是模型生命周期管理的主要抓手，你可以用它进行高层的语义操作，比如算法的选择、超参数的设置、训练数据的输入等等。这些高层次的方法使用起来清晰明了，它们会为你代劳与云平台底层资源的交互。
+
+> 注意：为了便于讲解说明以及突出重点，我对脚本中调用参数等处进行了适当简化。下面的举例同样如此。实际使用时，你可以根据具体使用的模型类型，参考云厂商的详细文档。
+
+除了可以使用厂商内置的机器学习算法，**云上 AI 平台也兼容开源的机器学习和深度学习框架**，比如著名的 Scikit-learn、TensorFlow、PyTorch、MXNet 等等。使用开源机器学习框架，能够让你彻底地控制你的底层算法和模型结构，也便于相关代码在不同平台的复用。
+
+你也许会很好奇，像 SageMaker 这样的厂商自有机器学习体系，它是怎么集成和支持这些开源框架的呢？我们来观察下面的代码示例：
+```python
+from sagemaker.tensorflow import TensorFlow
+
+tf_estimator = TensorFlow(entry_point='tf-train.py',     
+    role=role,
+    train_instance_count=2,
+    train_instance_type='ml.p2.xlarge',
+    framework_version='2.1.0',
+    py_version='py3',
+    distributions={'parameter_server': {'enabled': True}}))
+    
+tf_estimator.fit('s3://bucket/path/to/training/data')
+```
+
+可以看到，和前面的自有算法一样，这里同样使用了 Estimator 的概念，来管理和控制训练过程。不过你要注意一下这里的 TensorFlow 类，它不是指 TensorFlow 框架本身，而是一个在 SageMaker 中，用于管理封装 TensorFlow 相关模型的 Estimator。**秘密包含在作为 entry_point 参数的脚本文件 tf-train.py 中，在这个脚本里，你才会编写真正的 TensorFlow 代码。**
+
+> 小提示：当然，为了能在 SageMaker 环境中顺利运行，你的 TensorFlow 脚本需要遵循一些 AWS 规定的标准，比如环境变量设置、输入输出的路径和格式等。
+
+所以说，SageMaker 是通过将控制层和算法实现层分离的方式，来同时支持自有算法和开源框架的。无论你是使用什么算法和模型，它的上层仍然是统一使用 Estimator 的接口，实现了对具体算法的抽象。
+
+**另外值得注意的是，云上机器学习平台能够很容易地让你调动云上的计算资源**（比如通过上面的 `train_instance_type` 和 `train_instance_count` 参数），不需要我们手动来进行创建和维护。尤其是那些支持分布式训练的模型算法，在云端充足的 CPU/GPU 资源和弹性分配机制的加持下，你可以很容易地对模型训练进行充分的并行化，这大大缩短了模型训练所需的时间。
+
+**最后，则是模型发布和部署的环节**，也就是我们需要把训练完成的模型进行保存和管理，以及进行线上的发布和运行，有时这也被称为**推理**（Inference）阶段。
+
+同样借助上面的 Estimator 对象，这里我们只要简单地调用一下 **deploy** 方法，就可以把训练好的模型部署到生产环境中，并通过新生成的 predictor 对象来进行模型调用了，如下所示：
+```markdown
+# 将前面fit方法生成的模型部署到SageMaker端点上进行服务
+predictor = estimator.deploy(initial_instance_count=1, instance_type='ml.p2.xlarge')
+
+# 通过predict方法进行模型调用
+response = predictor.predict(data)
+```
+
+甚至对于大批量数据的场景，你还可以借助 **transformer 机制**，离线地进行模型的批量调用。
+```markdown
+transformer = estimator.transformer(instance_count=1, instance_type='ml.p2.xlarge')
+# 批量调用数据
+transformer.transform('s3://my-bucket/batch-transform-input')
+transformer.wait()
+# 随后可以从transformer.output_path中下载结果数据
+```
+
+你看，SageMaker 的这些功能还是很贴心的，它大大地简化了模型的部署和推理调用，相当程度地解决了模型开发者未必熟悉的 Web 服务的工程性问题。
+
+好了，对于机器学习基础设施服务，我们就讨论到这里。你可以通过下面的 SageMaker 架构流程图，来加深对这个支撑体系的印象。这一类云服务在你构建自有模型时，能帮你提供一站式的解决方案，能在多个核心环节给予你鼎力的支持。
+![](assets/16%20云上AI服务：云AI能从哪些方面帮助构建智能应用？/file-20260509170735542.png)
+
+
+# 总结
+
+当今世界的现代应用程序，如果其中没有一点 AI 的元素，恐怕都会不好意思发布了。与这样的趋势相匹配，云平台都希望成为构建和运行新一代智能应用程序的最佳平台。
+
+你可以根据自己的需求，直接使用云上 AI 服务中琳琅满目的内置模型，也可以利用云上机器学习平台，来高效地构建你自己的智能模型。云上 AI 平台还提供了很好的管理手段，来保存和使用公司的数据和模型资产，让你的 AI 工作朝着规范化、工程化的方向发展。
+
+AI 技术博大精深，你当然需要通过专门的课程去系统学习。而我们这一讲的价值在于，主要关注了云对于 AI 任务在不同层面的结合点和支撑点，包括模型、数据、算法、计算资源、部署推理等等。通过今天的介绍，希望你在云上实践时，能够知道如何按图索骥，在某个细分的 AI 场景进行深入的尝试。期待你的下一个智能应用。
+
+最后作为惯例，我们还是要谈一谈这里的风险，主要仍旧是厂商绑定的问题。如果你比较关注可迁移性，那么在使用云上 AI 服务时，你就需要注意甄别，哪些是云的自有生态，哪些是开源组件。当然，云厂商其实也在不断升级，努力地让云上 AI 服务从完全内置的黑盒到逐渐走向开放和兼容。最终让每一个环节能够拆开单独使用并且互相解耦，这是未来的一个发展趋势。
+
+> 补充：我们也不要“谈绑色变”，绑定是正常的商业选择，也常会给用户带来效率的提升。云计算的很多服务和开源世界的若即若离，其本质是在生态发展和客户黏性，在技术普惠和商业利益中，不断进行着博弈和平衡。
+
+
+
+
+
+
+
