@@ -46,4 +46,16 @@
 比如说，在常用来引导外部流量的 **Ingress Controller（入口控制器）** 方面，就有 AWS 的 ALB Ingress Controller，和 Azure 的 AKS Application Gateway Ingress Controller 等基于云上负载均衡器的控制器实现。它们会创建相应的 PaaS 服务实例，来为 Kubernetes 集群服务。
 
 再比如，我们可以在 Kubernetes 中定义动态存储卷分配策略的 StorageClass 层面，指定使用云端的块存储服务，来按需创建和挂载持久化存储。下面的配置文件片段（注意它的 provisioner 和 parameters 字段），就展示了一个使用 AWS EBS 服务来提供的 SSD 云硬盘的例子。
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+```
+
+云和 K8s 集成的方面还有很多，权限认证、日志集成、私有网络等许多方面，这里就不一一展开讨论了。这些集成共同构成了 K8s 在云上运行，以及和云全方位融合的坚实保障。
+
 
