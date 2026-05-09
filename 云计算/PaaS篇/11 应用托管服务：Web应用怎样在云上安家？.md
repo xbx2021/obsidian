@@ -23,5 +23,10 @@ Web 应用，显然是一个极为普遍的需求，也是一个巨大的市场�
 
 这类现代应用托管服务现在是各个云上的标配，AWS 上对应的云服务为 Elastic Beanstalk，阿里云对应的服务为 Web 应用托管服务（Web+），Azure 上称之为 Azure 应用服务（Azure App Service）。
 
+接下来，我就以国际版的 Azure 应用服务为例，把我们在第 7 讲中使用过的计算斐波那契数列的 Web 应用，移植到 Azure 云的 PaaS 服务上来。
+
+首先，我们来创建一个应用服务的实例：
+![](assets/11%20应用托管服务：Web应用怎样在云上安家？/file-20260509112043551.png)
+在上图中，我填写了一些重要信息，比如把这个实例称为 fibonodejs，系统会自动给它一个免费的域名 fibonodejs.azurewebsites.net。另外，我还选取了 Node 技术栈，以及 Linux 操作系统。在运行配置方面，我选取了标准 S1，对应一个 vCPU 和 1.75GB 内存的计算资源。
 
 
