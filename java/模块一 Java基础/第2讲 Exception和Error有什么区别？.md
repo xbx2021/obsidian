@@ -28,3 +28,5 @@ Exception 又分为**可检查**（checked）异常和**不检查**（unchecked�
 
 很多面试官会进一步追问一些细节，比如，你了解哪些 Error、Exception 或者 RuntimeException？我画了一个简单的类图，并列出来典型例子，可以给你作为参考，至少做到基本心里有数。
 ![](assets/第2讲%20Exception和Error有什么区别？/file-20260511143043715.png)
+其中有些子类型，最好重点理解一下，比如 NoClassDefFoundError 和 ClassNotFoundException 有什么区别，这也是个经典的入门题目。
+
