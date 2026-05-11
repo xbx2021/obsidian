@@ -110,3 +110,46 @@ finalize 还会掩盖资源回收时的出错信息，我们看下面一段 JDK 
     super.clear(); 
  }
 ```
+
+结合我上期专栏介绍的异常处理实践，你认为这段代码会导致什么问题？
+
+是的，你没有看错，这里的 Throwable 是被生吞了的！也就意味着一旦出现异常或者出错，你得不到任何有效信息。况且，Java 在 finalize 阶段也没有好的方式处理任何信息，不然更加不可预测。
+
+## 3. 有什么机制可以替换 finalize 吗？
+
+Java 平台目前在逐步使用 java.lang.ref.Cleaner 来替换掉原有的 finalize 实现。Cleaner 的实现利用了幻象引用（PhantomReference），这是一种常见的所谓 post-mortem 清理机制。我会在后面的专栏系统介绍 Java 的各种引用，利用幻象引用和引用队列，我们可以保证对象被彻底销毁前做一些类似资源回收的工作，比如关闭文件描述符（操作系统有限的资源），它比 finalize 更加轻量、更加可靠。
+
+吸取了 finalize 里的教训，每个 Cleaner 的操作都是独立的，它有自己的运行线程，所以可以避免意外死锁等问题。
+
+实践中，我们可以为自己的模块构建一个 Cleaner，然后实现相应的清理逻辑。下面是 JDK 自身提供的样例程序：
+```java
+public class CleaningExample implements AutoCloseable {
+        // A cleaner, preferably one shared within a library
+        private static final Cleaner cleaner = <cleaner>;
+        static class State implements Runnable { 
+            State(...) {
+                // initialize State needed for cleaning action
+            }
+            public void run() {
+                // cleanup action accessing State, executed at most once
+            }
+        }
+        private final State;
+        private final Cleaner.Cleanable cleanable
+        public CleaningExample() {
+            this.state = new State(...);
+            this.cleanable = cleaner.register(this, state);
+        }
+        public void close() {
+            cleanable.clean();
+        }
+    }
+```
+
+注意，从可预测性的角度来判断，Cleaner 或者幻象引用改善的程度仍然是有限的，如果由于种种原因导致幻象引用堆积，同样会出现问题。所以，Cleaner 适合作为一种最后的保证手段，而不是完全依赖 Cleaner 进行资源回收，不然我们就要再做一遍 finalize 的噩梦了。
+
+我也注意到很多第三方库自己直接利用幻象引用定制资源收集，比如广泛使用的 MySQL JDBC driver 之一的 mysql-connector-j，就利用了幻象引用机制。幻象引用也可以进行类似链条式依赖关系的动作，比如，进行总量控制的场景，保证只有连接被关闭，相应资源被回收，连接池才能创建新的连接。
+
+另外，这种代码如果稍有不慎添加了对资源的强引用关系，就会导致循环引用关系，前面提到的 MySQL JDBC 就在特定模式下有这种问题，导致内存泄漏。上面的示例代码中，将 State 定义为 static，就是为了避免普通的内部类隐含着对外部对象的强引用，因为那样会使外部对象无法进入幻象可达的状态。
+
+
