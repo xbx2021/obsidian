@@ -24,9 +24,106 @@ Exception 又分为**可检查**（checked）异常和**不检查**（unchecked�
 
 我们在日常编程中，如何处理好异常是比较考验功底的，我觉得需要掌握两个方面。
 
-**第一，理解 Throwable、Exception、Error 的设计和分类**。比如，掌握那些应用最为广泛的子类，以及如何自定义异常等。
+## **第一，理解 Throwable、Exception、Error 的设计和分类**。
+
+比如，掌握那些应用最为广泛的子类，以及如何自定义异常等。
 
 很多面试官会进一步追问一些细节，比如，你了解哪些 Error、Exception 或者 RuntimeException？我画了一个简单的类图，并列出来典型例子，可以给你作为参考，至少做到基本心里有数。
 ![](assets/第2讲%20Exception和Error有什么区别？/file-20260511143043715.png)
 其中有些子类型，最好重点理解一下，比如 NoClassDefFoundError 和 ClassNotFoundException 有什么区别，这也是个经典的入门题目。
+
+### **NoClassDefFoundError 和 ClassNotFoundException 区别**
+ 
+ **ClassNotFoundException**
+
+1. **类型**：受检异常 `Exception`
+2. **触发时机**：**运行时**，**主动尝试加载类**时找不到
+3. **核心原因**：类**根本不在运行时 classpath 中**
+4. **常见代码**：
+ ```java
+Class.forName("com.mysql.jdbc.Driver"); // 找不到驱动类 → 抛 ClassNotFoundException
+ ```
+5. **场景**：缺少 jar 包、依赖冲突、类名写错、classpath 配置错误
+
+**NoClassDefFoundError**
+
+1. **类型**：严重错误 `Error`
+2. **触发时机**：**运行时**，类**已经编译存在**，但 JVM 找不到**类的定义**
+3. **核心原因**：
+- 类的**静态代码块 / 构造方法执行失败**（类初始化失败）
+- 类被加载后，**对应的 class 文件被删除 / 替换**
+- 类依赖的其他类加载失败
+
+4. **表现**：编译完全正常，运行直接崩
+5. **示例**：
+```java
+public class Test {
+    static {
+        // 静态代码块抛异常 → 类初始化失败
+        int i = 1 / 0; 
+    }
+}
+```
+
+总结
+1. **ClassNotFoundException**：运行时**找不到类文件**，主动加载失败（缺包 / 路径错）
+2. **NoClassDefFoundError**：类文件存在，但**加载 / 初始化失败**（静态块报错 / 文件损坏）
+3. 一个是**找不到**，一个是**找到了但用不了**
+
+
+## **第二，理解 Java 语言中操作 Throwable 的元素和实践**。
+
+掌握最基本的语法是必须的，如 try-catch-finally 块，throw、throws 关键字等。与此同时，也要懂得如何处理典型场景。
+
+异常处理代码比较繁琐，比如我们需要写很多千篇一律的捕获代码，或者在 finally 里面做一些资源回收工作。随着 Java 语言的发展，引入了一些更加便利的特性，比如 try-with-resources 和 multiple catch，具体可以参考下面的代码段。在编译时期，会自动生成相应的处理逻辑，比如，自动按照约定俗成 close 那些扩展了 AutoCloseable 或者 Closeable 的对象。
+```java
+try (BufferedReader br = new BufferedReader(…);
+     BufferedWriter writer = new BufferedWriter(…)) {// Try-with-resources
+// do something
+catch ( IOException | XEception e) {// Multiple catch
+   // Handle it
+} 
+```
+
+
+# 知识扩展
+
+前面谈的大多是概念性的东西，下面我来谈些实践中的选择，我会结合一些代码用例进行分析。
+
+先开看第一个吧，下面的代码反映了异常处理中哪些不当之处？
+```java
+try {
+  // 业务代码
+  // …
+  Thread.sleep(1000L);
+} catch (Exception e) {
+  // Ignore it
+}
+```
+
+这段代码虽然很短，但是已经违反了异常处理的两个基本原则。
+
+**第一，尽量不要捕获类似 Exception 这样的通用异常，而是应该捕获特定异常**，在这里是 Thread.sleep() 抛出的 InterruptedException。
+
+这是因为在日常的开发和合作中，我们读代码的机会往往超过写代码，软件工程是门协作的艺术，所以我们有义务让自己的代码能够直观地体现出尽量多的信息，而泛泛的 Exception 之类，恰恰隐藏了我们的目的。另外，我们也要保证程序不会捕获到我们不希望捕获的异常。比如，你可能更希望 RuntimeException 被扩散出来，而不是被捕获。
+
+进一步讲，除非深思熟虑了，否则不要捕获 Throwable 或者 Error，这样很难保证我们能够正确程序处理 OutOfMemoryError。
+
+**第二，不要生吞（swallow）异常**。这是异常处理中要特别注意的事情，因为很可能会导致非常难以诊断的诡异情况。
+
+生吞异常，往往是基于假设这段代码可能不会发生，或者感觉忽略异常是无所谓的，但是千万不要在产品代码做这种假设！
+
+如果我们不把异常抛出来，或者也没有输出到日志（Logger）之类，程序可能在后续代码以不可控的方式结束。没人能够轻易判断究竟是哪里抛出了异常，以及是什么原因产生了异常。
+
+再来看看第二段代码
+```java
+try {
+   // 业务代码
+   // …
+} catch (IOException e) {
+    e.printStackTrace();
+}
+```
+
+这段代码作为一段实验代码，它是没有任何问题的，但是在产品代码中，通常都不允许这样处理。你先思考一下这是为什么呢？
 
