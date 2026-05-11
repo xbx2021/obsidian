@@ -74,3 +74,13 @@ JIT 在**程序运行过程中**，把这段热点字节码一次性编译成**�
 
 Java 虚拟机启动时，可以指定不同的参数对运行模式进行选择。 比如，**指定“-Xint”，就是告诉 JVM 只进行解释执行，不对代码进行编译，这种模式抛弃了 JIT 可能带来的性能优势**。毕竟解释器（interpreter）是逐条读入，逐条解释运行的。与其相对应的，还有一个 **“-Xcomp”参数，这是告诉 JVM 关闭解释器，不要进行解释执行，或者叫作最大优化级别。** 那你可能会问这种模式是不是最高效啊？简单说，还真未必。“-Xcomp”会导致 JVM 启动变慢非常多，同时有些 JIT 编译器优化方式，比如分支预测，如果不进行 profiling，往往并不能进行有效优化。
 
+除了我们日常最常见的 Java 使用模式，其实还有一种新的编译方式，即所谓的 **AOT（Ahead-of-Time Compilation），直接将字节码编译成机器代码，这样就避免了 JIT 预热等各方面的开销**，比如 Oracle JDK 9 就引入了实验性的 AOT 特性，并且增加了新的 jaotc 工具。利用下面的命令把某个类或者某个模块编译成为 AOT 库。
+```bash
+jaotc --output libHelloWorld.so HelloWorld.class
+jaotc --output libjava.base.so --module java.base
+```
+
+然后，在启动时直接指定就可以了。
+```bash
+java -XX:AOTLibrary=./libHelloWorld.so,./libjava.base.so HelloWorld
+```
