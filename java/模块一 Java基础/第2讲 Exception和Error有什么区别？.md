@@ -90,7 +90,7 @@ catch ( IOException | XEception e) {// Multiple catch
 
 前面谈的大多是概念性的东西，下面我来谈些实践中的选择，我会结合一些代码用例进行分析。
 
-## 代码一：
+## 代码一
 
 先开看第一个吧，下面的代码反映了异常处理中哪些不当之处？
 ```java
@@ -134,4 +134,15 @@ try {
 
 尤其是对于分布式系统，如果发生异常，但是无法找到堆栈轨迹（stacktrace），这纯属是为诊断设置障碍。所以，最好使用产品日志，详细地输出到日志系统里。
 
-我们接下来看下面的代码段，体会一下 Throw early, catch late 原则。
+## 代码三
+
+我们接下来看下面的代码段，体会一下 **Throw early, catch late 原则**。
+```java
+public void readPreferences(String fileName){
+   //...perform operations... 
+  InputStream in = new FileInputStream(fileName);
+   //...read the preferences file...
+}
+```
+
+
