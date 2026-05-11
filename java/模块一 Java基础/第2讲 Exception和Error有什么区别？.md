@@ -90,6 +90,8 @@ catch ( IOException | XEception e) {// Multiple catch
 
 前面谈的大多是概念性的东西，下面我来谈些实践中的选择，我会结合一些代码用例进行分析。
 
+## 代码一：
+
 先开看第一个吧，下面的代码反映了异常处理中哪些不当之处？
 ```java
 try {
@@ -115,6 +117,7 @@ try {
 
 如果我们不把异常抛出来，或者也没有输出到日志（Logger）之类，程序可能在后续代码以不可控的方式结束。没人能够轻易判断究竟是哪里抛出了异常，以及是什么原因产生了异常。
 
+## 代码二
 再来看看第二段代码
 ```java
 try {
@@ -130,3 +133,5 @@ try {
 我们先来看看[printStackTrace()](https://docs.oracle.com/javase/9/docs/api/java/lang/Throwable.html#printStackTrace--)的文档，开头就是“Prints this throwable and its backtrace to the standard error stream”。问题就在这里，在稍微复杂一点的生产系统中，标准出错（STERR）不是个合适的输出选项，因为你很难判断出到底输出到哪里去了。
 
 尤其是对于分布式系统，如果发生异常，但是无法找到堆栈轨迹（stacktrace），这纯属是为诊断设置障碍。所以，最好使用产品日志，详细地输出到日志系统里。
+
+我们接下来看下面的代码段，体会一下 Throw early, catch late 原则。
