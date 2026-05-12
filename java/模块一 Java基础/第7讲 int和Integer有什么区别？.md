@@ -31,3 +31,21 @@ int 是我们常说的整形数字，是 Java 的 8 个原始数据类型（Prim
 
 自动装箱实际上算是一种**语法糖**。什么是语法糖？可以简单理解为 Java 平台为我们自动进行了一些转换，保证不同的写法在运行时等价，它们发生在**编译阶段**，也就是生成的字节码是一致的。
 
+像前面提到的整数，javac 替我们自动把装箱转换为 Integer.valueOf()，把拆箱替换为 Integer.intValue()，这似乎这也顺道回答了另一个问题，既然调用的是 Integer.valueOf，自然能够得到缓存的好处啊。
+
+如何程序化的验证上面的结论呢？
+
+你可以写一段简单的程序包含下面两句代码，然后反编译一下。当然，这是一种从表现倒推的方法，大多数情况下，我们还是直接参考规范文档会更加可靠，毕竟软件承诺的是遵循规范，而不是保持当前行为。
+```java
+Integer integer = 1;
+int unboxing = integer ++;
+```
+
+反编译输出：
+```java
+1: invokestatic  #2                  // Method
+java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+8: invokevirtual #3                  // Method
+java/lang/Integer.intValue:()I
+```
+
