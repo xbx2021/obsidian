@@ -49,3 +49,7 @@ java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
 java/lang/Integer.intValue:()I
 ```
 
+这种缓存机制并不是只有 Integer 才有，同样存在于其他的一些包装类，比如：
+
+- Boolean，缓存了 true/false 对应实例，确切说，只会返回两个常量实例 Boolean.TRUE/FALSE。
+- 
