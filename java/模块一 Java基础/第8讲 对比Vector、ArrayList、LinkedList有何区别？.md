@@ -72,3 +72,10 @@ static <T> List<T> synchronizedList(List<T> list)
 List list = Collections.synchronizedList(new ArrayList());
 ```
 
+它的实现，基本就是将每个基本方法，比如 get、set、add 之类，都通过 synchronized 添加基本的同步支持，非常简单粗暴，但也非常实用。注意这些方法创建的线程安全集合，都符合迭代时 fail-fast 行为，当发生意外的并发修改时，尽早抛出 ConcurrentModificationException 异常，以避免不可预计的行为。
+
+另外一个经常会被考察到的问题，就是理解 Java 提供的默认排序算法，具体是什么排序方式以及设计思路等。
+
+这个问题本身就是有点陷阱的意味，因为需要区分是 Arrays.sort() 还是 Collections.sort() （底层是调用 Arrays.sort()）；什么数据类型；多大的数据集（太小的数据集，复杂排序是没必要的，Java 会直接进行二分插入排序）等。
+
+- 
