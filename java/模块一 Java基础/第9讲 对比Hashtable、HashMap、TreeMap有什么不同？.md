@@ -47,3 +47,5 @@ Hashtable、HashMap、TreeMap 都是最常见的一些 Map 实现，是以**键�
 - hashCode 需要保持一致性，状态改变返回的哈希值仍然要一致。
 - equals 的对称、反射、传递等特性。
 
+针对有序 Map 的分析内容比较有限，我再补充一些，虽然 LinkedHashMap 和 TreeMap 都可以保证某种顺序，但二者还是非常不同的。
+
