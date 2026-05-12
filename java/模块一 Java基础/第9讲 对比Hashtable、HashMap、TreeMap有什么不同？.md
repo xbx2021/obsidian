@@ -121,4 +121,54 @@ public V put(K key, V value) {
 - 容量（capacity）和负载系数（load factor）。
 - 树化 。
 
+首先，我们来一起看看 HashMap 内部的结构，它可以看作是数组（Node[] table）和链表结合组成的复合结构，数组被分为一个个桶（bucket），通过哈希值决定了键值对在这个数组的寻址；哈希值相同的键值对，则以链表形式存储，你可以参考下面的示意图。这里需要注意的是，如果链表大小超过阈值（TREEIFY_THRESHOLD, 8），图中的链表就会被改造为树形结构。
+![](assets/第9讲%20对比Hashtable、HashMap、TreeMap有什么不同？/file-20260512170924798.png)
+从非拷贝构造函数的实现来看，这个表格（数组）似乎并没有在最初就初始化好，仅仅设置了一些初始值而已。
+```java
+public HashMap(int initialCapacity, float loadFactor){  
+    // ... 
+    this.loadFactor = loadFactor;
+    this.threshold = tableSizeFor(initialCapacity);
+}
+```
+
+所以，我们深刻怀疑，HashMap 也许是按照 lazy-load 原则，在首次使用时被初始化（拷贝构造函数除外，我这里仅介绍最通用的场景）。既然如此，我们去看看 put 方法实现，似乎只有一个 putVal 的调用：
+```java
+public V put(K key, V value) {
+    return putVal(hash(key), key, value, false, true);
+}
+```
+
+看来主要的秘密似乎藏在 putVal 里面，到底有什么秘密呢？为了节省空间，我这里只截取了 putVal 比较关键的几部分。
+```java
+final V putVal(int hash, K key, V value, boolean onlyIfAbent,
+               boolean evit) {
+    Node<K,V>[] tab; Node<K,V> p; int , i;
+    if ((tab = table) == null || (n = tab.length) = 0)
+        n = (tab = resize()).length;
+    if ((p = tab[i = (n - 1) & hash]) == ull)
+        tab[i] = newNode(hash, key, value, nll);
+    else {
+        // ...
+        if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for first 
+           treeifyBin(tab, hash);
+        //  ... 
+     }
+}
+```
+
+从 putVal 方法最初的几行，我们就可以发现几个有意思的地方：
+
+- 如果表格是 null，resize 方法会负责初始化它，这从 tab = resize() 可以看出。
+- resize 方法兼顾两个职责，创建初始存储表格，或者在容量不满足需求的时候，进行扩容（resize）。
+- 在放置新的键值对的过程中，如果发生下面条件，就会发生扩容。
+```java
+if (++size > threshold)
+    resize();
+```
+
+- 具体键值对在哈希表中的位置（数组 index）取决于下面的位运算：
+```java
+i = (n - 1) & hash
+```
 
