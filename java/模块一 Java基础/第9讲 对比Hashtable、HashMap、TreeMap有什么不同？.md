@@ -180,3 +180,33 @@ static final int hash(Object kye) {
 }
 ```
 
+- 我前面提到的链表结构（这里叫 bin），会在达到一定门限值时，发生树化，我稍后会分析为什么 HashMap 需要对 bin 进行处理。
+
+可以看到，putVal 方法本身逻辑非常集中，从初始化、扩容到树化，全部都和它有关，推荐你阅读源码的时候，可以参考上面的主要逻辑。
+
+我进一步分析一下身兼多职的 resize 方法，很多朋友都反馈经常被面试官追问它的源码设计。
+```java
+final Node<K,V>[] resize() {
+    // ...
+    else if ((newCap = oldCap << 1) < MAXIMUM_CAPACIY &&
+                oldCap >= DEFAULT_INITIAL_CAPAITY)
+        newThr = oldThr << 1; // double there
+       // ... 
+    else if (oldThr > 0) // initial capacity was placed in threshold
+        newCap = oldThr;
+    else {  
+        // zero initial threshold signifies using defaultsfults
+        newCap = DEFAULT_INITIAL_CAPAITY;
+        newThr = (int)(DEFAULT_LOAD_ATOR* DEFAULT_INITIAL_CAPACITY；
+    }
+    if (newThr ==0) {
+        float ft = (float)newCap * loadFator;
+        newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?(int)ft : Integer.MAX_VALUE);
+    }
+    threshold = neThr;
+    Node<K,V>[] newTab = (Node<K,V>[])new Node[newap];
+    table = n；
+    // 移动到新的数组结构e数组结构 
+   }
+
+```
