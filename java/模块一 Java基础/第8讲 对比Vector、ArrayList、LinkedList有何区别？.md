@@ -47,4 +47,8 @@
 ![](assets/第8讲%20对比Vector、ArrayList、LinkedList有何区别？/file-20260512134959770.png)
 我们可以看到 Java 的集合框架，Collection 接口是所有集合的根，然后扩展开提供了三大类集合，分别是：
 
+- **List**，也就是我们前面介绍最多的有序集合，它提供了方便的访问、插入、删除等操作。
+- **Set**，Set 是不允许重复元素的，这是和 List 最明显的区别，也就是不存在两个对象 equals 返回 true。我们在日常开发中有很多需要保证元素唯一性的场合。
+- **Queue/Deque**，则是 Java 提供的标准队列结构的实现，除了集合的基本功能，它还支持类似先入先出（FIFO， First-in-First-Out）或者后入先出（LIFO，Last-In-First-Out）等特定行为。这里不包括 BlockingQueue，因为通常是并发编程场合，所以被放置在并发包里。
+
 
