@@ -92,3 +92,21 @@ public class LinkedHashMapSample {
 对于 TreeMap，它的整体顺序是由键的顺序关系决定的，通过 Comparator 或 Comparable（自然顺序）来决定。
 
 我在上一讲留给你的思考题提到了，构建一个具有优先级的调度系统的问题，其本质就是个典型的优先队列场景，Java 标准库提供了基于二叉堆实现的 PriorityQueue，它们都是依赖于同一种排序机制，当然也包括 TreeMap 的马甲 TreeSet。
+
+类似 hashCode 和 equals 的约定，为了避免模棱两可的情况，自然顺序同样需要符合一个约定，就是 compareTo 的返回值需要和 equals 一致，否则就会出现模棱两可情况。
+
+我们可以分析 TreeMap 的 put 方法实现：
+```java
+public V put(K key, V value) {
+    Entry<K,V> t = …
+    cmp = k.compareTo(t.key);
+    if (cmp < 0)
+        t = t.left;
+    else if (cmp > 0)
+        t = t.right;
+    else
+        return t.setValue(value);
+        // ...
+   }
+```
+
