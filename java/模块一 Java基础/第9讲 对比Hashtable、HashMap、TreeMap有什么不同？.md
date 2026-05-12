@@ -36,3 +36,14 @@ Hashtable、HashMap、TreeMap 都是最常见的一些 Map 实现，是以**键�
 
 首先，我们先对 Map 相关类型有个整体了解，Map 虽然通常被包括在 Java 集合框架里，但是其本身并不是狭义上的集合类型（Collection），具体你可以参考下面这个简单类图。
 ![](assets/第9讲%20对比Hashtable、HashMap、TreeMap有什么不同？/file-20260512153044404.png)
+**Hashtable** 比较特别，作为类似 Vector、Stack 的早期集合相关类型，它是扩展了 Dictionary 类的，类结构上与 HashMap 之类明显不同。
+
+**HashMap** 等其他 Map 实现则是都扩展了 AbstractMap，里面包含了通用方法抽象。不同 Map 的用途，从类图结构就能体现出来，设计目的已经体现在不同接口上。
+
+大部分使用 Map 的场景，通常就是放入、访问或者删除，而对顺序没有特别要求，HashMap 在这种情况下基本是最好的选择。**HashMap 的性能表现非常依赖于哈希码的有效性，请务必掌握 hashCode 和 equals 的一些基本约定**，比如：
+
+- equals 相等，hashCode 一定要相等。
+- 重写了 hashCode 也要重写 equals。
+- hashCode 需要保持一致性，状态改变返回的哈希值仍然要一致。
+- equals 的对称、反射、传递等特性。
+
