@@ -210,3 +210,6 @@ final Node<K,V>[] resize() {
    }
 
 ```
+
+依据 resize 源码，不考虑极端情况（容量理论最大极限由 MAXIMUM_CAPACITY 指定，数值为 1<<30，也就是 2 的 30 次方），我们可以归纳为：
+
