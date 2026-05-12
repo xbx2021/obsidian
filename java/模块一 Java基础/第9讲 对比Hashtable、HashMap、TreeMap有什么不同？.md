@@ -43,7 +43,7 @@ Hashtable、HashMap、TreeMap 都是最常见的一些 Map 实现，是以**键�
 大部分使用 Map 的场景，通常就是放入、访问或者删除，而对顺序没有特别要求，HashMap 在这种情况下基本是最好的选择。**HashMap 的性能表现非常依赖于哈希码的有效性，请务必掌握 hashCode 和 equals 的一些基本约定**，比如：
 
 - equals 相等，hashCode 一定要相等。
-- 重写了 hashCode 也要重写 equals。
+- 重写了 hashCode 也要重写 equals[为什么重写了 hashCode 也要重写 equals。](../扩展/为什么重写了%20hashCode%20也要重写%20equals。.md)。
 - hashCode 需要保持一致性，状态改变返回的哈希值仍然要一致。
 - equals 的对称、反射、传递等特性。
 
