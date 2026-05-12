@@ -248,6 +248,8 @@ final void treeifyBin(Node<K,V>[] tab, int hash) {
         //树化改造逻辑
     }
 }
-
 ```
+
+上面是精简过的 treeifyBin 示意，综合这两个方法，树化改造的逻辑就非常清晰了，可以理解为，当 bin 的数量大于 TREEIFY_THRESHOLD 时：
+
 
