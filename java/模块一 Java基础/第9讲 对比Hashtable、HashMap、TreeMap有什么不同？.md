@@ -34,3 +34,5 @@ Hashtable、HashMap、TreeMap 都是最常见的一些 Map 实现，是以**键�
 
 ## 1.Map 整体结构
 
+首先，我们先对 Map 相关类型有个整体了解，Map 虽然通常被包括在 Java 集合框架里，但是其本身并不是狭义上的集合类型（Collection），具体你可以参考下面这个简单类图。
+![](assets/第9讲%20对比Hashtable、HashMap、TreeMap有什么不同？/file-20260512153044404.png)
