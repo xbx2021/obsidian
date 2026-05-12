@@ -88,5 +88,17 @@ http://mail.openjdk.java.net/pipermail/core-libs-dev/2018-January/051000.html
 
 在 Java 8 之中，Java 平台支持了 Lambda 和 Stream，相应的 Java 集合框架也进行了大范围的增强，以支持类似为集合创建相应 stream 或者 parallelStream 的方法实现，我们可以非常方便的实现函数式代码。
 
+阅读 Java 源代码，你会发现，这些 API 的设计和实现比较独特，它们并不是实现在抽象类里面，而是以默认方法的形式实现在 Collection 这样的接口里！这是 Java 8 在语言层面的新特性，允许接口实现默认方法，理论上来说，我们原来实现在类似 Collections 这种工具类中的方法，大多可以转换到相应的接口上。针对这一点，我在面向对象主题，会专门梳理 Java 语言面向对象基本机制的演进。
 
+在 Java 9 中，Java 标准类库提供了一系列的静态工厂方法，比如，List.of()、Set.of()，大大简化了构建小的容器实例的代码量。根据业界实践经验，我们发现相当一部分集合实例都是容量非常有限的，而且在生命周期中并不会进行修改。但是，在原有的 Java 类库中，我们可能不得不写成：
+```java
+ArrayList<String>  list = new ArrayList<>();
+list.add("Hello");
+list.add("World");
+```
+
+而利用新的容器静态工厂方法，一句代码就够了，并且保证了不可变性。
+```java
+List<String> simpleList = List.of("Hello","world");
+```
 
