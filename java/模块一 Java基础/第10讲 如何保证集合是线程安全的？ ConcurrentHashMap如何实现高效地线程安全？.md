@@ -85,3 +85,48 @@ public V get(Object key) {
     }
 ```
 
+而对于 put 操作，首先是通过二次哈希避免哈希冲突，然后以 Unsafe 调用方式，直接获取相应的 Segment，然后进行线程安全的 put 操作：
+```java
+ public V put(K key, V value) {
+        Segment<K,V> s;
+        if (value == null)
+            throw new NullPointerException();
+        // 二次哈希，以保证数据的分散性，避免哈希冲突
+        int hash = hash(key.hashCode());
+        int j = (hash >>> segmentShift) & segmentMask;
+        if ((s = (Segment<K,V>)UNSAFE.getObject          // nonvolatile; recheck
+             (segments, (j << SSHIFT) + SBASE)) == null) //  in ensureSegment
+            s = ensureSegment(j);
+        return s.put(key, hash, value, false);
+    }
+```
+
+其核心逻辑实现在下面的内部方法中：
+```java
+final V put(K key, int hash, V value, boolean onlyIfAbsent) {
+            // scanAndLockForPut会去查找是否有key相同Node
+            // 无论如何，确保获取锁
+            HashEntry<K,V> node = tryLock() ? null :
+                scanAndLockForPut(key, hash, value);
+            V oldValue;
+            try {
+                HashEntry<K,V>[] tab = table;
+                int index = (tab.length - 1) & hash;
+                HashEntry<K,V> first = entryAt(tab, index);
+                for (HashEntry<K,V> e = first;;) {
+                    if (e != null) {
+                        K k;
+                        // 更新已有value...
+                    }
+                    else {
+                        // 放置HashEntry到特定位置，如果超过阈值，进行rehash
+                        // ...
+                    }
+                }
+            } finally {
+                unlock();
+            }
+            return oldValue;
+        }
+```
+
