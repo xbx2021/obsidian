@@ -134,5 +134,31 @@ public static Path copy(Path source, Path target, CopyOption... options)
 
 我在上一讲提到 Buffer 是 NIO 操作数据的基本工具，Java 为每种原始数据类型都提供了相应的 Buffer 实现（布尔除外），所以掌握和使用 Buffer 是十分必要的，尤其是涉及 Direct Buffer 等使用，因为其在垃圾收集等方面的特殊性，更要重点掌握。
 ![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260513160126131.png)
+Buffer 有几个基本属性：
 
+- **capacity**，它反映这个 Buffer 到底有多大，也就是数组的长度。
+- **position**，要操作的数据起始位置。
+- **limit**，相当于操作的限额。在读取或者写入时，limit 的意义很明显是不一样的。比如，读取操作时，很可能将 limit 设置到所容纳数据的上限；而在写入时，则会设置容量或容量以下的可写限度。
+- **mark**，记录上一次 postion 的位置，默认是 0，算是一个便利性的考虑，往往不是必须的。
 
+前面三个是我们日常使用最频繁的，我简单梳理下 Buffer 的基本操作：
+
+- 我们创建了一个 ByteBuffer，准备放入数据，capacity 当然就是缓冲区大小，而 position 就是 0，limit 默认就是 capacity 的大小。
+- 当我们写入几个字节的数据时，position 就会跟着水涨船高，但是它不可能超过 limit 的大小。
+- 如果我们想把前面写入的数据读出来，需要调用 flip 方法，将 position 设置为 0，limit 设置为以前的 position 那里。
+- 如果还想从头再读一遍，可以调用 rewind，让 limit 不变，position 再次设置为 0。
+
+更进一步的详细使用，我建议参考相关[教程](http://tutorials.jenkov.com/java-nio/buffers.html)。
+
+## 4.Direct Buffer 和垃圾收集
+
+我这里重点介绍两种特别的 Buffer。
+
+- **Direct Buffer**：如果我们看 Buffer 的方法定义，你会发现它定义了 isDirect() 方法，返回当前 Buffer 是否是 Direct 类型。这是因为 Java 提供了堆内和堆外（Direct）Buffer，我们可以以它的 allocate 或者 allocateDirect 方法直接创建。
+
+- **MappedByteBuffer**：它将文件按照指定大小直接映射为内存区域，当程序访问这个内存区域时将直接操作这块儿文件数据，省去了将数据从内核空间向用户空间传输的损耗。我们可以使用FileChannel.map创建 MappedByteBuffer，它本质上也是种 Direct Buffer。
+
+在实际使用中，Java 会尽量对 Direct Buffer 仅做本地 IO 操作，对于很多大数据量的 IO 密集操作，可能会带来非常大的性能优势，因为：
+
+- Direct Buffer 生命周期内内存地址都不会再发生更改，进而内核可以安全地对其进行访问，很多 IO 操作会很高效。
+- 
