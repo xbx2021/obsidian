@@ -77,4 +77,22 @@ transferTo 的传输过程是：
 ![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260513154102576.png)
 ## 2.Java IO/NIO 源码结构
 
+前面我在典型回答中提了第三种方式，即 Java 标准库也提供了文件拷贝方法（java.nio.file.Files.copy）。如果你这样回答，就一定要小心了，因为很少有问题的答案是仅仅调用某个方法。从面试的角度，面试官往往会追问：既然你提到了标准库，那么它是怎么实现的呢？有的公司面试官以喜欢追问而出名，直到追问到你说不知道。
 
+其实，这个问题的答案还真不是那么直观，因为实际上有几个不同的 copy 方法。
+```java
+public static Path copy(Path source, Path target, CopyOption... options)
+    throws IOException
+```
+
+```java
+public static long copy(InputStream in, Path target, CopyOption... options)
+    throws IOException
+```
+
+```java
+public static long copy(Path source, OutputStream out) 
+throws IOException
+```
+
+可以看到，copy 不仅仅是支持文件之间操作，没有人限定输入输出流一定是针对文件的，这是两个很实用的工具方法。
