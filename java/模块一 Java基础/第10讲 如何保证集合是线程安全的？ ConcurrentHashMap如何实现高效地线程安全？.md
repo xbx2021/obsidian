@@ -206,3 +206,34 @@ final V putVal(K key, V value, boolean onlyIfAbsent) { if (key == null || value 
 }
 
 ```
+
+初始化操作实现在 initTable 里面，这是一个典型的 CAS 使用场景，利用 volatile 的 sizeCtl 作为互斥手段：如果发现竞争性的初始化，就 spin 在那里，等待条件恢复；否则利用 CAS 设置排他标志。如果成功则进行初始化；否则重试。
+
+请参考下面代码：
+```java
+private final Node<K,V>[] initTable() {
+    Node<K,V>[] tab; int sc;
+    while ((tab = table) == null || tab.length == 0) {
+        // 如果发现冲突，进行spin等待
+        if ((sc = sizeCtl) < 0)
+            Thread.yield(); 
+        // CAS成功返回true，则进入真正的初始化逻辑
+        else if (U.compareAndSetInt(this, SIZECTL, sc, -1)) {
+            try {
+                if ((tab = table) == null || tab.length == 0) {
+                    int n = (sc > 0) ? sc : DEFAULT_CAPACITY;
+                    @SuppressWarnings("unchecked")
+                    Node<K,V>[] nt = (Node<K,V>[])new Node<?,?>[n];
+                    table = tab = nt;
+                    sc = n - (n >>> 2);
+                }
+            } finally {
+                sizeCtl = sc;
+            }
+            break;
+        }
+    }
+    return tab;
+}
+
+```
