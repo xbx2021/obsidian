@@ -133,7 +133,6 @@ public static Path copy(Path source, Path target, CopyOption... options)
 ## 3. 掌握 NIO Buffer
 
 我在上一讲提到 Buffer 是 NIO 操作数据的基本工具，Java 为每种原始数据类型都提供了相应的 Buffer 实现（布尔除外），所以掌握和使用 Buffer 是十分必要的，尤其是涉及 Direct Buffer 等使用，因为其在垃圾收集等方面的特殊性，更要重点掌握。
-
-
+![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260513160126131.png)
 
 
