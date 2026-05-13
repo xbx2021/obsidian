@@ -98,4 +98,22 @@ throws IOException
 可以看到，copy 不仅仅是支持文件之间操作，没有人限定输入输出流一定是针对文件的，这是两个很实用的工具方法。
 
 后面两种 copy 实现，能够在方法实现里直接看到使用的是 InputStream.transferTo()，你可以直接看源码，其内部实现其实是 stream 在用户态的读写；而对于第一种方法的分析过程要相对麻烦一些，可以参考下面片段。简单起见，我只分析同类型文件系统拷贝过程。
+```java
+public static Path copy(Path source, Path target, CopyOption... options)
+    throws IOException
+ {
+    FileSystemProvider provider = provider(source);
+    if (provider(target) == provider) {
+        // same provider
+        provider.copy(source, target, options);//这是本文分析的路径
+    } else {
+        // different providers
+        CopyMoveHelper.copyToForeignTarget(source, target, options);
+    }
+    return target;
+}
+```
 
+我把源码分析过程简单记录如下，JDK 的源代码中，内部实现和公共 API 定义也不是可以能够简单关联上的，NIO 部分代码甚至是定义为模板而不是 Java 源文件，在 build 过程自动生成源码，下面顺便介绍一下部分 JDK 代码机制和如何绕过隐藏障碍。
+
+- 首先，直接跟踪，发现 FileSystemProvider 只是个抽象类，阅读它的源码能够理解到，原来文件系统实际逻辑存在于 JDK 内部实现里，公共 API 其实是通过 ServiceLoader 机制加载一系列文件系统实现，然后提供服务。
