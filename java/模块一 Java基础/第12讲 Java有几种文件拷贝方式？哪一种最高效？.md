@@ -21,5 +21,22 @@ public static void copyFileByStream(File source, File dest) throws
         }
     }
  }
-
 ```
+
+或者，利用 java.nio 类库提供的 transferTo 或 transferFrom 方法实现。
+```java
+public static void copyFileByChannel(File source, File dest) throws
+        IOException {
+    try (FileChannel sourceChannel = new FileInputStream(source)
+            .getChannel();
+         FileChannel targetChannel = new FileOutputStream(dest).getChannel
+                 ();){
+        for (long count = sourceChannel.size() ;count>0 ;) {
+            long transferred = sourceChannel.transferTo(
+                    sourceChannel.position(), count, targetChannel);            sourceChannel.position(sourceChannel.position() + transferred);
+            count -= transferred;
+        }
+    }
+ }
+```
+
