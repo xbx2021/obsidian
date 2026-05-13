@@ -61,7 +61,27 @@ private static class SynchronizedMap<K,V>
 早期 ConcurrentHashMap，其实现是基于：
 
 - **分离锁**，也就是将内部进行分段（Segment），里面则是 HashEntry 的数组，和 HashMap 类似，哈希相同的条目也是以链表形式存放。
-- HashEntry 内部使用 volatile 的 value 字段来保证可见性，也利用了不可变对象的机制以改进利用 Unsafe 提供的底层能力，比如 volatile access，去直接完成部分操作，以最优化性能，毕竟 Unsafe 中的很多操作都是 JVM intrinsic 优化过的。
+- HashEntry 内部使用 **volatile** 的 **value** 字段来保证可见性，也利用了不可变对象的机制以改进利用 Unsafe 提供的底层能力，比如 volatile access，去直接完成部分操作，以最优化性能，毕竟 Unsafe 中的很多操作都是 JVM intrinsic 优化过的。
 
 你可以参考下面这个早期 ConcurrentHashMap 内部结构的示意图，其核心是利用分段设计，在进行并发操作的时候，只需要锁定相应段，这样就有效避免了类似 Hashtable 整体同步的问题，大大提高了性能。
 ![](assets/第10讲%20如何保证集合是线程安全的？%20ConcurrentHashMap如何实现高效地线程安全？/file-20260513102320437.png)
+在构造的时候，Segment 的数量由所谓的 concurrencyLevel 决定，**默认是 16**，也可以在相应构造函数直接指定。注意，Java 需要它是 2 的幂数值，如果输入是类似 15 这种非幂值，会被自动调整到 16 之类 2 的幂数值。
+
+具体情况，我们一起看看一些 Map 基本操作的[源码](https://hg.openjdk.org/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/classes/java/util/concurrent/ConcurrentHashMap.java)，这是 JDK 7 比较新的 get 代码。针对具体的优化部分，为方便理解，我直接注释在代码段里，get 操作需要保证的是可见性，所以并没有什么同步逻辑。
+```java
+public V get(Object key) {
+        Segment<K,V> s; // manually integrate access methods to reduce overhead
+        HashEntry<K,V>[] tab;
+        int h = hash(key.hashCode());
+       //利用位操作替换普通数学运算
+       long u = (((h >>> segmentShift) & segmentMask) << SSHIFT) + SBASE;
+        // 以Segment为单位，进行定位
+        // 利用Unsafe直接进行volatile access
+        if ((s = (Segment<K,V>)UNSAFE.getObjectVolatile(segments, u)) != null &&
+            (tab = s.table) != null) {
+           //省略
+          }
+        return null;
+    }
+```
+
