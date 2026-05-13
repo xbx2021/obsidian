@@ -51,7 +51,7 @@ IO 的内容比较多，专栏一讲很难能够说清楚。IO 不仅仅是多�
 - 参考下面这张类图，很多 IO 工具类都实现了 Closeable 接口，因为需要进行资源的释放。比如，打开 FileInputStream，它就会获取相应的文件描述符（FileDescriptor），需要利用 try-with-resources、 try-finally 等机制保证 FileInputStream 被明确关闭，进而相应文件描述符也会失效，否则将导致资源无法被释放。利用专栏前面的内容提到的 Cleaner 或 finalize 机制作为资源释放的最后把关，也是必要的。
 
 下面是我整理的一个简化版的类图，阐述了日常开发应用较多的类型和结构关系。
-![](assets/第11讲%20Java提供了哪些IO方式？%20NIO如何实现多路复用？/file-20260513140121222.png)
+![](assets/第11讲%20Java提供了哪些IO方式？%20NIO如何实现多路复用？/file-20260513140731901.png)
 ## 1. Java NIO 概览
 
 首先，熟悉一下 NIO 的主要组成部分：
