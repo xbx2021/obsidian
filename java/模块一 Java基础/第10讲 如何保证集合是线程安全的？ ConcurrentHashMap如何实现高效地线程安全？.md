@@ -130,3 +130,79 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
         }
 ```
 
+所以，从上面的源码清晰的看出，在进行并发写操作时：
+
+- ConcurrentHashMap 会获取再入锁，以保证数据一致性，Segment 本身就是基于 ReentrantLock 的扩展实现，所以，在并发修改期间，相应 Segment 是被锁定的。
+- 在最初阶段，进行重复性的扫描，以确定相应 key 值是否已经在数组里面，进而决定是更新还是放置操作，你可以在代码里看到相应的注释。重复扫描、检测冲突是 ConcurrentHashMap 的常见技巧。
+- 我在专栏上一讲介绍 HashMap 时，提到了可能发生的扩容问题，在 ConcurrentHashMap 中同样存在。不过有一个明显区别，就是它进行的不是整体的扩容，而是单独对 Segment 进行扩容，细节就不介绍了。
+
+另外一个 Map 的 size 方法同样需要关注，它的实现涉及分离锁的一个副作用。
+
+试想，如果不进行同步，简单的计算所有 Segment 的总值，可能会因为并发 put，导致结果不准确，但是直接锁定所有 Segment 进行计算，就会变得非常昂贵。其实，分离锁也限制了 Map 的初始化等操作。
+
+所以，ConcurrentHashMap 的实现是通过重试机制（RETRIES_BEFORE_LOCK，指定重试次数 2），来试图获得可靠值。如果没有监控到发生变化（通过对比 Segment.modCount），就直接返回，否则获取锁进行操作。
+
+### **Java 8 之后ConcurrentHashMap实现**
+
+下面我来对比一下，在 Java 8 和之后的版本中，ConcurrentHashMap 发生了哪些变化呢？
+
+- 总体结构上，它的内部存储变得和我在专栏上一讲介绍的 HashMap 结构非常相似，同样是大的桶（bucket）数组，然后内部也是一个个所谓的链表结构（bin），同步的粒度要更细致一些。
+- 其内部仍然有 Segment 定义，但仅仅是为了保证序列化时的兼容性而已，不再有任何结构上的用处。
+- 因为不再使用 Segment，初始化操作大大简化，修改为 lazy-load 形式，这样可以有效避免初始开销，解决了老版本很多人抱怨的这一点。
+- 数据存储利用 volatile 来保证可见性。
+- 使用 CAS 等操作，在特定场景进行无锁并发操作。
+- 使用 Unsafe、LongAdder 之类底层手段，进行极端情况的优化。
+
+先看看现在的数据存储内部实现，我们可以发现 Key 是 final 的，因为在生命周期中，一个条目的 Key 发生变化是不可能的；与此同时 val，则声明为 volatile，以保证可见性。
+```java
+ static class Node<K,V> implements Map.Entry<K,V> {
+        final int hash;
+        final K key;
+        volatile V val;
+        volatile Node<K,V> next;
+        // … 
+    }
+```
+
+我这里就不再介绍 get 方法和构造函数了，相对比较简单，直接看并发的 put 是如何实现的。
+```java
+final V putVal(K key, V value, boolean onlyIfAbsent) { if (key == null || value == null) throw new NullPointerException();
+    int hash = spread(key.hashCode());
+    int binCount = 0;
+    for (Node<K,V>[] tab = table;;) {
+        Node<K,V> f; int n, i, fh; K fk; V fv;
+        if (tab == null || (n = tab.length) == 0)
+            tab = initTable();
+        else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
+            // 利用CAS去进行无锁线程安全操作，如果bin是空的
+            if (casTabAt(tab, i, null, new Node<K,V>(hash, key, value)))
+                break; 
+        }
+        else if ((fh = f.hash) == MOVED)
+            tab = helpTransfer(tab, f);
+        else if (onlyIfAbsent // 不加锁，进行检查
+                 && fh == hash
+                 && ((fk = f.key) == key || (fk != null && key.equals(fk)))
+                 && (fv = f.val) != null)
+            return fv;
+        else {
+            V oldVal = null;
+            synchronized (f) {
+                   // 细粒度的同步修改操作... 
+                }
+            }
+            // Bin超过阈值，进行树化
+            if (binCount != 0) {
+                if (binCount >= TREEIFY_THRESHOLD)
+                    treeifyBin(tab, i);
+                if (oldVal != null)
+                    return oldVal;
+                break;
+            }
+        }
+    }
+    addCount(1L, binCount);
+    return null;
+}
+
+```
