@@ -137,3 +137,22 @@ class RequestHandler extends Thread {
 这样，一个简单的 Socket 服务器就被实现出来了。
 
 思考一下，这个解决方案在扩展性方面，可能存在什么潜在问题呢？
+
+大家知道 Java 语言目前的线程实现是比较重量级的，启动或者销毁一个线程是有明显开销的，每个线程都有单独的线程栈等结构，需要占用非常明显的内存，所以，每一个 Client 启动一个线程似乎都有些浪费。
+
+那么，稍微修正一下这个问题，我们引入线程池机制来避免浪费。
+```java
+serverSocket = new ServerSocket(0);
+executor = Executors.newFixedThreadPool(8);
+ while (true) {
+    Socket socket = serverSocket.accept();
+    RequestHandler requestHandler = new RequestHandler(socket);
+    executor.execute(requestHandler);
+}
+```
+
+这样做似乎好了很多，通过一个固定大小的线程池，来负责管理工作线程，避免频繁创建、销毁线程的开销，这是我们构建并发服务的典型方式。这种工作方式，可以参考下图来理解。
+![](assets/第11讲%20Java提供了哪些IO方式？%20NIO如何实现多路复用？/file-20260513145028094.png)
+如果连接数并不是非常多，只有最多几百个连接的普通应用，这种模式往往可以工作的很好。但是，如果连接数量急剧上升，这种实现方式就无法很好地工作了，因为线程上下文切换开销会在高并发时变得很明显，这是同步阻塞方式的低扩展性劣势。
+
+
