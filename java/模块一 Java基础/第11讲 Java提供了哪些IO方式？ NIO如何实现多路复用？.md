@@ -11,3 +11,7 @@ Java IO 方式有很多种，基于不同的 IO 抽象模型和交互方式，�
 
 java.io 包的好处是代码比较简单、直观，缺点则是 IO 效率和扩展性存在局限性，容易成为应用性能的瓶颈。
 
+很多时候，人们也把 java.net 下面提供的部分网络 API，比如 Socket、ServerSocket、HttpURLConnection 也归类到同步阻塞 IO 类库，因为网络通信同样是 IO 行为。
+
+**第二，在 Java 1.4 中引入了 NIO 框架（java.nio 包）**，提供了 Channel、Selector、Buffer 等新的抽象，可以构建多路复用的、同步非阻塞 IO 程序，同时提供了更接近操作系统底层的高性能数据操作方式。
+
