@@ -9,3 +9,17 @@
 Java 有多种比较典型的文件拷贝实现方式，比如：
 
 利用 java.io 类库，直接为源文件构建一个 FileInputStream 读取，然后再为目标文件构建一个 FileOutputStream，完成写入工作。
+```java
+public static void copyFileByStream(File source, File dest) throws
+        IOException {
+    try (InputStream is = new FileInputStream(source);
+         OutputStream os = new FileOutputStream(dest);){
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = is.read(buffer)) > 0) {
+            os.write(buffer, 0, length);
+        }
+    }
+ }
+
+```
