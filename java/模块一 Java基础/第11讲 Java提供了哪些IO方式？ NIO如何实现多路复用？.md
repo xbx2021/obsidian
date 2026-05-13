@@ -192,3 +192,7 @@ public class NIOServer extends Thread {
 }
 ```
 
+这个非常精简的样例掀开了 NIO 多路复用的面纱，我们可以分析下主要步骤和元素：
+
+- 首先，通过 Selector.open() 创建一个 Selector，作为类似调度员的角色。
+- 然后，创建一个 ServerSocketChannel，并且向 Selector 注册，通过指定 SelectionKey.OP_ACCEPT，告诉调度员，它关注的是新的连接请求。
