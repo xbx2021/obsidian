@@ -72,6 +72,8 @@ Charset.defaultCharset().encode("Hello world!"));
 
 下面我通过一个典型场景，来分析为什么需要 NIO，为什么需要多路复用。设想，我们需要实现一个服务器应用，只简单要求能够同时服务多个客户端请求即可。
 
+ ### **java.io 和 java.net 同步机制**
+ 
 使用 java.io 和 java.net 中的同步、阻塞式 API，可以简单实现。
 ```java
 public class DemoServer extends Thread {
@@ -155,4 +157,38 @@ executor = Executors.newFixedThreadPool(8);
 ![](assets/第11讲%20Java提供了哪些IO方式？%20NIO如何实现多路复用？/file-20260513145028094.png)
 如果连接数并不是非常多，只有最多几百个连接的普通应用，这种模式往往可以工作的很好。但是，如果连接数量急剧上升，这种实现方式就无法很好地工作了，因为线程上下文切换开销会在高并发时变得很明显，这是同步阻塞方式的低扩展性劣势。
 
+### **NIO 引入的多路复用机制**
+
+NIO 引入的多路复用机制，提供了另外一种思路，请参考我下面提供的新的版本。
+```java
+public class NIOServer extends Thread {
+    public void run() {
+        try (Selector selector = Selector.open();
+             ServerSocketChannel serverSocket = ServerSocketChannel.open();) {// 创建Selector和Channel
+            serverSocket.bind(new InetSocketAddress(InetAddress.getLocalHost(), 8888));
+            serverSocket.configureBlocking(false);
+            // 注册到Selector，并说明关注点
+            serverSocket.register(selector, SelectionKey.OP_ACCEPT);
+            while (true) {
+                selector.select();// 阻塞等待就绪的Channel，这是关键点之一
+                Set<SelectionKey> selectedKeys = selector.selectedKeys();
+                Iterator<SelectionKey> iter = selectedKeys.iterator();
+                while (iter.hasNext()) {
+                    SelectionKey key = iter.next();
+                   // 生产系统中一般会额外进行就绪状态检查
+                    sayHelloWorld((ServerSocketChannel) key.channel());
+                    iter.remove();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void sayHelloWorld(ServerSocketChannel server) throws IOException {
+        try (SocketChannel client = server.accept();) {          client.write(Charset.defaultCharset().encode("Hello world!"));
+        }
+    }
+   // 省略了与前面类似的main
+}
+```
 
