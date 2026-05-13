@@ -190,5 +190,29 @@ Buffer 有几个基本属性：
 注意，激活 NMT 通常都会导致 JVM 出现 5%~10% 的性能下降，请谨慎考虑。
 
 运行时，可以采用下面命令进行交互式对比：
+```bash
+// 打印NMT信息
+jcmd <pid> VM.native_memory detail 
+
+// 进行baseline，以对比分配内存变化
+jcmd <pid> VM.native_memory baseline
+
+// 进行baseline，以对比分配内存变化
+jcmd <pid> VM.native_memory detail.diff
 ```
+
+我们可以在 Internal 部分发现 Direct Buffer 内存使用的信息，这是因为其底层实际是利用 unsafe_allocatememory。严格说，这不是 JVM 内部使用的内存，所以在 JDK 11 以后，其实它是归类在 other 部分里。
+
+JDK 9 的输出片段如下，“+”表示的就是 diff 命令发现的分配变化：
 ```
+-Internal (reserved=679KB +4KB, committed=679KB +4KB)
+              (malloc=615KB +4KB #1571 +4)
+              (mmap: reserved=64KB, committed=64KB)
+
+```
+
+注意：JVM 的堆外内存远不止 Direct Buffer，NMT 输出的信息当然也远不止这些，我在专栏后面有综合分析更加具体的内存结构的主题。
+
+# 一课一练
+
+关于今天我们讨论的题目你做到心中有数了吗？你可以思考下，如果我们需要在 channel 读取的过程中，将不同片段写入到相应的 Buffer 里面（类似二进制消息分拆成消息头、消息体等），可以采用 NIO 的什么机制做到呢？
