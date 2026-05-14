@@ -228,3 +228,5 @@ public class StampedSample {
 }
 
 ```
+
+注意，这里的 writeLock 和 unLockWrite 一定要保证成对调用。
