@@ -87,3 +87,37 @@ public class ThreadSafeSample {
 }
 ```
 
+下面是在我的电脑上的运行结果：
+```
+C:\>c:\jdk-9\bin\java ThreadSafeSample
+Observed data race, former is 13097, latter is 13099
+```
+
+将两次赋值过程用 synchronized 保护起来，使用 this 作为互斥单元，就可以避免别的线程并发的去修改 sharedState。
+```java
+synchronized (this) {
+  int former = sharedState ++;
+  int latter = sharedState;
+  // …
+}
+```
+
+如果用 javap 反编译，可以看到类似片段，利用 monitorenter/monitorexit 对实现了同步的语义：
+```
+11: astore_1
+12: monitorenter
+13: aload_0
+14: dup
+15: getfield    #2                // Field sharedState:I
+18: dup_x1
+…
+56: monitorexit
+```
+
+我会在下一讲，对 synchronized 和其他锁实现的更多底层细节进行深入分析。
+
+代码中使用 synchronized 非常便利，如果用来修饰静态方法，其等同于利用下面代码将方法体囊括进来：
+```java
+synchronized (ClassName.class) {}
+```
+
