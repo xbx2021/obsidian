@@ -157,4 +157,21 @@ ReentrantLock 相比 synchronized，因为可以像普通对象一样使用，�
 条件变量最为典型的应用场景就是标准类库中的 ArrayBlockingQueue 等。
 
 我们参考下面的源码，首先，通过再入锁获取条件变量：
+```java
+/** Condition for waiting takes */
+private final Condition notEmpty;
+
+/** Condition for waiting puts */
+private final Condition notFull;
+ 
+public ArrayBlockingQueue(int capacity, boolean fair) {
+  if (capacity <= 0)
+      throw new IllegalArgumentException();
+  this.items = new Object[capacity];
+  lock = new ReentrantLock(fair);
+  notEmpty = lock.newCondition();
+  notFull =  lock.newCondition();
+}
+```
+
 
