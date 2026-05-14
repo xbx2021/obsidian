@@ -100,4 +100,18 @@ daemonThread.setDaemon(true);
 daemonThread.start();
 ```
 
-再来看看Spurious wakeup。尤其是在多核 CPU 的系统中，线程等待存在一种可能，就是在没有任何线程广播或者发出信号的情况下，线程就被唤醒，如果处理不当就可能出现诡异的并发问题，所以我们在等待条件过程中，建议采用下面模式来书写。
+再来看看[Spurious wakeup](https://en.wikipedia.org/wiki/Spurious_wakeup)。尤其是在多核 CPU 的系统中，线程等待存在一种可能，就是在没有任何线程广播或者发出信号的情况下，线程就被唤醒，如果处理不当就可能出现诡异的并发问题，所以我们在等待条件过程中，建议采用下面模式来书写。
+```java
+// 推荐
+while ( isCondition()) {
+waitForAConfition(...);
+}
+
+// 不推荐，可能引入bug
+if ( isCondition()) {
+waitForAConfition(...);
+}
+
+```
+
+
