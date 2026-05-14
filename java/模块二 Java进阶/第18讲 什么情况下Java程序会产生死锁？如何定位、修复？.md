@@ -86,4 +86,30 @@ ${JAVA_HOME}\bin\jstack your_pid
 
 所以，理解线程基本状态和并发相关元素是定位问题的关键，然后配合程序调用栈结构，基本就可以定位到具体的问题代码。
 
-如果我们是开发自己的管理工具，需要用更加程序化的方式扫描服务进程、定位死锁，可以考虑使用 Java 提供的标准管理 API，ThreadMXBean，其直接就提供了 findDeadlockedThreads​() 方法用于定位。为方便说明，我修改了 DeadLockSample，请看下面的代码片段。
+如果我们是开发自己的管理工具，需要用更加程序化的方式扫描服务进程、定位死锁，可以考虑使用 Java 提供的标准管理 API，[ThreadMXBean](https://docs.oracle.com/javase/9/docs/api/java/lang/management/ThreadMXBean.html#findDeadlockedThreads--)，其直接就提供了 findDeadlockedThreads​() 方法用于定位。为方便说明，我修改了 DeadLockSample，请看下面的代码片段。
+```java
+public static void main(String[] args) throws InterruptedException {
+
+  ThreadMXBean mbean = ManagementFactory.getThreadMXBean();
+  Runnable dlCheck = new Runnable() {
+
+      @Override
+      public void run() {
+          long[] threadIds = mbean.findDeadlockedThreads();
+          if (threadIds != null) {
+                     ThreadInfo[] threadInfos = mbean.getThreadInfo(threadIds);
+                     System.out.println("Detected deadlock threads:");
+              for (ThreadInfo threadInfo : threadInfos) {
+                  System.out.println(threadInfo.getThreadName());
+              }
+          }
+       }
+    };
+
+       ScheduledExecutorService scheduler =Executors.newScheduledThreadPool(1);
+       // 稍等5秒，然后每10秒进行一次死锁扫描
+        scheduler.scheduleAtFixedRate(dlCheck, 5L, 10L, TimeUnit.SECONDS);
+// 死锁样例代码…
+}
+```
+
