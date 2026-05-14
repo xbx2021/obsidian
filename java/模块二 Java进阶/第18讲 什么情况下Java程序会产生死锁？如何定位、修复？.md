@@ -106,10 +106,14 @@ public static void main(String[] args) throws InterruptedException {
        }
     };
 
-       ScheduledExecutorService scheduler =Executors.newScheduledThreadPool(1);
+       ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
        // 稍等5秒，然后每10秒进行一次死锁扫描
         scheduler.scheduleAtFixedRate(dlCheck, 5L, 10L, TimeUnit.SECONDS);
 // 死锁样例代码…
 }
 ```
+
+重新编译执行，你就能看到死锁被定位到的输出。在实际应用中，就可以据此收集进一步的信息，然后进行预警等后续处理。但是要注意的是，对线程进行快照本身是一个相对重量级的操作，还是要慎重选择频度和时机。
+
+## 如何在编程中尽量预防死锁呢？
 
