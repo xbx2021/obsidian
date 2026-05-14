@@ -138,7 +138,7 @@ class MyWorker implements Runnable {
 
 ## CountDownLatch 和 CyclicBarrier
 
-下面，来看看 CountDownLatch 和 CyclicBarrier，它们的行为有一定的相似度，经常会被考察二者有什么区别，我来简单总结一下。
+下面，来看看 CountDownLatch 和 CyclicBarrier，它们的行为有一定的相似度，经常会被考察二者有什么区别，我来简单总结一下。[CountDownLatch 和 CyclicBarrier 区别](../扩展/CountDownLatch%20和%20CyclicBarrier%20区别.md)
 
 - CountDownLatch 是不可以重置的，所以无法重用；而 CyclicBarrier 则没有这种限制，可以重用。
 
