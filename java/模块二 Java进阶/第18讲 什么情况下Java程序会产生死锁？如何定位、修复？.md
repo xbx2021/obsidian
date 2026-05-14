@@ -117,3 +117,72 @@ public static void main(String[] args) throws InterruptedException {
 
 ## 如何在编程中尽量预防死锁呢？
 
+首先，我们来总结一下前面例子中死锁的产生包含哪些基本元素。基本上死锁的发生是因为：
+
+- 互斥条件，类似 Java 中 Monitor 都是独占的，要么是我用，要么是你用。
+- 互斥条件是长期持有的，在使用结束之前，自己不会释放，也不能被其他线程抢占。
+- 循环依赖关系，两个或者多个个体之间出现了锁的链条环。
+
+所以，我们可以据此分析可能的避免死锁的思路和方法。
+
+### **第一种方法**
+
+如果可能的话，**尽量避免使用多个锁，并且只有需要时才持有锁**。否则，即使是非常精通并发编程的工程师，也难免会掉进坑里，嵌套的 synchronized 或者 lock 非常容易出问题。
+
+我举个[例子](https://bugs.openjdk.java.net/browse/JDK-8198928)， Java NIO 的实现代码向来以锁多著称，一个原因是，其本身模型就非常复杂，某种程度上是不得不如此；另外是在设计时，考虑到既要支持阻塞模式，又要支持非阻塞模式。直接结果就是，一些基本操作如 connect，需要操作三个锁以上，在最近的一个 JDK 改进中，就发生了死锁现象。
+
+我将其简化为下面的伪代码，问题是暴露在 HTTP/2 客户端中，这是个非常现代的反应式风格的 API，非常推荐学习使用。
+```java
+/// Thread HttpClient-6-SelectorManager:
+readLock.lock();
+writeLock.lock();
+// 持有readLock/writeLock，调用close（）需要获得closeLock
+close();
+// Thread HttpClient-6-Worker-2 持有closeLock
+implCloseSelectableChannel (); //想获得readLock
+```
+
+在 close 发生时， HttpClient-6-SelectorManager 线程持有 readLock/writeLock，试图获得 closeLock；与此同时，另一个 HttpClient-6-Worker-2 线程，持有 closeLock，试图获得 readLock，这就不可避免地进入了死锁。
+
+这里比较难懂的地方在于，closeLock 的持有状态（就是我标记为绿色的部分）并没有在线程栈中显示出来，请参考我在下图中标记的部分。
+![](assets/第18讲%20什么情况下Java程序会产生死锁？如何定位、修复？/file-20260514151818179.png)
+
+更加具体来说，请查看[SocketChannelImpl](http://hg.openjdk.java.net/jdk/jdk/file/ce06058197a4/src/java.base/share/classes/sun/nio/ch/SocketChannelImpl.java)的 663 行，对比 implCloseSelectableChannel() 方法实现和[AbstractInterruptibleChannel.close()](http://hg.openjdk.java.net/jdk/jdk/file/ce06058197a4/src/java.base/share/classes/java/nio/channels/spi/AbstractInterruptibleChannel.java)在 109 行的代码，这里就不展示代码了。
+
+所以，从程序设计的角度反思，如果我们赋予一段程序太多的职责，出现“既要…又要…”的情况时，可能就需要我们审视下设计思路或目的是否合理了。对于类库，因为其基础、共享的定位，比应用开发往往更加令人苦恼，需要仔细斟酌之间的平衡。
+
+### **第二种方法**
+
+如果必须使用多个锁，**尽量设计好锁的获取顺序**，这个说起来简单，做起来可不容易，你可以参看著名的[银行家算法](https://en.wikipedia.org/wiki/Banker%27s_algorithm)。
+
+一般的情况，我建议可以采取些简单的辅助手段，比如：
+
+- 将对象（方法）和锁之间的关系，用图形化的方式表示分别抽取出来，以今天最初讲的死锁为例，因为是调用了同一个线程所以更加简单。
+![](assets/第18讲%20什么情况下Java程序会产生死锁？如何定位、修复？/file-20260514152135747.png)
+- 然后根据对象之间组合、调用的关系对比和组合，考虑可能调用时序。
+![](assets/第18讲%20什么情况下Java程序会产生死锁？如何定位、修复？/file-20260514152223228.png)
+- 按照可能时序合并，发现可能死锁的场景。
+![](assets/第18讲%20什么情况下Java程序会产生死锁？如何定位、修复？/file-20260514152256495.png)
+
+### **第三种方法**
+
+**使用带超时的方法，为程序带来更多可控性。**
+
+类似 Object.wait(…) 或者 CountDownLatch.await(…)，都支持所谓的 timed_wait，我们完全可以就不假定该锁一定会获得，指定超时时间，并为无法得到锁时准备退出逻辑。
+
+并发 Lock 实现，如 ReentrantLock 还支持非阻塞式的获取锁操作 `tryLock()`，这是一个插队行为（barging），并不在乎等待的公平性，如果执行时对象恰好没有被独占，则直接获取锁。有时，我们希望条件允许就尝试插队，不然就按照现有公平性规则等待，一般采用下面的方法：
+```java
+if (lock.tryLock() || lock.tryLock(timeout, unit)) {
+    // ...
+   }
+```
+
+### **第四种方法**
+
+业界也有一些其他方面的尝试，比如通过静态代码分析（如 FindBugs）去查找固定的模式，进而定位可能的死锁或者竞争情况。实践证明这种方法也有一定作用，请参考[相关文档](https://plugins.jetbrains.com/plugin/3847-findbugs-idea)。
+
+除了典型应用中的死锁场景，其实还有一些更令人头疼的死锁，比如类加载过程发生的死锁，尤其是在框架大量使用自定义类加载时，因为往往不是在应用本身的代码库中，jstack 等工具也不见得能够显示全部锁信息，所以处理起来比较棘手。对此，Java 有[官方文档](https://docs.oracle.com/javase/7/docs/technotes/guides/lang/cl-mt.html)进行了详细解释，并针对特定情况提供了相应 JVM 参数和基本原则。
+
+# 一课一练
+
+关于今天我们讨论的题目你做到心中有数了吗？今天的思考题是，有时候并不是阻塞导致的死锁，只是某个线程进入了死循环，导致其他线程一直等待，这种问题如何诊断呢？
