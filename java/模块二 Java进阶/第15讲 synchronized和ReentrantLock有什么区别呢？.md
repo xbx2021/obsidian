@@ -189,5 +189,21 @@ public E take() throws InterruptedException {
 }
 ```
 
+当队列为空时，试图 take 的线程的正确行为应该是等待入队发生，而不是直接返回，这是 BlockingQueue 的语义，使用条件 notEmpty 就可以优雅地实现这一逻辑。
+
+那么，怎么保证入队触发后续 take 操作呢？请看 enqueue 实现：
+```java
+private void enqueue(E e) {
+  // assert lock.isHeldByCurrentThread();
+  // assert lock.getHoldCount() == 1;
+  // assert items[putIndex] == null;
+  final Object[] items = this.items;
+  items[putIndex] = e;
+  if (++putIndex == items.length) putIndex = 0;
+  count++;
+  notEmpty.signal(); // 通知等待的线程，非空条件已经满足
+}
+```
+
 
 
