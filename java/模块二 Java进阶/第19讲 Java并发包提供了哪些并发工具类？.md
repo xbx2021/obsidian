@@ -148,5 +148,56 @@ class MyWorker implements Runnable {
 
 如果用 CountDownLatch 去实现上面的排队场景，该怎么做呢？假设有 10 个人排队，我们将其分成 5 个人一批，通过 CountDownLatch 来协调批次，你可以试试下面的示例代码。
 ```java
-
+import java.util.concurrent.CountDownLatch;
+public class LatchSample {
+  public static void main(String[] args) throws InterruptedException {
+      CountDownLatch latch = new CountDownLatch(6);
+           for (int i = 0; i < 5; i++) {
+                Thread t = new Thread(new FirstBatchWorker(latch));
+                t.start();
+      }
+      for (int i = 0; i < 5; i++) {
+              Thread t = new Thread(new SecondBatchWorker(latch));
+              t.start();
+      }
+           // 注意这里也是演示目的的逻辑，并不是推荐的协调方式
+      while ( latch.getCount() != 1 ){
+              Thread.sleep(100L);
+      }
+      System.out.println("Wait for first batch finish");
+      latch.countDown();
+  }
+}
+class FirstBatchWorker implements Runnable {
+  private CountDownLatch latch;
+  public FirstBatchWorker(CountDownLatch latch) {
+      this.latch = latch;
+  }
+  @Override
+  public void run() {
+          System.out.println("First batch executed!");
+          latch.countDown();
+  }
+}
+class SecondBatchWorker implements Runnable {
+  private CountDownLatch latch;
+  public SecondBatchWorker(CountDownLatch latch) {
+      this.latch = latch;
+  }
+  @Override
+  public void run() {
+      try {
+          latch.await();
+          System.out.println("Second batch executed!");
+      } catch (InterruptedException e) {
+          e.printStackTrace();
+      }
+  }
+}
 ```
+
+CountDownLatch 的调度方式相对简单，后一批次的线程进行 await，等待前一批 countDown 足够多次。这个例子也从侧面体现出了它的局限性，虽然它也能够支持 10 个人排队的情况，但是因为不能重用，如果要支持更多人排队，就不能依赖一个 CountDownLatch 进行了。其编译运行输出如下：
+![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260514163034136.png)
+
+在实际应用中的条件依赖，往往没有这么别扭，CountDownLatch 用于线程间等待操作结束是非常简单普遍的用法。通过 countDown/await 组合进行通信是很高效的，通常不建议使用例子里那个循环等待方式。
+
