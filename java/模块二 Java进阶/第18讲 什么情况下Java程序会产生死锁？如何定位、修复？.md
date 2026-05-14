@@ -18,3 +18,47 @@
 
 今天的问题偏向于实用场景，大部分死锁本身并不难定位，掌握基本思路和工具使用，理解线程相关的基本概念，比如各种线程状态和同步、锁、Latch 等并发工具，就已经足够解决大多数问题了。
 
+针对死锁，面试官可以深入考察：
+
+- 抛开字面上的概念，让面试者写一个可能死锁的程序，顺便也考察下基本的线程编程。
+- 诊断死锁有哪些工具，如果是分布式环境，可能更关心能否用 API 实现吗？
+- 后期诊断死锁还是挺痛苦的，经常加班，如何在编程中尽量避免一些典型场景的死锁，有其他工具辅助吗？
+
+# 知识扩展
+
+在分析开始之前，先以一个基本的死锁程序为例，我在这里只用了两个嵌套的 synchronized 去获取锁，具体如下：
+```java
+public class DeadLockSample extends Thread {
+  private String first;
+  private String second;
+  public DeadLockSample(String name, String first, String second) {
+      super(name);
+      this.first = first;
+      this.second = second;
+  }
+
+  public  void run() {
+      synchronized (first) {
+          System.out.println(this.getName() + " obtained: " + first);
+          try {
+              Thread.sleep(1000L);
+              synchronized (second) {
+                  System.out.println(this.getName() + " obtained: " + second);
+              }
+          } catch (InterruptedException e) {
+              // Do nothing
+          }
+      }
+  }
+  public static void main(String[] args) throws InterruptedException {
+      String lockA = "lockA";
+      String lockB = "lockB";
+      DeadLockSample t1 = new DeadLockSample("Thread1", lockA, lockB);
+      DeadLockSample t2 = new DeadLockSample("Thread2", lockB, lockA);
+      t1.start();
+      t2.start();
+      t1.join();
+      t2.join();
+  }
+}
+```
