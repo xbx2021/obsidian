@@ -156,7 +156,39 @@ void ObjectSynchronizer::slow_enter(Handle obj, BasicLock* lock, TRAPS) {
 
 **StampedLock** 竟然也是个单独的类型，从类图结构可以看出它是不支持再入性的语义的，也就是它不是以持有锁的线程为单位。
 
-为什么我们需要读写锁（ReadWriteLock）等其他锁呢？
+## 为什么需要读写锁（ReadWriteLock）等其他锁呢？
 
 这是因为，虽然 ReentrantLock 和 synchronized 简单实用，但是行为上有一定局限性，通俗点说就是“太霸道”，要么不占，要么独占。实际应用场景中，有的时候不需要大量竞争的写操作，而是以并发读取为主，如何进一步优化并发操作的粒度呢？
 
+Java 并发包提供的读写锁等扩展了锁的能力，它所基于的原理是多个读操作是不需要互斥的，因为读操作并不会更改数据，所以不存在互相干扰。而写操作则会导致并发一致性的问题，所以写线程之间、读写线程之间，需要精心设计的互斥逻辑。
+
+下面是一个基于读写锁实现的数据结构，当数据量较大，并发读多、并发写少的时候，能够比纯同步版本凸显出优势。
+```java
+public class RWSample {
+  private final Map<String, String> m = new TreeMap<>();
+  private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
+  private final Lock r = rwl.readLock();
+  private final Lock w = rwl.writeLock();
+  public String get(String key) {
+      r.lock();
+      System.out.println("读锁锁定！");
+      try {
+          return m.get(key);
+      } finally {
+          r.unlock();
+      }
+  }
+
+  public String put(String key, String entry) {
+      w.lock();
+  System.out.println("写锁锁定！");
+        try {
+            return m.put(key, entry);
+        } finally {
+            w.unlock();
+        }
+    }
+  // …
+  }
+
+```
