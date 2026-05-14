@@ -27,6 +27,7 @@ synchronized 和 ReentrantLock 的性能不能一概而论，早期版本 synchr
 更进一步，你还需要：
 
 - **掌握 synchronized、ReentrantLock 底层实现；理解锁膨胀、降级；理解偏斜锁、自旋锁、轻量级锁、重量级锁等概念。**
+
 - **掌握并发包中 java.util.concurrent.lock 各种不同实现和案例分析。**
 
 # 知识扩展
