@@ -93,12 +93,16 @@ Thread 和 Object 的方法，听起来简单，但是实际应用中被证明�
 
 前面谈了不少理论，下面谈谈线程 API 使用，我会侧重于平时工作学习中，容易被忽略的一些方面。
 
+### **守护线程**
+
 先来看看**守护线程**（Daemon Thread），有的时候应用中需要一个长期驻留的服务程序，但是不希望其影响应用退出，就可以将其设置为守护线程，如果 JVM 发现只有守护线程存在时，将结束进程，具体可以参考下面代码段。注意，必须在线程启动之前设置。
 ```java
 Thread daemonThread = new Thread();
 daemonThread.setDaemon(true);
 daemonThread.start();
 ```
+
+### **Spurious wakeup**
 
 再来看看[Spurious wakeup](https://en.wikipedia.org/wiki/Spurious_wakeup)。尤其是在多核 CPU 的系统中，线程等待存在一种可能，就是在没有任何线程广播或者发出信号的情况下，线程就被唤醒，如果处理不当就可能出现诡异的并发问题，所以我们在等待条件过程中，建议采用下面模式来书写。
 ```java
@@ -114,4 +118,57 @@ waitForAConfition(...);
 
 ```
 
+### **Thread.onSpinWait()**
 
+Thread.onSpinWait()，这是 Java 9 中引入的特性。我在专栏第 16 讲给你留的思考题中，提到“自旋锁”（spin-wait, busy-waiting），也可以认为其不算是一种锁，而是一种针对短期等待的性能优化技术。“onSpinWait()”没有任何行为上的保证，而是对 JVM 的一个暗示，JVM 可能会利用 CPU 的 pause 指令进一步提高性能，性能特别敏感的应用可以关注。
+
+### **ThreadLocal**
+
+再有就是慎用[ThreadLocal](https://docs.oracle.com/javase/9/docs/api/java/lang/ThreadLocal.html)，这是 Java 提供的一种保存线程私有信息的机制，因为其在整个线程生命周期内有效，所以可以方便地在一个线程关联的不同业务模块之间传递信息，比如事务 ID、Cookie 等上下文相关信息。
+
+它的实现结构，可以参考[源码](http://hg.openjdk.java.net/jdk/jdk/file/ee8524126794/src/java.base/share/classes/java/lang/ThreadLocal.java)，数据存储于线程相关的 ThreadLocalMap，其内部条目是弱引用，如下面片段。
+```java
+static class ThreadLocalMap {
+  static class Entry extends WeakReference<ThreadLocal<?>> {
+      /** The value associated with this ThreadLocal. */
+      Object value;
+      Entry(ThreadLocal<?> k, Object v) {
+          super(k);
+      value = v;
+      }
+      }
+   // …
+}
+```
+
+当 Key 为 null 时，该条目就变成“废弃条目”，相关“value”的回收，往往依赖于几个关键点，即 set、remove、rehash。
+
+下面是 set 的示例，我进行了精简和注释：
+```java
+private void set(ThreadLocal<?> key, Object value) {
+  Entry[] tab = table;
+  int len = tab.length;
+  int i = key.threadLocalHashCode & (len-1);
+
+  for (Entry e = tab[i];; …) {
+      //…
+      if (k == null) {
+// 替换废弃条目
+          replaceStaleEntry(key, value, i);
+          return;
+      }
+       }
+
+  tab[i] = new Entry(key, value);
+  int sz = ++size;
+//  扫描并清理发现的废弃条目，并检查容量是否超限
+  if (!cleanSomeSlots(i, sz) && sz >= threshold)
+      rehash();// 清理废弃条目，如果仍然超限，则扩容（加倍）
+}  
+```
+
+具体的清理逻辑是实现在 cleanSomeSlots 和 expungeStaleEntry 之中，如果你有兴趣可以自行阅读。
+
+结合专栏第 4 讲介绍的引用类型，我们会发现一个特别的地方，通常弱引用都会和引用队列配合清理机制使用，但是 ThreadLocal 是个例外，它并没有这么做。
+
+这意味着，废弃项目的回收**依赖于显式地触发，否则就要等待线程结束**，进而回收相应 ThreadLocalMap！这就是很多 OOM 的来源，所以通常都会建议，应用一定要自己负责 remove，并且不要和线程池配合，因为 worker 线程往往是不会退出的。
