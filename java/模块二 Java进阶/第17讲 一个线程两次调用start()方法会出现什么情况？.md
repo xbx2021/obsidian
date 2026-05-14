@@ -19,3 +19,9 @@ Java 的线程是不允许启动两次的，第二次调用必然会抛出 Illeg
 public final native void wait(long timeout) throws InterruptedException;
 ```
 
+- **终止**（TERMINATED），不管是意外退出还是正常执行结束，线程已经完成使命，终止运行，也有人把这个状态叫作死亡。
+
+在第二次调用 start() 方法的时候，线程可能处于终止或者其他（非 NEW）状态，但是不论如何，都是不可以再次启动的。
+
+# 考点分析
+
