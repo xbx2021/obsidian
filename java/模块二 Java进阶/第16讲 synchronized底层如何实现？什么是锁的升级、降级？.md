@@ -63,3 +63,7 @@ Handle h_obj(THREAD, obj);
   }
 ```
 
+其实现可以简单进行分解：
+
+- **UseBiasedLocking** 是一个检查，因为，在 JVM 启动时，我们可以指定是否开启偏斜锁。
+
