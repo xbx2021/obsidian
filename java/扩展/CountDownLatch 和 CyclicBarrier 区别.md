@@ -1,10 +1,3 @@
-# CountDownLatch 和 CyclicBarrier 核心区别（一句话吃透）
-
-**CountDownLatch：一次性倒计时，别人等干完活的人，不能复用**
-**CyclicBarrier：循环栅栏，大家互相等所有人到齐，可复用**
-
----
-
 ## 一、核心定义
 ### CountDownLatch
 - **减法计数器**：初始化固定次数 `count`
@@ -58,8 +51,88 @@
 
 ---
 
-## 五、极简总结记忆
-1. **CountDownLatch**：**主等从、一次性、倒计时**
-2. **CyclicBarrier**：**互相等、可循环、凑齐放行**
+## 五、CountDownLatch 示例（一次性、主等子、不可复用）
+特点：**主线程等所有子线程干完活**，计数器归零就报废，不能第二轮再用。
 
-需要我给你写两段极简对照 Demo，直观跑一遍看输出差异吗？
+```java
+import java.util.concurrent.CountDownLatch;
+
+public class CountDownLatchDemo {
+    public static void main(String[] args) throws InterruptedException {
+        // 计数器 = 5
+        CountDownLatch latch = new CountDownLatch(5);
+
+        for (int i = 0; i < 5; i++) {
+            new Thread(() -> {
+                System.out.println(Thread.currentThread().getName() + " 执行任务");
+                // 计数减1
+                latch.countDown();
+            }).start();
+        }
+
+        // 主线程阻塞，等5个线程全部 countDown 完
+        latch.await();
+        System.out.println("所有子线程执行完毕，主线程继续往下走");
+
+        // 重点：不能复用！再 await 直接放行，没有第二轮等待
+    }
+}
+```
+
+### 核心特点
+1. 子线程干完活主动 `countDown()`
+2. 主线程 `await()` 等待全部完成
+3. **只能用一次**，不能循环多轮同步
+
+---
+
+## 六、CyclicBarrier 示例（可循环、互相等、凑齐放行）
+特点：**线程之间互相等待**，凑齐数量统一放行，自动重置，可以多轮循环。
+
+```java
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
+
+public class CyclicBarrierDemo {
+    public static void main(String[] args) {
+        // 5个线程到达屏障才放行，放行后执行回调
+        CyclicBarrier barrier = new CyclicBarrier(5, () ->
+                System.out.println("===== 所有人到齐，统一放行 =====")
+        );
+
+        // 开启5个线程
+        for (int i = 0; i < 5; i++) {
+            new Thread(() -> {
+                // 模拟3轮循环，每轮都要等所有人到齐
+                for (int round = 1; round <= 3; round++) {
+                    System.out.println(Thread.currentThread().getName() + " 第" + round + "轮就绪");
+                    try {
+                        // 阻塞，等凑齐5个线程
+                        barrier.await();
+                    } catch (InterruptedException | BrokenBarrierException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+    }
+}
+```
+
+### 核心特点
+1. 每个线程到卡点都调用 `await()` **互相等待**
+2. 凑齐设定数量，统一放行 + 执行回调
+3. **自动循环复用**，可以无限多轮同步
+
+---
+
+## 七、一句话终极区别（背下来就能面试）
+1. **CountDownLatch**：
+**一个线程等一群线程，一次性，不可逆，不能复用。**
+适合：**等待所有任务初始化完成 / 所有任务执行结束**。
+
+2. **CyclicBarrier**：
+**一群线程互相等，凑齐再一起走，可循环复用。**
+适合：**多线程分阶段执行、每一轮都要全员同步**。
+
+---
