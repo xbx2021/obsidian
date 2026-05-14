@@ -174,4 +174,20 @@ public ArrayBlockingQueue(int capacity, boolean fair) {
 }
 ```
 
+两个条件变量是从同一再入锁创建出来，然后使用在特定操作中，如下面的 take 方法，判断和等待条件满足：
+```java
+public E take() throws InterruptedException {
+  final ReentrantLock lock = this.lock;
+  lock.lockInterruptibly();
+  try {
+      while (count == 0)
+          notEmpty.await();
+      return dequeue();
+  } finally {
+      lock.unlock();
+  }
+}
+```
+
+
 
