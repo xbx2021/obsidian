@@ -239,3 +239,7 @@ public class CyclicBarrierSample {
   }
 }
 ```
+
+为了让输出更能表达运行时序，我使用了 CyclicBarrier 特有的 barrierAction，当屏障被触发时，Java 会自动调度该动作。因为 CyclicBarrier 会自动进行重置，所以这个逻辑其实可以非常自然的支持更多排队人数。其编译输出如下：
+![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260514163948287.png)
+
