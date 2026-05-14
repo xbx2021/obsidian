@@ -43,3 +43,45 @@
 - [Semaphore](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Semaphore.html)，Java 版本的信号量实现。
 
 Java 提供了经典信号量（[Semaphore](https://en.wikipedia.org/wiki/Semaphore_(programming))）的实现，它通过控制一定数量的允许（permit）的方式，来达到限制通用资源访问的目的。你可以想象一下这个场景，在车站、机场等出租车时，当很多空出租车就位时，为防止过度拥挤，调度员指挥排队等待坐车的队伍一次进来 5 个人上车，等这 5 个人坐车出发，再放进去下一批，这和 Semaphore 的工作原理有些类似。
+
+你可以试试使用 Semaphore 来模拟实现这个调度过程：
+```java
+import java.util.concurrent.Semaphore;
+public class UsualSemaphoreSample {
+  public static void main(String[] args) throws InterruptedException {
+      System.out.println("Action...GO!");
+      Semaphore semaphore = new Semaphore(5);
+      for (int i = 0; i < 10; i++) {
+          Thread t = new Thread(new SemaphoreWorker(semaphore));
+          t.start();
+      }
+  }
+}
+class SemaphoreWorker implements Runnable {
+  private String name;
+  private Semaphore semaphore;
+  public SemaphoreWorker(Semaphore semaphore) {
+      this.semaphore = semaphore;
+  }
+  @Override
+  public void run() {
+      try {
+          log("is waiting for a permit!");
+         semaphore.acquire();
+          log("acquired a permit!");
+          log("executed!");
+      } catch (InterruptedException e) {
+          e.printStackTrace();
+      } finally {
+          log("released a permit!");
+          semaphore.release();
+      }
+  }
+  private void log(String msg){
+      if (name == null) {
+          name = Thread.currentThread().getName();
+      }
+      System.out.println(name + " " + msg);
+  }
+}
+```
