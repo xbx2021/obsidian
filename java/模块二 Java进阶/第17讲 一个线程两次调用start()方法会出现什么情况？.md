@@ -50,3 +50,40 @@ private native void setPriority0(int newPriority);
 private native void interrupt0();
 ```
 
+这种实现有利有弊，总体上来说，Java 语言得益于精细粒度的线程和相关的并发操作，其构建高扩展性的大型应用的能力已经毋庸置疑。但是，其复杂性也提高了并发编程的门槛，近几年的 Go 语言等提供了协程（[coroutine](https://en.wikipedia.org/wiki/Coroutine)），大大提高了构建并发应用的效率。于此同时，Java 也在[Loom](http://openjdk.java.net/projects/loom/)项目中，孕育新的类似轻量级用户线程（Fiber）等机制，也许在不久的将来就可以在新版 JDK 中使用到它。
+
+## 线程的基本操作
+
+下面，我来分析下线程的基本操作。如何创建线程想必你已经非常熟悉了，请看下面的例子：
+```java
+Runnable task = () -> {System.out.println("Hello World!");};
+Thread myThread = new Thread(task);
+myThread.start();
+myThread.join();
+```
+
+我们可以直接扩展 Thread 类，然后实例化。但在本例中，我选取了另外一种方式，就是实现一个 Runnable，将代码逻放在 Runnable 中，然后构建 Thread 并启动（start），等待结束（join）。
+
+### **使用Runnable的好处**
+
+Runnable 的好处是，不会受 Java 不支持类多继承的限制，重用代码实现，当我们需要重复执行相应逻辑时优点明显。而且，也能更好的与现代 Java 并发库中的 Executor 之类框架结合使用，比如将上面 start 和 join 的逻辑完全写成下面的结构：
+```java
+Future future = Executors.newFixedThreadPool(1)
+.submit(task)
+.get();
+```
+
+这样我们就不用操心线程的创建和管理，也能利用 Future 等机制更好地处理执行结果。线程生命周期通常和业务之间没有本质联系，混淆实现需求和业务需求，就会降低开发的效率。
+
+### **影响线程状态的方法**
+
+从线程生命周期的状态开始展开，那么在 Java 编程中，有哪些因素可能影响线程的状态呢？主要有：
+
+- 线程自身的方法，除了 `start`，还有多个 `join` 方法，等待线程结束；`yield` 是告诉调度器，主动让出 CPU；另外，就是一些已经被标记为过时的 resume、stop、suspend 之类，据我所知，在 JDK 最新版本中，destory/stop 方法将被直接移除。
+
+- 基类 Object 提供了一些基础的 wait/notify/notifyAll 方法。如果我们持有某个对象的 Monitor 锁，调用 `wait` 会让当前线程处于等待状态，直到其他线程 `notify` 或者 `notifyAll`。所以，**本质上是提供了 Monitor 的获取和释放的能力，是基本的线程间通信方式**。
+
+- 并发类库中的工具，比如 `CountDownLatch.await()` 会让当前线程进入等待状态，直到 latch 被基数为 0，这可以看作是线程间通信的 Signal。
+
+我这里画了一个状态和方法之间的对应图：
+![](assets/第17讲%20一个线程两次调用start()方法会出现什么情况？/file-20260514140351469.png)方法会出现什么情况？/file-20260514140351469.png)
