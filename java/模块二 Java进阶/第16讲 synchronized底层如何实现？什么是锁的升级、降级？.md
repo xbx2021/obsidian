@@ -69,3 +69,94 @@ Handle h_obj(THREAD, obj);
 
 偏斜锁并不适合所有应用场景，撤销操作（revoke）是比较重的行为，只有当存在较多不会真正竞争的 synchronized 块儿时，才能体现出明显改善。实践中对于偏斜锁的一直是有争议的，有人甚至认为，当你需要大量使用并发类库时，往往意味着你不需要偏斜锁。从具体选择来看，我还是建议需要在实践中进行测试，根据结果再决定是否使用。
 
+还有一方面是，偏斜锁会延缓 JIT 预热的进程，所以很多性能测试中会显式地关闭偏斜锁，命令如下：
+```bash
+-XX:-UseBiasedLocking
+```
+
+- **fast_enter** 是我们熟悉的完整锁获取路径，**slow_enter** 则是绕过偏斜锁，直接进入轻量级锁获取逻辑。
+
+那么 fast_enter 是如何实现的呢？同样是通过在代码库搜索，我们可以定位到 synchronizer.cpp。 类似 fast_enter 这种实现，解释器或者动态编译器，都是拷贝这段基础逻辑，所以如果我们修改这部分逻辑，要保证一致性。这部分代码是非常敏感的，微小的问题都可能导致死锁或者正确性问题。
+```cpp
+void ObjectSynchronizer::fast_enter(Handle obj, BasicLock* lock,
+                                  bool attempt_rebias, TRAPS) {
+  if (UseBiasedLocking) {
+    if (!SafepointSynchronize::is_at_safepoint()) {
+      BiasedLocking::Condition cond = BiasedLocking::revoke_and_rebias(obj, attempt_rebias, THREAD);
+      if (cond == BiasedLocking::BIAS_REVOKED_AND_REBIASED) {
+        return;
+      }
+  } else {
+      assert(!attempt_rebias, "can not rebias toward VM thread");
+      BiasedLocking::revoke_at_safepoint(obj);
+  }
+    assert(!obj->mark()->has_bias_pattern(), "biases should be revoked by now");
+  }
+ 
+  slow_enter(obj, lock, THREAD);
+}
+```
+
+我来分析下这段逻辑实现：
+
+- [biasedLocking](http://hg.openjdk.java.net/jdk/jdk/file/6659a8f57d78/src/hotspot/share/runtime/biasedLocking.cpp) 定义了偏斜锁相关操作，revoke_and_rebias 是获取偏斜锁的入口方法，revoke_at_safepoint 则定义了当检测到安全点时的处理逻辑。
+- 如果获取偏斜锁失败，则进入 slow_enter。
+- 这个方法里面同样检查是否开启了偏斜锁，但是从代码路径来看，其实如果关闭了偏斜锁，是不会进入这个方法的，所以算是个额外的保障性检查吧。
+
+另外，如果你仔细查看[synchronizer.cpp](https://hg.openjdk.org/jdk/jdk/file/896e80158d35/src/hotspot/share/runtime/synchronizer.cpp)里，会发现不仅仅是 synchronized 的逻辑，包括从本地代码，也就是 JNI，触发的 Monitor 动作，全都可以在里面找到（jni_enter/jni_exit）。
+
+关于biasedLocking的更多细节我就不展开了，明白它是通过 CAS 设置 Mark Word 就完全够用了，对象头中 Mark Word 的结构，可以参考下图：
+![](assets/第16讲%20synchronized底层如何实现？什么是锁的升级、降级？/file-20260514110637986.png)
+顺着锁升降级的过程分析下去，偏斜锁到轻量级锁的过程是如何实现的呢？
+
+我们来看看 slow_enter 到底做了什么。
+```cpp
+void ObjectSynchronizer::slow_enter(Handle obj, BasicLock* lock, TRAPS) {
+  markOop mark = obj->mark();
+ if (mark->is_neutral()) {
+       // 将目前的Mark Word复制到Displaced Header上
+  lock->set_displaced_header(mark);
+  // 利用CAS设置对象的Mark Word
+    if (mark == obj()->cas_set_mark((markOop) lock, mark)) {
+      TEVENT(slow_enter: release stacklock);
+      return;
+    }
+    // 检查存在竞争
+  } else if (mark->has_locker() &&
+             THREAD->is_lock_owned((address)mark->locker())) {
+  // 清除
+    lock->set_displaced_header(NULL);
+    return;
+  }
+ 
+  // 重置Displaced Header
+  lock->set_displaced_header(markOopDesc::unused_mark());
+  ObjectSynchronizer::inflate(THREAD,
+                            obj(),
+                              inflate_cause_monitor_enter)->enter(THREAD);
+}
+```
+
+请结合我在代码中添加的注释，来理解如何从试图获取轻量级锁，逐步进入锁膨胀的过程。你可以发现这个处理逻辑，和我在这一讲最初介绍的过程是十分吻合的。
+
+- 设置 Displaced Header，然后利用 cas_set_mark 设置对象 Mark Word，如果成功就成功获取轻量级锁。
+- 否则 Displaced Header，然后进入锁膨胀阶段，具体实现在 `inflate` 方法中。
+
+今天就不介绍膨胀的细节了，我这里提供了源代码分析的思路和样例，考虑到应用实践，再进一步增加源代码解读意义不大，有兴趣的同学可以参考我提供的synchronizer.cpp链接，例如：
+
+- deflate_idle_monitors 是分析锁降级逻辑的入口，这部分行为还在进行持续改进，因为其逻辑是在安全点内运行，处理不当可能拖长 JVM 停顿（STW，stop-the-world）的时间。
+- fast_exit 或者 slow_exit 是对应的锁释放逻辑。
+
+
+## 其他类型的锁
+
+前面分析了 synchronized 的底层实现，理解起来有一定难度，下面我们来看一些相对轻松的内容。 我在上一讲对比了 synchronized 和 ReentrantLock，Java 核心类库中还有其他一些特别的锁类型，具体请参考下面的图。
+![](assets/第16讲%20synchronized底层如何实现？什么是锁的升级、降级？/file-20260514110950380.png)
+你可能注意到了，这些锁竟然不都是实现了 Lock 接口，**ReadWriteLock** 是一个单独的接口，它通常是代表了一对儿锁，分别对应只读和写操作，标准类库中提供了再入版本的读写锁实现（ReentrantReadWriteLock），对应的语义和 ReentrantLock 比较相似。
+
+**StampedLock** 竟然也是个单独的类型，从类图结构可以看出它是不支持再入性的语义的，也就是它不是以持有锁的线程为单位。
+
+为什么我们需要读写锁（ReadWriteLock）等其他锁呢？
+
+这是因为，虽然 ReentrantLock 和 synchronized 简单实用，但是行为上有一定局限性，通俗点说就是“太霸道”，要么不占，要么独占。实际应用场景中，有的时候不需要大量竞争的写操作，而是以并发读取为主，如何进一步优化并发操作的粒度呢？
+
