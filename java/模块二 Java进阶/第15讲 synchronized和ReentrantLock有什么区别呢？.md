@@ -41,5 +41,49 @@ synchronized 和 ReentrantLock 的性能不能一概而论，早期版本 synchr
 
 换个角度来看，如果状态不是共享的，或者不是可修改的，也就不存在线程安全问题，进而可以推理出保证线程安全的两个办法：
 
+- **封装**：通过封装，我们可以将对象内部状态隐藏、保护起来。
+- **不可变**：还记得我们在专栏第 3 讲强调的 final 和 immutable 吗，就是这个道理，Java 语言目前还没有真正意义上的原生不可变，但是未来也许会引入。
 
+线程安全需要保证几个基本特性：
+
+- **原子性**，简单说就是相关操作不会中途被其他线程干扰，一般通过同步机制实现。
+- **可见性**，是一个线程修改了某个共享变量，其状态能够立即被其他线程知晓，通常被解释为将线程本地状态反映到主内存上，**volatile** 就是负责保证可见性的。
+- **有序性**，是保证线程内串行语义，避免指令重排等。
+
+可能有点晦涩，那么我们看看下面的代码段，分析一下原子性需求体现在哪里。这个例子通过取两次数值然后进行对比，来模拟两次对共享状态的操作。
+
+你可以编译并执行，可以看到，仅仅是两个线程的低度并发，就非常容易碰到 former 和 latter 不相等的情况。这是因为，在两次取值的过程中，其他线程可能已经修改了 sharedState。
+```java
+public class ThreadSafeSample {
+  public int sharedState;
+  public void nonSafeAction() {
+      while (sharedState < 100000) {
+          int former = sharedState++;
+          int latter = sharedState;
+          if (former != latter - 1) {
+              System.out.printf("Observed data race, former is " +
+                      former + ", " + "latter is " + latter);
+          }
+      }
+  }
+
+  public static void main(String[] args) throws InterruptedException {
+      ThreadSafeSample sample = new ThreadSafeSample();
+      Thread threadA = new Thread(){
+          public void run(){
+              sample.nonSafeAction();
+          }
+      };
+      Thread threadB = new Thread(){
+          public void run(){
+              sample.nonSafeAction();
+          }
+      };
+      threadA.start();
+      threadB.start();
+      threadA.join();
+      threadB.join();
+  }
+}
+```
 
