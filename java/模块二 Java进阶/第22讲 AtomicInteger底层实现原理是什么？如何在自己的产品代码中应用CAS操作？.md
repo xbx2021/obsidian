@@ -16,3 +16,13 @@ private static final long VALUE = U.objectFieldOffset(AtomicInteger.class, "valu
 private volatile int value;
 ```
 
+具体的原子操作细节，可以参考任意一个原子更新方法，比如下面的 getAndIncrement。
+
+Unsafe 会利用 value 字段的内存地址偏移，直接完成操作。
+```java
+public final int getAndIncrement() {
+    return U.getAndAddInt(this, VALUE, 1);
+}
+```
+
+
