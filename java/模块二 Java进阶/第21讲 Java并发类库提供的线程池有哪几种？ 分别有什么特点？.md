@@ -37,3 +37,22 @@ Executor 框架可不仅仅是线程池，我觉得至少下面几点值得深�
 
 # 知识扩展
 
+首先，我们来看看 Executor 框架的基本组成，请参考下面的类图。
+![](assets/第21讲%20Java并发类库提供的线程池有哪几种？%20分别有什么特点？/file-20260515122730466.png)
+
+我们从整体上把握一下各个类型的主要设计目的：
+
+- **Executor** 是一个基础的接口，其初衷是将任务提交和任务执行细节解耦，这一点可以体会其定义的唯一方法。
+```java
+void execute(Runnable command);
+```
+
+Executor 的设计是源于 Java 早期线程 API 使用的教训，开发者在实现应用逻辑时，被太多线程创建、调度等不相关细节所打扰。就像我们进行 HTTP 通信，如果还需要自己操作 TCP 握手，开发效率低下，质量也难以保证。
+
+- **ExecutorService** 则更加完善，不仅提供 service 的管理功能，比如 shutdown 等方法，也提供了更加全面的提交任务机制，如返回Future而不是 void 的 submit 方法。
+```java
+<T> Future<T> submit(Callable<T> task);
+```
+
+注意，这个例子输入的可是Callable，它解决了 Runnable 无法返回结果的困扰。
+
