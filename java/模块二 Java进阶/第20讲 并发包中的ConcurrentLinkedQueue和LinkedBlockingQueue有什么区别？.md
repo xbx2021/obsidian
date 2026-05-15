@@ -122,3 +122,6 @@ public E take() throws InterruptedException {
     return x;
 }
 ```
+
+类似 **ConcurrentLinkedQueue** 等，则是基于 CAS 的无锁技术，不需要在每个操作时使用锁，所以扩展性表现要更加优异。
+
