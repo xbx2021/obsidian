@@ -98,7 +98,7 @@ private final ReentrantLock putLock = new ReentrantLock();
 private final Condition notFull = putLock.newCondition();
 ```
 
-我在介绍 ReentrantLock 的条件变量用法的时候分析过 ArrayBlockingQueue，不知道你有没有注意到，其条件变量与 LinkedBlockingQueue 版本的实现是有区别的。notEmpty、notFull 都是同一个再入锁的条件变量，而 LinkedBlockingQueue 则改进了锁操作的粒度，头、尾操作使用不同的锁，所以在通用场景下，它的吞吐量相对要更好一些。
+我在介绍 ReentrantLock 的条件变量用法的时候分析过 ArrayBlockingQueue，不知道你有没有注意到，其条件变量与 LinkedBlockingQueue 版本的实现是有区别的。**notEmpty、notFull 都是同一个再入锁的条件变量**，而 **LinkedBlockingQueue 则改进了锁操作的粒度，头、尾操作使用不同的锁**，所以在通用场景下，它的吞吐量相对要更好一些。
 
 下面的 take 方法与 ArrayBlockingQueue 中的实现，也是有不同的，由于其内部结构是链表，需要自己维护元素数量值，请参考下面的代码。
 ```java
@@ -128,3 +128,73 @@ public E take() throws InterruptedException {
 类似 **ConcurrentLinkedQueue** 等，则是基于 CAS 的无锁技术，不需要在每个操作时使用锁，所以扩展性表现要更加优异。
 
 相对比较另类的 SynchronousQueue，在 Java 6 中，其实现发生了非常大的变化，利用 CAS 替换掉了原本基于锁的逻辑，同步开销比较小。它是 Executors.newCachedThreadPool() 的默认队列。
+
+## 队列使用场景与典型用例
+
+在实际开发中，我提到过 Queue 被广泛使用在生产者 - 消费者场景，比如利用 BlockingQueue 来实现，由于其提供的等待机制，我们可以少操心很多协调工作，你可以参考下面样例代码：
+```java
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+public class ConsumerProducer {
+    public static final String EXIT_MSG  = "Good bye!";
+    public static void main(String[] args) {
+// 使用较小的队列，以更好地在输出中展示其影响
+        BlockingQueue<String> queue = new ArrayBlockingQueue<>(3);
+        Producer producer = new Producer(queue);
+        Consumer consumer = new Consumer(queue);
+        new Thread(producer).start();
+        new Thread(consumer).start();
+    }
+
+
+    static class Producer implements Runnable {
+        private BlockingQueue<String> queue;
+        public Producer(BlockingQueue<String> q) {
+            this.queue = q;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < 20; i++) {
+                try{
+                    Thread.sleep(5L);
+                    String msg = "Message" + i;
+                    System.out.println("Produced new item: " + msg);
+                    queue.put(msg);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            try {
+                System.out.println("Time to say good bye!");
+                queue.put(EXIT_MSG);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static class Consumer implements Runnable{
+        private BlockingQueue<String> queue;
+        public Consumer(BlockingQueue<String> q){
+            this.queue=q;
+        }
+
+        @Override
+        public void run() {
+            try{
+                String msg;
+                while(!EXIT_MSG.equalsIgnoreCase( (msg = queue.take()))){
+                    System.out.println("Consumed item: " + msg);
+                    Thread.sleep(10L);
+                }
+                System.out.println("Got exit message, bye!");
+            }catch(InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
