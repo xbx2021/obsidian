@@ -88,4 +88,19 @@ Atomic 包提供了最常用的原子性数据类型，甚至是引用、数组�
 
 我在专栏第七讲中曾介绍使用原子数据类型和 Atomic * FieldUpdater，创建更加紧凑的计数器实现，以替代 AtomicLong。优化永远是针对特定需求、特定目的，我这里的侧重点是介绍可能的思路，具体还是要看需求。如果仅仅创建一两个对象，其实完全没有必要进行前面的优化，但是如果对象成千上万或者更多，就要考虑紧凑性的影响了。而 atomic 包提供的LongAdder，在高度竞争环境下，可能就是比 AtomicLong 更佳的选择，尽管它的本质是空间换时间。
 
-回归正题，如果是 Java 9 以后，我们完全可以采用另外一种方式实现，也就是 Variable Handle API，这是源自于JEP 193，提供了各种粒度的原子或者有序性的操作等。我将前面的代码修改为如下实现：
+回归正题，如果是 Java 9 以后，我们完全可以采用另外一种方式实现，也就是 Variable Handle API，这是源自于[JEP 193](http://openjdk.java.net/jeps/193)，提供了各种粒度的原子或者有序性的操作等。我将前面的代码修改为如下实现：
+```java
+private static final VarHandle HANDLE = MethodHandles.lookup().findStaticVarHandle
+        (AtomicBTreePartition.class, "lock");
+
+private void acquireLock(){
+    long t = Thread.currentThread().getId();
+    while (!HANDLE.compareAndSet(this, 0L, t)){
+        // 等待一会儿，数据库操作可能比较慢
+        …
+    }
+}
+```
+
+过程非常直观，首先，获取相应的变量句柄，然后直接调用其提供的 CAS 方法。
+
