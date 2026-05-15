@@ -40,8 +40,9 @@
 
 我在专栏第 8 讲中介绍过，常见的集合中如 LinkedList 是个 Deque，只不过不是线程安全的。下面这张图是 Java 并发类库提供的各种各样的线程安全队列实现，注意，图中并未将非线程安全部分包含进来。
 ![](assets/第20讲%20并发包中的ConcurrentLinkedQueue和LinkedBlockingQueue有什么区别？/file-20260515104304557.png)
+### **数据结构**
 
-我们可以从不同的角度进行分类，从基本的数据结构的角度分析，有两个特别的Deque实现，ConcurrentLinkedDeque 和 LinkedBlockingDeque。Deque 的侧重点是支持对队列头尾都进行插入和删除，所以提供了特定的方法，如:
+我们可以从不同的角度进行分类，从基本的数据结构的角度分析，有两个特别的Deque实现，ConcurrentLinkedDeque 和 LinkedBlockingDeque。**Deque 的侧重点是支持对队列头尾都进行插入和删除**，所以提供了特定的方法，如:
 
 - 尾部插入时需要的addLast(e)、offerLast(e)。
 - 尾部删除所需要的removeLast()、pollLast()。
@@ -63,5 +64,11 @@ E take() throws InterruptedException;
 void put(E e) throws InterruptedException;  
 ```
 
+### **是否有界**
 
+另一个 BlockingQueue 经常被考察的点，就是**是否有界**（Bounded、Unbounded），这一点也往往会影响我们在应用开发中的选择，我这里简单总结一下。
 
+- ArrayBlockingQueue 是最典型的的有界队列，其内部以 final 的数组保存数据，数组的大小就决定了队列的边界，所以我们在创建 ArrayBlockingQueue 时，都要指定容量，如
+```java
+public ArrayBlockingQueue(int capacity, boolean fair)
+```
