@@ -45,4 +45,44 @@ CAS 是 Java 并发中所谓 lock-free 机制的基础。
 
 # 考点分析
 
+今天的问题有点偏向于 Java 并发机制的底层了，虽然我们在开发中未必会涉及 CAS 的实现层面，但是理解其机制，掌握如何在 Java 中运用该技术，还是十分有必要的，尤其是这也是个并发编程的面试热点。
+
+有的同学反馈面试官会问 CAS 更加底层是如何实现的，这依赖于 CPU 提供的特定指令，具体根据体系结构的不同还存在着明显区别。比如，x86 CPU 提供 cmpxchg 指令；而在精简指令集的体系架构中，则通常是靠一对儿指令（如“load and reserve”和“store conditional”）实现的，在大多数处理器上 CAS 都是个非常轻量级的操作，这也是其优势所在。
+
+大部分情况下，掌握到这个程度也就够用了，我认为没有必要让每个 Java 工程师都去了解到指令级别，我们进行抽象、分工就是为了让不同层面的开发者在开发中，可以尽量屏蔽不相关的细节。
+
+如果我作为面试官，很有可能深入考察这些方向：
+
+- 在什么场景下，可以采用 CAS 技术，调用 Unsafe 毕竟不是大多数场景的最好选择，有没有更加推荐的方式呢？毕竟我们掌握一个技术，cool 不是目的，更不是为了应付面试，我们还是希望能在实际产品中有价值。
+
+- 对 ReentrantLock、CyclicBarrier 等并发结构底层的实现技术的理解。
+
+# 知识扩展
+
+关于 CAS 的使用，你可以设想这样一个场景：在数据库产品中，为保证索引的一致性，一个常见的选择是，保证只有一个线程能够排他性地修改一个索引分区，如何在数据库抽象层面实现呢？
+
+可以考虑为索引分区对象添加一个逻辑上的锁，例如，以当前独占的线程 ID 作为锁的数值，然后通过原子操作设置 lock 数值，来实现加锁和释放锁，伪代码如下：
+```java
+public class AtomicBTreePartition {
+private volatile long lock;
+public void acquireLock(){}
+public void releaseeLock(){}
+}
+```
+
+那么在 Java 代码中，我们怎么实现锁操作呢？Unsafe 似乎不是个好的选择，例如，我就注意到类似 Cassandra 等产品，因为 Java 9 中移除了 Unsafe.moniterEnter()/moniterExit()，导致无法平滑升级到新的 JDK 版本。目前 Java 提供了两种公共 API，可以实现这种 CAS 操作，比如使用 java.util.concurrent.atomic.AtomicLongFieldUpdater，它是基于反射机制创建，我们需要保证类型和字段名称正确。
+```java
+private static final AtomicLongFieldUpdater<AtomicBTreePartition> lockFieldUpdater =
+        AtomicLongFieldUpdater.newUpdater(AtomicBTreePartition.class, "lock");
+
+private void acquireLock(){
+    long t = Thread.currentThread().getId();
+    while (!lockFieldUpdater.compareAndSet(this, 0L, t)){
+        // 等待一会儿，数据库操作可能比较慢
+         …
+    }
+}
+```
+
+Atomic 包提供了最常用的原子性数据类型，甚至是引用、数组等相关原子类型和更新操作工具，是很多线程安全程序的首选。
 
