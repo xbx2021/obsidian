@@ -94,7 +94,7 @@ private final HashSet<Worker> workers = new HashSet<>();
 - **keepAliveTime** 和 **TimeUnit**，这两个参数指定了额外的线程能够闲置多久，显然有些线程池不需要它。
 - **workQueue**，工作队列，必须是 BlockingQueue。
 
-通过配置不同的参数，我们就可以创建出行为大相径庭的线程池，这就是线程池高度灵活性的基础。
+通过配置不同的参数，我们就可以创建出行为大相径庭的线程池，这就是线程池高度灵活性的基础。[ThreadPoolExecutor 核心参数 + 工作流程](../扩展/ThreadPoolExecutor%20核心参数%20+%20工作流程.md)
 ```java
 public ThreadPoolExecutor(int corePoolSize,
                         int maximumPoolSize,
