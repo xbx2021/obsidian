@@ -126,3 +126,32 @@ private static int ctlOf(int rs, int wc) { return rs | wc; }
 ```
 
 为了让你能对线程生命周期有个更加清晰的印象，我这里画了一个简单的状态流转图，对线程池的可能状态和其内部方法之间进行了对应，如果有不理解的方法，请参考 Javadoc。注意，实际 Java 代码中并不存在所谓 Idle 状态，我添加它仅仅是便于理解。
+![](assets/第21讲%20Java并发类库提供的线程池有哪几种？%20分别有什么特点？/file-20260515142716018.png)
+
+前面都是对线程池属性和构建等方面的分析，下面我选择典型的 execute 方法，来看看其是如何工作的，具体逻辑请参考我添加的注释，配合代码更加容易理解。
+```java
+public void execute(Runnable command) {
+…
+  int c = ctl.get();
+// 检查工作线程数目，低于corePoolSize则添加Worker
+  if (workerCountOf(c) < corePoolSize) {
+      if (addWorker(command, true))
+          return;
+      c = ctl.get();
+  }
+// isRunning就是检查线程池是否被shutdown
+// 工作队列可能是有界的，offer是比较友好的入队方式
+  if (isRunning(c) && workQueue.offer(command)) {
+      int recheck = ctl.get();
+// 再次进行防御性检查
+      if (! isRunning(recheck) && remove(command))
+          reject(command);
+      else if (workerCountOf(recheck) == 0)
+          addWorker(null, false);
+  }
+// 尝试添加一个worker，如果失败意味着已经饱和或者被shutdown了
+  else if (!addWorker(command, false))
+      reject(command);
+}
+```
+
