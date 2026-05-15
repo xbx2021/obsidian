@@ -99,3 +99,26 @@ private final Condition notFull = putLock.newCondition();
 我在介绍 ReentrantLock 的条件变量用法的时候分析过 ArrayBlockingQueue，不知道你有没有注意到，其条件变量与 LinkedBlockingQueue 版本的实现是有区别的。notEmpty、notFull 都是同一个再入锁的条件变量，而 LinkedBlockingQueue 则改进了锁操作的粒度，头、尾操作使用不同的锁，所以在通用场景下，它的吞吐量相对要更好一些。
 
 下面的 take 方法与 ArrayBlockingQueue 中的实现，也是有不同的，由于其内部结构是链表，需要自己维护元素数量值，请参考下面的代码。
+```java
+public E take() throws InterruptedException {
+    final E x;
+    final int c;
+    final AtomicInteger count = this.count;
+    final ReentrantLock takeLock = this.takeLock;
+    takeLock.lockInterruptibly();
+    try {
+        while (count.get() == 0) {
+            notEmpty.await();
+        }
+        x = dequeue();
+        c = count.getAndDecrement();
+        if (c > 1)
+            notEmpty.signal();
+    } finally {
+        takeLock.unlock();
+    }
+    if (c == capacity)
+        signalNotFull();
+    return x;
+}
+```
