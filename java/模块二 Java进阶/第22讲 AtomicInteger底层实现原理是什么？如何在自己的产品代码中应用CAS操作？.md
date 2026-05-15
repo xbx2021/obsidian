@@ -179,3 +179,30 @@ public ReentrantLock() {
 
 ```
 
+以非公平的 tryAcquire 为例，其内部实现了如何配合状态与 CAS 获取锁，注意，对比公平版本的 tryAcquire，它在锁无人占有时，并不检查是否有其他等待者，这里体现了非公平的语义。
+```java
+final boolean nonfairTryAcquire(int acquires) {
+    final Thread current = Thread.currentThread();
+    int c = getState();// 获取当前AQS内部状态量
+    if (c == 0) { // 0表示无人占有，则直接用CAS修改状态位，
+      if (compareAndSetState(0, acquires)) {// 不检查排队情况，直接争抢
+          setExclusiveOwnerThread(current);  //并设置当前线程独占锁
+          return true;
+      }
+    } else if (current == getExclusiveOwnerThread()) { //即使状态不是0，也可能当前线程是锁持有者，因为这是再入锁
+      int nextc = c + acquires;
+      if (nextc < 0) // overflow
+          throw new Error("Maximum lock count exceeded");
+      setState(nextc);
+      return true;
+  }
+  return false;
+}
+```
+
+接下来我再来分析 acquireQueued，如果前面的 tryAcquire 失败，代表着锁争抢失败，进入排队竞争阶段。这里就是我们所说的，利用 FIFO 队列，实现线程间对锁的竞争的部分，算是 AQS 的核心逻辑。
+
+当前线程会被包装成为一个排他模式的节点（EXCLUSIVE），通过 addWaiter 方法添加到队列中。acquireQueued 的逻辑，简要来说，就是如果当前节点的前面是头节点，则试图获取锁，一切顺利则成为新的头节点；否则，有必要则等待，具体处理逻辑请参考我添加的注释。
+```java
+
+```
