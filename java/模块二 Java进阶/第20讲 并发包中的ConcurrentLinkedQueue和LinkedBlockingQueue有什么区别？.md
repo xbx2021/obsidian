@@ -3,4 +3,12 @@
 
 今天我要问你的问题是，**并发包中的 ConcurrentLinkedQueue 和 LinkedBlockingQueue 有什么区别？**
 
+# 典型回答
 
+有时候我们把并发包下面的所有容器都习惯叫作并发容器，但是严格来讲，类似 ConcurrentLinkedQueue 这种“Concurrent*”容器，才是真正代表并发。
+
+关于问题中它们的区别：
+
+- Concurrent 类型基于 lock-free，在常见的多线程访问场景，一般可以提供较高吞吐量。
+
+- 而 LinkedBlockingQueue 内部则是基于锁，并提供了 BlockingQueue 的等待性方法。
