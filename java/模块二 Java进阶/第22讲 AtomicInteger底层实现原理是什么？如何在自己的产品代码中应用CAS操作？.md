@@ -132,5 +132,17 @@ AQS 内部数据和方法，可以简单拆分为：
 - 一个 volatile 的整数成员表征状态，同时提供了 setState 和 getState 方法
 ```java
 private volatile int state;
-```4
+```
+
+- 一个先入先出（FIFO）的等待线程队列，以实现多线程间竞争和等待，这是 AQS 机制的核心之一。
+
+- 各种基于 CAS 的基础操作方法，以及各种期望具体同步结构去实现的 acquire/release 方法。
+
+利用 AQS 实现一个同步结构，至少要实现两个基本类型的方法，分别是 acquire 操作，获取资源的独占权；还有就是 release 操作，释放对某个资源的独占。
+
+以 ReentrantLock 为例，它内部通过扩展 AQS 实现了 Sync 类型，以 AQS 的 state 来反映锁的持有情况。
+```java
+private final Sync sync;
+abstract static class Sync extends AbstractQueuedSynchronizer { …}
+```
 
