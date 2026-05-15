@@ -115,15 +115,16 @@ classDiagram
 
 ## 五、配套核心特性
 
-|队列类|底层结构|有界 / 无界|特点|
-|---|---|---|---|
-|ArrayBlockingQueue|数组|有界|固定容量，支持公平锁|
-|LinkedBlockingQueue|链表|可选有界|读写分离，吞吐量高|
-|PriorityBlockingQueue|数组堆|无界|优先级排序|
-|SynchronousQueue|无容器|容量 0|一对一传递，不存储元素|
-|DelayQueue|优先级队列|无界|按延迟时间出队|
-|LinkedTransferQueue|链表|无界|可阻塞等待消费|
-|LinkedBlockingDeque|双向链表|可选有界|双向阻塞队列|
+| 队列类                   | 底层结构  | 有界 / 无界 | 特点          |
+| --------------------- | ----- | ------- | ----------- |
+| ArrayBlockingQueue    | 数组    | 有界      | 固定容量，支持公平锁  |
+| LinkedBlockingQueue   | 链表    | 可选有界    | 读写分离，吞吐量高   |
+| PriorityBlockingQueue | 数组堆   | 无界      | 优先级排序       |
+| SynchronousQueue      | 无容器   | 容量 0    | 一对一传递，不存储元素 |
+| DelayQueue            | 优先级队列 | 无界      | 按延迟时间出队     |
+| LinkedTransferQueue   | 链表    | 无界      | 可阻塞等待消费     |
+| LinkedBlockingDeque   | 双向链表  | 可选有界    | 双向阻塞队列      |
+
 ---
 
 ### 总结
@@ -131,5 +132,3 @@ classDiagram
 2. **6 个标准阻塞队列**：Array/Linked/Priority/Synchronous/Delay/Transfer
 3. **1 个阻塞双端队列**：LinkedBlockingDeque
 4. 全部基于 `Queue/Deque` 标准集合接口
-
-如果你需要，我可以**直接生成图片格式类图**（PlantUML/Mermaid），可直接复制到 IDEA/Visio 显示。
