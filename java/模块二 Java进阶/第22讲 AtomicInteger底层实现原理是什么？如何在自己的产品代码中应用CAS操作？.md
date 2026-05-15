@@ -167,3 +167,15 @@ public final void acquire(int arg) {
 ```
 
 首先，我们来看看 tryAcquire。在 ReentrantLock 中，tryAcquire 逻辑实现在 NonfairSync 和 FairSync 中，分别提供了进一步的非公平或公平性方法，而 AQS 内部 tryAcquire 仅仅是个接近未实现的方法（直接抛异常），这是留个实现者自己定义的操作。
+
+我们可以看到公平性在 ReentrantLock 构建时如何指定的，具体如下：
+```java
+public ReentrantLock() {
+        sync = new NonfairSync(); // 默认是非公平的
+    }
+    public ReentrantLock(boolean fair) {
+        sync = fair ? new FairSync() : new NonfairSync();
+    }
+
+```
+
