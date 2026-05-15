@@ -46,3 +46,22 @@
 - 尾部插入时需要的addLast(e)、offerLast(e)。
 - 尾部删除所需要的removeLast()、pollLast()。
 
+从上面这些角度，能够理解 ConcurrentLinkedDeque 和 LinkedBlockingQueue 的主要功能区别，也就足够日常开发的需要了。但是如果我们深入一些，通常会更加关注下面这些方面。
+
+从行为特征来看，绝大部分 Queue 都是实现了 BlockingQueue 接口。在常规队列操作基础上，Blocking 意味着其提供了特定的等待性操作，获取时（take）等待元素进队，或者插入时（put）等待队列出现空位。
+```java
+ /**
+ * 获取并移除队列头结点，如果必要，其会等待直到队列出现元素
+…
+ */
+E take() throws InterruptedException;
+
+/**
+ * 插入元素，如果队列已满，则等待直到队列出现空闲空间
+   …
+ */
+void put(E e) throws InterruptedException;  
+```
+
+
+
