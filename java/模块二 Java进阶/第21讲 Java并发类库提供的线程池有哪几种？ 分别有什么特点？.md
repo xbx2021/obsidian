@@ -81,3 +81,4 @@ private final BlockingQueue<Runnable> workQueue;
 private final HashSet<Worker> workers = new HashSet<>();
 ```
 
+线程池的工作线程被抽象为静态内部类 Worker，基于AQS实现。
