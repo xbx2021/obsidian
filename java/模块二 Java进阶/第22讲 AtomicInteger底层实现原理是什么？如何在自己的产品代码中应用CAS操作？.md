@@ -127,3 +127,10 @@ CAS 也并不是没有副作用，试想，其常用的失败重试机制，隐�
 
 [Doug Lea](https://en.wikipedia.org/wiki/Doug_Lea)曾经介绍过 AQS 的设计初衷。从原理上，一种同步结构往往是可以利用其他的结构实现的，例如我在专栏第 19 讲中提到过可以使用 Semaphore 实现互斥锁。但是，对某种同步结构的倾向，会导致复杂、晦涩的实现逻辑，所以，他选择了将基础的同步相关操作抽象在 AbstractQueuedSynchronizer 中，利用 AQS 为我们构建同步结构提供了范本。
 
+AQS 内部数据和方法，可以简单拆分为：
+
+- 一个 volatile 的整数成员表征状态，同时提供了 setState 和 getState 方法
+```java
+private volatile int state;
+```4
+
