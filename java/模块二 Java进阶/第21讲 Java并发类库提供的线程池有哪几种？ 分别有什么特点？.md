@@ -16,3 +16,4 @@ Executors 目前提供了 5 种不同的线程池创建配置：
 
 - **newSingleThreadExecutor()**，它的特点在于工作线程数目被限制为 1，操作一个无界的工作队列，所以它保证了所有任务的都是被顺序执行，最多会有一个任务处于活动状态，并且不允许使用者改动线程池实例，因此可以避免其改变线程数目。
 
+- **newSingleThreadScheduledExecutor()** 和 **newScheduledThreadPool(int corePoolSize)**，创建的是个 ScheduledExecutorService，可以进行定时或周期性的工作调度，区别在于单一工作线程还是多个工作线程。
