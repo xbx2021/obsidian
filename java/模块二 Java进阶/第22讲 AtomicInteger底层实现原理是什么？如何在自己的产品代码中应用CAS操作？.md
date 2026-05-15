@@ -25,4 +25,15 @@ public final int getAndIncrement() {
 }
 ```
 
+因为 getAndIncrement 需要返归数值，所以需要添加失败重试逻辑。
+```java
+public final int getAndAddInt(Object o, long offset, int delta) {
+    int v;
+    do {
+        v = getIntVolatile(o, offset);
+    } while (!weakCompareAndSetInt(o, offset, v, v + delta));
+    return v;
+}
+```
+
 
