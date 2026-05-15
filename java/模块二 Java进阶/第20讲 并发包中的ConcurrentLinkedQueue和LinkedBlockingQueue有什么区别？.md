@@ -198,3 +198,9 @@ public class ConsumerProducer {
     }
 }
 ```
+
+上面是一个典型的生产者 - 消费者样例，如果使用非 Blocking 的队列，那么我们就要自己去实现轮询、条件判断（如检查 poll 返回值是否 null）等逻辑，如果没有特别的场景要求，Blocking 实现起来代码更加简单、直观。
+
+前面介绍了各种队列实现，在日常的应用开发中，如何进行选择呢？
+
+以 LinkedBlockingQueue、ArrayBlockingQueue 和 SynchronousQueue 为例，我们一起来分析一下，根据需求可以从很多方面考量：
