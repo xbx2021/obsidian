@@ -81,8 +81,9 @@ public ArrayBlockingQueue(int capacity, boolean fair)
 
 - **DelayedQueue** 和 **LinkedTransferQueue** 同样是无边界的队列。对于无边界的队列，有一个自然的结果，就是 put 操作永远也不会发生其他 BlockingQueue 的那种等待情况。
 
+### **实现方式**
 
-如果我们分析不同队列的底层实现，BlockingQueue 基本都是基于锁实现，一起来看看典型的 LinkedBlockingQueue。
+如果我们分析不同队列的底层实现，**BlockingQueue 基本都是基于锁实现**，一起来看看典型的 LinkedBlockingQueue。
 ```java
 /** Lock held by take, poll, etc */
 private final ReentrantLock takeLock = new ReentrantLock();
