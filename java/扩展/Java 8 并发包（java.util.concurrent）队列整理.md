@@ -1,4 +1,5 @@
-# Java 8 并发包（java.util.concurrent）队列类图完整整理
+# Java 8 并发包（java.util.concurrent）队列类图整理
+
 我直接给你**结构化类图 + 层级继承关系 + 核心说明**，清晰可直接画 UML，也能直接理解整个队列家族结构。
 
 ## 一、整体顶层接口（最上层）
@@ -27,38 +28,8 @@ LinkedBlockingDeque
 
 ---
 
-## 二、JUC 队列完整类图（最清晰版）
-```
-+------------------+
-|     Queue        |  (java.util)
-+------------------+
-          ↑
-          | implements
-+------------------+
-|   BlockingQueue  |  (j.u.c)  阻塞队列核心接口
-+------------------+
-   ↑         ↑         ↑         ↑         ↑         ↑
-   |         |         |         |         |         |
-+--------+ +--------+ +--------+ +--------+ +--------+ +--------+
-|ArrayB- ||LinkedB- ||PriorityB| |Synchr- ||Delay-  ||Trans-  |
-|lockingQ|lockingQ |lockingQ |onousQ  |Queue   |ferQueue|
-|Queue   |Queue    |         |        |        |        |
-+--------+ +--------+ +--------+ +--------+ +--------+ +--------+
+## 二、JUC 队列完整类图
 
-
-+------------------+
-|      Deque       |  (java.util) 双端队列
-+------------------+
-          ↑
-          | implements
-+------------------+
-|  BlockingDeque   |  (j.u.c) 阻塞双端队列
-+------------------+
-          ↑
-+------------------+
-|LinkedBlockingDeque| (j.u.c)
-+------------------+
-```
 
 ```mermaid
 classDiagram
@@ -104,7 +75,9 @@ classDiagram
 
 ## 三、JUC 队列类清单（Java 8 全部）
 ### 1. 阻塞队列（**最常用、核心**）
+
 实现 `BlockingQueue`：
+
 1. **ArrayBlockingQueue**
    数组实现、有界、公平/非公平
 2. **LinkedBlockingQueue**
@@ -120,7 +93,9 @@ classDiagram
    → Java 8 实现：**LinkedTransferQueue**
 
 ### 2. 阻塞双端队列
+
 实现 `BlockingDeque`：
+
 - **LinkedBlockingDeque**
   链表双端阻塞队列
 
@@ -138,23 +113,17 @@ classDiagram
 
 ---
 
-## 五、最精简可直接画图的 UML 文本
-```
-Interface Queue
-Interface BlockingQueue extends Queue
+## 五、配套核心特性
 
-ArrayBlockingQueue        implements BlockingQueue
-LinkedBlockingQueue       implements BlockingQueue
-PriorityBlockingQueue     implements BlockingQueue
-SynchronousQueue          implements BlockingQueue
-DelayQueue                 implements BlockingQueue
-LinkedTransferQueue       implements BlockingQueue, TransferQueue
-
-Interface Deque
-Interface BlockingDeque extends Deque
-LinkedBlockingDeque       implements BlockingDeque
-```
-
+|队列类|底层结构|有界 / 无界|特点|
+|---|---|---|---|
+|ArrayBlockingQueue|数组|有界|固定容量，支持公平锁|
+|LinkedBlockingQueue|链表|可选有界|读写分离，吞吐量高|
+|PriorityBlockingQueue|数组堆|无界|优先级排序|
+|SynchronousQueue|无容器|容量 0|一对一传递，不存储元素|
+|DelayQueue|优先级队列|无界|按延迟时间出队|
+|LinkedTransferQueue|链表|无界|可阻塞等待消费|
+|LinkedBlockingDeque|双向链表|可选有界|双向阻塞队列|
 ---
 
 ### 总结
