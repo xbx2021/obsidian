@@ -40,7 +40,7 @@ Executor 框架可不仅仅是线程池，我觉得至少下面几点值得深�
 首先，我们来看看 Executor 框架的基本组成，请参考下面的类图。
 ![](assets/第21讲%20Java并发类库提供的线程池有哪几种？%20分别有什么特点？/file-20260515122730466.png)
 
-## 各个类型设计
+## 各个类型设计目的
 
 我们从整体上把握一下各个类型的主要设计目的：
 
@@ -62,8 +62,13 @@ Executor 的设计是源于 Java 早期线程 API 使用的教训，开发者在
 
 - **Executors** 则从简化使用的角度，为我们提供了各种方便的静态工厂方法。
 
+## 源码分析
+
 下面我就从源码角度，分析线程池的设计与实现，我将主要围绕最基础的 ThreadPoolExecutor 源码。ScheduledThreadPoolExecutor 是 ThreadPoolExecutor 的扩展，主要是增加了调度逻辑，如想深入了解，你可以参考相关教程。而 ForkJoinPool 则是为 ForkJoinTask 定制的线程池，与通常意义的线程池有所不同。
 
 这部分内容比较晦涩，罗列概念也不利于你去理解，所以我会配合一些示意图来说明。在现实应用中，理解应用与线程池的交互和线程池的内部工作过程，你可以参考下图。
 ![](assets/第21讲%20Java并发类库提供的线程池有哪几种？%20分别有什么特点？/file-20260515123613781.png)
 
+简单理解一下：
+
+- 工作队列负责存储用户提交的各个任务，这个工作队列，可以是容量为 0 的 SynchronousQueue（使用 newCachedThreadPool），也可以是像固定大小线程池（newFixedThreadPool）那样使用 LinkedBlockingQueue。
