@@ -65,7 +65,7 @@
 
 那么，我们如何利用 JVM 参数，直接影响堆和内部区域的大小呢？我来简单总结一下：
 
-## 堆内存JVM 参数
+### **堆内存JVM 参数**
 
 - 最大堆体积
 ```bash
@@ -90,3 +90,39 @@
 ```
 
 - Eden 和 Survivor 的大小是按照比例设置的，如果 SurvivorRatio 是 8，那么 Survivor 区域就是 Eden 的 1/8 大小，也就是新生代的 1/10，因为 YoungGen=Eden + 2* Survivor，JVM 参数格式是
+```bash
+-XX:SurvivorRatio=value
+```
+
+- TLAB 当然也可以调整，JVM 实现了复杂的适应策略，如果你有兴趣可以参考这篇[说明](https://blogs.oracle.com/jonthecollector/the-real-thing)。
+
+### **Virtual 区域**
+
+不知道你有没有注意到，我在年代视角的堆结构示意图也就是第一张图中，还标记出了 Virtual 区域，这是块儿什么区域呢？
+
+在 JVM 内部，如果 Xms 小于 Xmx，堆的大小并不会直接扩展到其上限，也就是说保留的空间（reserved）大于实际能够使用的空间（committed）。当内存需求不断增长的时候，JVM 会逐渐扩展新生代等区域的大小，所以 **Virtual 区域代表的就是暂时不可用（uncommitted）的空间**。
+
+## 堆外内存
+
+第二，分析完堆内空间，我们一起来看看 JVM 堆外内存到底包括什么？
+
+在 JMC 或 JConsole 的内存管理界面，会统计部分非堆内存，但提供的信息相对有限，下图就是 JMC 活动内存池的截图。
+![](assets/第26讲%20如何监控和诊断JVM堆内和堆外内存使用？/file-20260516103455821.png)
+
+接下来我会依赖 NMT 特性对 JVM 进行分析，它所提供的详细分类信息，非常有助于理解 JVM 内部实现。
+
+首先来做些准备工作，开启 NMT 并选择 summary 模式，
+```bash
+-XX:NativeMemoryTracking=summary
+```
+
+为了方便获取和对比 NMT 输出，选择在应用退出时打印 NMT 统计信息
+```bash
+-XX:+UnlockDiagnosticVMOptions -XX:+PrintNMTStatistics
+```
+
+然后，执行一个简单的在标准输出打印 HelloWorld 的程序，就可以得到下面的输出
+![](assets/第26讲%20如何监控和诊断JVM堆内和堆外内存使用？/file-20260516103644352.png)
+
+我来仔细分析一下，NMT 所表征的 JVM 本地内存使用：
+
