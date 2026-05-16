@@ -126,3 +126,46 @@
 
 我来仔细分析一下，NMT 所表征的 JVM 本地内存使用：
 
+- 第一部分非常明显是 Java 堆，我已经分析过使用什么参数调整，不再赘述。
+
+- 第二部分是 Class 内存占用，它所统计的就是 Java 类元数据所占用的空间，JVM 可以通过类似下面的参数调整其大小：
+```bash
+-XX:MaxMetaspaceSize=value
+```
+
+对于本例，因为 HelloWorld 没有什么用户类库，所以其内存占用主要是启动类加载器（Bootstrap）加载的核心类库。你可以使用下面的小技巧，调整启动类加载器元数据区，这主要是为了对比以加深理解，也许只有在 hack JDK 时才有实际意义。
+```bash
+-XX:InitialBootClassLoaderMetaspaceSize=30720
+```
+
+- 下面是 Thread，这里既包括 Java 线程，如程序主线程、Cleaner 线程等，也包括 GC 等本地线程。你有没有注意到，即使是一个 HelloWorld 程序，这个线程数量竟然还有 25。似乎有很多浪费，设想我们要用 Java 作为 Serverless 运行时，每个 function 是非常短暂的，如何降低线程数量呢？
+
+如果你充分理解了专栏讲解的内容，对 JVM 内部有了充分理解，思路就很清晰了：
+
+JDK 9 的默认 GC 是 G1，虽然它在较大堆场景表现良好，但本身就会比传统的 Parallel GC 或者 Serial GC 之类复杂太多，所以**要么降低其并行线程数目，要么直接切换 GC 类型；**
+
+JIT 编译默认是开启了 TieredCompilation 的，将其关闭，那么 JIT 也会变得简单，相应本地线程也会减少。
+
+我们来对比一下，这是默认参数情况的输出：
+![](assets/第26讲%20如何监控和诊断JVM堆内和堆外内存使用？/file-20260516104139976.png)
+
+下面是替换了默认 GC，并关闭 TieredCompilation 的命令行
+![](assets/第26讲%20如何监控和诊断JVM堆内和堆外内存使用？/file-20260516104201257.png)
+得到的统计信息如下，线程数目从 25 降到了 17，消耗的内存也下降了大概 1/3。
+![](assets/第26讲%20如何监控和诊断JVM堆内和堆外内存使用？/file-20260516104231791.png)
+
+
+- 接下来是 Code 统计信息，显然这是 CodeCache 相关内存，也就是 JIT compiler 存储编译热点方法等信息的地方，JVM 提供了一系列参数可以限制其初始值和最大值等，例如：
+```bash
+-XX:InitialCodeCacheSize=value
+```
+
+```bash
+-XX:ReservedCodeCacheSize=value
+```
+
+你可以设置下列 JVM 参数，也可以只设置其中一个，进一步判断不同参数对 CodeCache 大小的影响。
+![](assets/第26讲%20如何监控和诊断JVM堆内和堆外内存使用？/file-20260516104405262.png)
+![](assets/第26讲%20如何监控和诊断JVM堆内和堆外内存使用？/file-20260516104414480.png)
+
+
