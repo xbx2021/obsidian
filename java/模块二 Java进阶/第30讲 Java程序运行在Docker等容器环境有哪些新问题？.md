@@ -88,6 +88,14 @@ Docker 仅在类似 Linux 内核之上实现了有限的隔离和虚拟化，并
 我这里有几个建议：
 
 - 明确设置堆、元数据区等内存区域大小，保证 Java 进程的总大小可控。
-```bash
+
 例如，我们可能在环境中，这样限制容器内存：
+```bash
+$ docker run -it --rm --name yourcontainer -p 8080:8080 -m 800M repo/your-java-container:openjdk
 ```
+
+那么，就可以额外配置下面的环境变量，直接指定 JVM 堆大小。
+```bash
+-e JAVA_OPTIONS='-Xmx300m'
+```
+
