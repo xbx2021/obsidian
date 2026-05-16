@@ -83,6 +83,8 @@ Docker 仅在类似 Linux 内核之上实现了有限的隔离和虚拟化，并
 
 - 幸运的是，JDK 9 中的实验性改进已经被移植到 Oracle JDK 8u131 之中，你可以直接下载相应[镜像](https://store.docker.com/images/oracle-serverjre-8)，并配置“UseCGroupMemoryLimitForHeap”，后续很有可能还会进一步将 JDK 10 中相关的增强，应用到 JDK 8 最新的更新中。
 
+## 老版本的 JDK配置
+
 但是，如果我暂时只能使用老版本的 JDK 怎么办？
 
 我这里有几个建议：
@@ -97,5 +99,11 @@ $ docker run -it --rm --name yourcontainer -p 8080:8080 -m 800M repo/your-java-c
 那么，就可以额外配置下面的环境变量，直接指定 JVM 堆大小。
 ```bash
 -e JAVA_OPTIONS='-Xmx300m'
+```
+
+- 明确配置 GC 和 JIT 并行线程数目，以避免二者占用过多计算资源。
+```bash
+-XX:ParallelGCThreads
+-XX:CICompilerCount
 ```
 
