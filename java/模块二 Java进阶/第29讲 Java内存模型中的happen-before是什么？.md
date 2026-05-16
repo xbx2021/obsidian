@@ -80,3 +80,43 @@ JMM 内部的实现通常是依赖于所谓的内存屏障，通过禁止某些�
 - 对该变量的**写操作之后**，编译器会插入一个**写屏障**。
 - 对该变量的**读操作之前**，编译器会插入一个**读屏障**。
 
+内存屏障能够在类似变量读、写操作之后，保证其他线程对 volatile 变量的修改对当前线程可见，或者本地修改对其他线程提供可见性。换句话说，**线程写入，写屏障会通过类似强迫刷出处理器缓存的方式，让其他线程能够拿到最新数值**。
+
+如果你对更多内存屏障的细节感兴趣，或者想了解不同体系结构的处理器模型，建议参考 [JSR-133相关文档](https://gee.cs.oswego.edu/dl/jmm/cookbook.html)，我个人认为这些都是和特定硬件相关的，内存屏障之类只是实现 JMM 规范的技术手段，并不是规范的要求。
+
+## 从应用开发者的角度，JMM 提供的可见性，体现在类似 volatile 上，具体行为是什么样呢？
+
+我这里循序渐进的举两个例子。
+
+首先，前几天有同学问我一个问题，请看下面的代码片段，希望达到的效果是，当 condition 被赋值为 false 时，线程 A 能够从循环中退出。
+```java
+// Thread A
+while (condition) {
+}
+
+// Thread B
+condition = false;
+```
+
+这里就需要 condition 被定义为 volatile 变量，不然其数值变化，往往并不能被线程 A 感知，进而无法退出。当然，也可以在 while 中，添加能够直接或间接起到类似效果的代码。
+
+第二，我想举 Brian Goetz 提供的一个经典用例，使用 volatile 作为守卫对象，实现某种程度上轻量级的同步，请看代码片段：
+```java
+Map configOptions;
+char[] configText;
+volatile boolean initialized = false;
+ 
+// Thread A
+configOptions = new HashMap();
+configText = readConfigFile(fileName);
+processConfigOptions(configText, configOptions);
+initialized = true;
+ 
+// Thread B
+while (!initialized)
+  sleep();
+// use configOptions
+```
+
+JSR-133 重新定义的 JMM 模型，能够保证线程 B 获取的 configOptions 是更新后的数值。
+
