@@ -54,3 +54,5 @@ JVM 会根据统计信息，动态决定什么方法被编译，什么方法解�
 
 而即时编译器（JIT），则是更多优化工作的承担者。**JIT 对 Java 编译的基本单元是整个方法**，通过对方法调用的计数统计，甄别出热点方法，编译为本地代码。另外一个优化场景，则是最针对所谓热点循环代码，利用通常说的**栈上替换技术**（OSR，On-Stack Replacement，更加细节请参考[R 大的文章](https://github.com/AdoptOpenJDK/jitwatch/wiki/Understanding-the-On-Stack-Replacement-(OSR)-optimisation-in-the-HotSpot-C1-compiler)），如果方法本身的调用频度还不够编译标准，但是内部有大的循环之类，则还是会有进一步优化的价值。
 
+从理论上来看，JIT 可以看作就是基于两个计数器实现，**方法计数器**和**回边计数器**提供给 JVM 统计数据，以定位到热点代码。实际中的 JIT 机制要复杂得多，郑博士提到了[逃逸分析](https://en.wikipedia.org/wiki/Escape_analysis)、[循环展开](https://en.wikipedia.org/wiki/Loop_unrolling)、方法内联等，包括前面提到的 Intrinsic 等通用机制同样会在 JIT 阶段发生。
+
