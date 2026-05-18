@@ -77,4 +77,12 @@ JVM 会生成一个 xml 形式的文件，另外， LogFile 选项是可选的�
 hotspot_pid<pid>.log
 ```
 
-具体格式可以参考 Ben Evans 提供的JitWatch工具和分析指南。
+具体格式可以参考 Ben Evans 提供的[JitWatch](https://github.com/AdoptOpenJDK/jitwatch/)工具和[分析指南](http://www.oracle.com/technetwork/articles/java/architect-evans-pt1-2266278.html)。
+![](assets/第35讲%20JVM优化Java代码时都做了什么？/file-20260518155524161.png)
+
+- 打印内联的发生，可利用下面的诊断选项，也需要明确解锁。
+```bash
+-XX:+PrintInlining
+```
+
+
