@@ -56,8 +56,19 @@ JVM 会根据统计信息，动态决定什么方法被编译，什么方法解�
 
 从理论上来看，JIT 可以看作就是基于两个计数器实现，**方法计数器**和**回边计数器**提供给 JVM 统计数据，以定位到热点代码。实际中的 JIT 机制要复杂得多，郑博士提到了[逃逸分析](https://en.wikipedia.org/wiki/Escape_analysis)、[循环展开](https://en.wikipedia.org/wiki/Loop_unrolling)、方法内联等，包括前面提到的 Intrinsic 等通用机制同样会在 JIT 阶段发生。
 
+### **如何查看优化细节**
 
 第二，有哪些手段可以探查这些优化的具体发生情况呢？
 
 专栏中已经陆陆续续介绍了一些，我来简单总结一下并补充部分细节。
+
+- 打印编译发生的细节。
+```bash
+-XX:+PrintCompilation
+```
+
+- 输出更多编译的细节。
+```bash
+-XX:UnlockDiagnosticVMOptions -XX:+LogCompilation -XX:LogFile=<your_file_path>
+```
 
