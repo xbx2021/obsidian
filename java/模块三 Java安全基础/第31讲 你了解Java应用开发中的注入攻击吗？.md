@@ -86,4 +86,11 @@ Java 工程师未必都要成为安全专家，但了解基础的安全领域常
 
 例如：
 
-- keytool，这是个强大的工具，可以管理安全场景中不可或缺的秘钥、证书等，并且可以管理 Java 程序使用的 keystore 文件。
+- [keytool](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/keytool.html)，这是个强大的工具，可以管理安全场景中不可或缺的秘钥、证书等，并且可以管理 Java 程序使用的 keystore 文件。
+- [jarsigner](https://docs.oracle.com/javase/9/tools/jarsigner.htm#JSWOR-GUID-925E7A1B-B3F3-44D2-8B49-0B3FA2C54864)，用于对 jar 文件进行签名或者验证。
+
+在应用实践中，如果对安全要求非常高，建议打开 SecurityManager，
+```bash
+-Djava.security.manager
+```
+
