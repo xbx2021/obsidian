@@ -93,7 +93,7 @@ hotspot_pid<pid>.log
 
 第三，我们作为应用开发者，有哪些可以触手可及的调优角度和手段呢？
 
-- 调整热点代码门限值
+- **调整热点代码门限值**
 
 我曾经介绍过 JIT 的默认门限，server 模式默认 10000 次，client 是 1500 次。门限大小也存在着调优的可能，可以使用下面的参数调整；与此同时，该参数还可以变相起到降低预热时间的作用。
 ```bash
@@ -108,5 +108,17 @@ hotspot_pid<pid>.log
 如果你是利用 debug 版本的 JDK，还可以利用下面的参数进行试验，但是生产版本是不支持这个选项的。
 ```bash
 -XX:CounterHalfLifeTime
+```
+
+- **调整 Code Cache 大小**
+
+我们知道 JIT 编译的代码是存储在 Code Cache 中的，需要注意的是 Code Cache 是存在大小限制的，而且不会动态调整。这意味着，如果 Code Cache 太小，可能只有一小部分代码可以被 JIT 编译，其他的代码则没有选择，只能解释执行。所以，一个潜在的调优点就是调整其大小限制。
+```bash
+-XX:ReservedCodeCacheSize=<SIZE>
+```
+
+当然，也可以调整其初始大小。
+```bash
+-XX:InitialCodeCacheSize=<SIZE>
 ```
 
