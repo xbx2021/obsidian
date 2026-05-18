@@ -99,5 +99,11 @@ public void testMethod() {
 mvn clean install
 ```
 
+运行基准测试则与运行不同的 Java 应用没有明显区别。
+```java
+java -jar target/benchmarks.jar
+```
+
+更加具体的上手步骤，请参考相关[指南](https://www.baeldung.com/java-microbenchmark-harness)。JMH 处处透着浓浓的工程师味道，并没有纠结于完善的文档，而是提供了非常棒的[样例代码](http://hg.openjdk.java.net/code-tools/jmh/file/3769055ad883/jmh-samples/src/main/java/org/openjdk/jmh/samples)，所以你需要习惯于直接从代码中学习。
 
 
