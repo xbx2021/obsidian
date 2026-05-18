@@ -70,4 +70,7 @@ throw new RuntimeException(hostname + port + “ doesn’t response”);
 
 第三，Java 提供了序列化等创新的特性，广泛使用在远程调用等方面，但也带来了复杂的安全问题。直到今天，序列化仍然是个安全问题频发的场景。
 
+针对序列化，通常建议：
 
+- 敏感信息不要被序列化！在编码中，建议使用 transient 关键字将其保护起来。
+- 
