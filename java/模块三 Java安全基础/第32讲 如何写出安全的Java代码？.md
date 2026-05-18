@@ -75,4 +75,10 @@ throw new RuntimeException(hostname + port + “ doesn’t response”);
 - 敏感信息不要被序列化！在编码中，建议使用 transient 关键字将其保护起来。
 - 反序列化中，建议在 readObject 中实现与对象构件过程相同的安全检查和数据检查。
 
+另外，在 JDK 9 中，Java 引入了过滤器机制，以保证反序列化过程中数据都要经过基本验证才可以使用。其原理是通过黑名单和白名单，限定安全或者不安全的类型，并且你可以进行定制，然后通过环境变量灵活进行配置， 更加具体的使用你可以参考 [ObjectInputFilter](https://docs.oracle.com/javase/9/docs/api/java/io/ObjectInputFilter.html)。
+
+
+通过前面的介绍，你可能注意到，很多安全问题都是源于非常基本的编程细节，类似 Immutable、封装等设计，都存在着安全性的考虑。从实践的角度，让每个人都了解和掌握这些原则，有必要但并不太现实，有没有什么工程实践手段，可以帮助我们排查安全隐患呢？
+
+## 开发和测试阶段
 
