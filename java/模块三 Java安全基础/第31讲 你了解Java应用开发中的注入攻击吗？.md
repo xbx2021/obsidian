@@ -16,3 +16,13 @@
 Select * from use_info where username = “input_usr_name” and password = “input_pwd”
 ```
 
+但是，如果我输入的 input_pwd 是类似下面的文本，
+```sql
+“ or “”=”
+```
+
+那么，拼接出的 SQL 字符串就变成了下面的条件，OR 的存在导致输入什么名字都是复合条件的。
+```sql
+Select * from use_info where username = “input_usr_name” and password = “” or “” = “”
+```
+
