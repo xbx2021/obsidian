@@ -122,3 +122,12 @@ hotspot_pid<pid>.log
 -XX:InitialCodeCacheSize=<SIZE>
 ```
 
+注意，在相对较新版本的 Java 中，由于分层编译（Tiered-Compilation）的存在，Code Cache 的空间需求大大增加，其本身默认大小也被提高了。
+
+- **调整编译器线程数，或者选择适当的编译器模式**
+
+JVM 的编译器线程数目与我们选择的模式有关，选择 client 模式默认只有一个编译线程，而 server 模式则默认是两个，如果是当前最普遍的分层编译模式，则会根据 CPU 内核数目计算 C1 和 C2 的数值，你可以通过下面的参数指定的编译线程数。
+```bash
+-XX:CICompilerCount=N
+```
+
