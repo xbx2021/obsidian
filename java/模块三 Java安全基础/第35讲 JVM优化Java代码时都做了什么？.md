@@ -105,4 +105,8 @@ hotspot_pid<pid>.log
 -XX:-UseCounterDecay
 ```
 
+如果你是利用 debug 版本的 JDK，还可以利用下面的参数进行试验，但是生产版本是不支持这个选项的。
+```bash
+-XX:CounterHalfLifeTime
+```
 
