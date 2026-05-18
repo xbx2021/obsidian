@@ -78,4 +78,12 @@ Java 工程师未必都要成为安全专家，但了解基础的安全领域常
 
 - 加密、解密 API。
 - 授权、鉴权 API。
-- 安全通信相关的类库，比如基本 HTTPS 通信协议相关标准实现，如[TLS 1.3](https://openjdk.org/jeps/332)；或者附属的类似证书撤销状态判断（OSCP）等协议实现。
+- 安全通信相关的类库，比如基本 HTTPS 通信协议相关标准实现，如[TLS 1.3](https://openjdk.org/jeps/332)；或者附属的类似证书撤销状态判断（[OSCP](https://en.wikipedia.org/wiki/Online_Certificate_Status_Protocol)）等协议实现。
+
+注意，这一部分 API 内部实现是和厂商相关的，不同 JDK 厂商往往会定制自己的加密算法实现。
+
+## 第三， 就是 JDK 集成的各种安全工具
+
+例如：
+
+- keytool，这是个强大的工具，可以管理安全场景中不可或缺的秘钥、证书等，并且可以管理 Java 程序使用的 keystore 文件。
