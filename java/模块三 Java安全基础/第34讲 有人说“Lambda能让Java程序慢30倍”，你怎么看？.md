@@ -139,4 +139,27 @@ public void testMethod() {
 
 如果你发现代码统计数据发生了数量级程度上的提高，需要警惕是否出现了无效代码消除的问题。
 
-解决办法也很直接，尽量保证方法有返回值，而不是 void 方法，或者使用 JMH 提供的BlackHole设施，在方法中添加下面语句。
+解决办法也很直接，尽量保证方法有返回值，而不是 void 方法，或者使用 JMH 提供的[BlackHole](http://hg.openjdk.java.net/code-tools/jmh/file/3769055ad883/jmh-core/src/main/java/org/openjdk/jmh/infra/Blackhole.java)设施，在方法中添加下面语句。
+```java
+public void testMethod(Blackhole blackhole) {
+   // …
+   blackhole.consume(mul);
+}
+```
+
+- 防止发生常量折叠（Constant Folding）。JVM 如果发现计算过程是依赖于常量或者事实上的常量，就可能会直接计算其结果，所以基准测试并不能真实反映代码执行的性能。JMH 提供了 State 机制来解决这个问题，将本地变量修改为 State 对象信息，请参考下面示例。
+```java
+@State(Scope.Thread)
+public static class MyState {
+   public int left = 10;
+   public int right = 100;
+}
+
+public void testMethod(MyState state, Blackhole blackhole) {
+   int left = state.left;
+   int right = state.right;
+   int mul = left * right;
+   blackhole.consume(mul);
+}
+```
+
