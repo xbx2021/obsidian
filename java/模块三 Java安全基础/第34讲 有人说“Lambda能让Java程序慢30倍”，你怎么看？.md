@@ -126,4 +126,17 @@ java -jar target/benchmarks.jar
 -Xbatch
 ```
 
+与此同时，也要保证预热阶段的代码路径和采集阶段的代码路径是一致的，并且可以观察 PrintCompilation 输出是否在后期运行中仍然有零星的编译语句出现。
 
+- 防止 JVM 进行无效代码消除（Dead Code Elimination），例如下面的代码片段中，由于我们并没有使用计算结果 mul，那么 JVM 就可能直接判断无效代码，根本就不执行它。
+```java
+public void testMethod() {
+   int left = 10;
+   int right = 100;
+   int mul = left * right;
+}
+```
+
+如果你发现代码统计数据发生了数量级程度上的提高，需要警惕是否出现了无效代码消除的问题。
+
+解决办法也很直接，尽量保证方法有返回值，而不是 void 方法，或者使用 JMH 提供的BlackHole设施，在方法中添加下面语句。
