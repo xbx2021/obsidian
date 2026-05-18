@@ -26,3 +26,10 @@ Select * from use_info where username = “input_usr_name” and password = “i
 Select * from use_info where username = “input_usr_name” and password = “” or “” = “”
 ```
 
+这里只是举个简单的例子，它是利用了期望输入和可能输入之间的偏差。上面例子中，期望用户输入一个数值，但实际输入的则是 SQL 语句片段。类似场景可以利用注入的不同 SQL 语句，进行各种不同目的的攻击，甚至还可以加上“;delete xxx”之类语句，如果数据库权限控制不合理，攻击效果就可能是灾难性的。
+
+**第二，操作系统命令注入**。Java 语言提供了类似 Runtime.exec(…) 的 API，可以用来执行特定命令，假设我们构建了一个应用，以输入文本作为参数，执行下面的命令：
+```bash
+ls –la input_file_name
+```
+
