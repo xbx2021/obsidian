@@ -69,3 +69,19 @@ public int lambdaMaxInteger() {
 
 目前应用最为广泛的框架之一就是[JMH](https://openjdk.org/projects/code-tools/jmh/)，OpenJDK 自身也大量地使用 JMH 进行性能对比，如果你是做 Java API 级别的性能对比，JMH 往往是你的首选。
 
+JMH 是由 Hotspot JVM 团队专家开发的，除了支持完整的基准测试过程，包括预热、运行、统计和报告等，还支持 Java 和其他 JVM 语言。更重要的是，它针对 Hotspot JVM 提供了各种特性，以保证基准测试的正确性，整体准确性大大优于其他框架，并且，JMH 还提供了用近乎白盒的方式进行 Profiling 等工作的能力。
+
+使用 JMH 也非常简单，你可以直接将其依赖加入 Maven 工程，如下图：
+![](assets/第34讲%20有人说“Lambda能让Java程序慢30倍”，你怎么看？/file-20260518121222394.png)
+
+也可以，利用类似下面的命令，直接生成一个 Maven 项目。
+```bash
+$ mvn archetype:generate \
+        -DinteractiveMode=false \
+        -DarchetypeGroupId=org.openjdk.jmh \
+          -DarchetypeArtifactId=jmh-java-benchmark-archetype \
+        -DgroupId=org.sample \
+        -DartifactId=test \
+        -Dversion=1.0
+```
+
