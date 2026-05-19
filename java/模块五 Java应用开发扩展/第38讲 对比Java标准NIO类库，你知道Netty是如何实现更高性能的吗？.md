@@ -82,4 +82,10 @@ Netty 的设计强调了 “**Separation Of Concerns**”，通过精巧设计�
 你可以参考下面的简化示意图，忽略 Inbound/OutBound Handler 的细节，理解这几个基本单元之间的操作流程和对应关系。
 ![](assets/第38讲%20对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？/file-20260519111751653.png)
 
+对比 Java 标准 NIO 的代码，Netty 提供的相对高层次的封装，减少了对 Selector 等细节的操纵，而 EventLoop、Pipeline 等机制则简化了编程模型，开发者不用担心并发等问题，在一定程度上简化了应用代码的开发。最难能可贵的是，这一切并没有以可靠性、可扩展性为代价，反而将其大幅度提高。
 
+我在专栏周末福利中已经推荐了 Norman Maurer 等编写的《Netty 实战》（Netty In Action），如果你想系统学习 Netty，它会是个很好的入门参考。针对 Netty 的一些实现原理，很可能成为面试中的考点，例如：
+
+- Reactor 模式和 Netty 线程模型。
+- Pipelining、EventLoop 等部分的设计实现细节。
+- Netty 的内存管理机制、[引用计数](https://netty.io/wiki/reference-counted-objects.html)等特别手段。
