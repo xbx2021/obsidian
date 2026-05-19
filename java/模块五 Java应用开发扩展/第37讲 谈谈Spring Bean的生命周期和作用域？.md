@@ -113,3 +113,4 @@ Java 核心类库中同样存在类似代码，例如 Java 9 中引入的 Flow A
 
 - Join Point 仅仅是可利用的机会。
 - Pointcut 是解决了切面编程中的 Where 问题，让程序可以知道哪些机会点可以应用某个切面动作。
+- 而 Advice 则是明确了切面编程中的 What，也就是做什么；同时通过指定 Before、After 或者 Around，定义了 When，也就是什么时候做。
