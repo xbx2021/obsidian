@@ -89,3 +89,10 @@ Netty 的设计强调了 “**Separation Of Concerns**”，通过精巧设计�
 - Reactor 模式和 Netty 线程模型。
 - Pipelining、EventLoop 等部分的设计实现细节。
 - Netty 的内存管理机制、[引用计数](https://netty.io/wiki/reference-counted-objects.html)等特别手段。
+- 有的时候面试官也喜欢对比 Java 标准 NIO API，例如，你是否知道 Java NIO 早期版本中的 Epoll[空转问题](http://www.10tiao.com/html/308/201602/401718035/1.html)，以及 Netty 的解决方式等。
+
+对于这些知识点，公开的深入解读已经有很多了，在学习时希望你不要一开始就被复杂的细节弄晕，可以结合实例，逐步、有针对性的进行学习。我的一个建议是，可以试着画出相应的示意图，非常有助于理解并能清晰阐述自己的看法。
+
+# 一课一练
+
+关于今天我们讨论的题目你做到心中有数了吗？今天的思考题是，Netty 的线程模型是什么样的？
