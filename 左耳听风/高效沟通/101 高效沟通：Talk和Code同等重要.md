@@ -49,14 +49,3 @@
 # 小结
 
 总结一下今天的内容。在文章伊始我先强调了我的观点，Talk和code同样重要，有效的沟通是你事业成功的必要条件。随后介绍了何为沟通及其背后的原理。我认为，沟通原理跟计算机世界中的通信原理有些类似。由于编码器和解码器的不同，会造成理解的偏差。这个问题可以通过约定和反馈来解决，也就是要先达成共识，然后基于共识来进行沟通。最后我阐述了一些沟通问题，以及应对这些问题的方法。
-
-下篇文章中，我将分析一下形成各种沟通问题的主要阻碍。敬请期待。
-
-下面是《高效沟通》系列文章的目录。
-
-- [Talk和Code同等重要](https://time.geekbang.org/column/article/28550)
-- [沟通阻碍和应对方法](https://time.geekbang.org/column/article/32619)
-- [沟通方式及技巧](https://time.geekbang.org/column/article/32796)
-- [沟通技术](https://time.geekbang.org/column/article/32902)
-- [好老板要善于提问](https://time.geekbang.org/column/article/33112)
-- [好好说话的艺术](https://time.geekbang.org/column/article/41008)
