@@ -95,7 +95,7 @@ def extract_article(url, cookie):
             
             markdown_content = html_to_markdown(article_content)
             
-            filename = article_title.replace('|', '-').replace(':', '-').replace('\\', '-').replace('/', '-').strip()
+            filename = article_title.replace('|', ' ').replace(':', ' ').replace('\\', ' ').replace('/', ' ').strip()
             filename = f"{filename}.md"
             
             with open(filename, 'w', encoding='utf-8') as f:
