@@ -15,6 +15,9 @@ def html_to_markdown(html_content):
     result = re.sub(r'<p>(.*?)</p>', r'\1\n\n', result, flags=re.DOTALL)
     result = re.sub(r'</?(ul|ol)>', '', result)
     result = re.sub(r'</?br\s*/?>', '\n', result)
+    
+    result = re.sub(r'<a\s+([^>]*?)href\s*=\s*["\']([^"\']*)["\']([^>]*?)>(.*?)</a>', r'[\4](\2)', result, flags=re.DOTALL)
+    
     result = re.sub(r'<[^>]+>', '', result)
     result = re.sub(r'\n{3,}', '\n\n', result)
     result = re.sub(r'-\s+', '- ', result)
