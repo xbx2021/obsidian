@@ -27,10 +27,14 @@ When user provides a GeekBang article URL (e.g., `https://time.geekbang.org/colu
 {"id": "<article_id>", "include_neighbors": true, "is_freelyread": true}
 ```
 
+### User Cookie
+
+get cookie from file /cookie
+
 ### Required Headers
 - `Accept: application/json, text/plain, */*`
 - `Content-Type: application/json`
-- `Cookie: <user_cookie>` (User must provide their GeekBang cookie for authentication)
+- `Cookie: <user_cookie>`
 - `Origin: https://time.geekbang.org`
 - `Referer: https://time.geekbang.org/column/article/<article_id>`
 - `User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36`
@@ -44,8 +48,6 @@ python scripts/geekbang_article.py <url> <cookie>
 
 If the API returns a permission error:
 1. Inform the user that the cookie may be expired or invalid
-2. Ask user to provide a new cookie
-3. Update the cookie in the script or re-run with new cookie
 
 ## Example
 
