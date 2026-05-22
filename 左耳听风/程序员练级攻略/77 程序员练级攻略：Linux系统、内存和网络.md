@@ -208,72 +208,15 @@ HTTP 1.1的原始RFC是1999年6月的 [RFC 2616](https://tools.ietf.org/html/rfc
 - [Nginx HTTP/2 白皮书](https://www.nginx.com/wp-content/uploads/2015/09/NGINX_HTTP2_White_Paper_v4.pdf)
 
 - HTTP/2 的两个RFC：
-
-[RFC 7540 - Hypertext Transfer Protocol Version 2 (HTTP/2)](https://httpwg.org/specs/rfc7540.html) ，HTTP/2的协议本身
-
-- [RFC 7541 - HPACK: Header Compression for HTTP/2](https://httpwg.org/specs/rfc7541.html) ，HTTP/2的压缩算法
+	- [RFC 7540 - Hypertext Transfer Protocol Version 2 (HTTP/2)](https://httpwg.org/specs/rfc7540.html) ，HTTP/2的协议本身
+	- [RFC 7541 - HPACK: Header Compression for HTTP/2](https://httpwg.org/specs/rfc7541.html) ，HTTP/2的压缩算法
 
 最后，你可以上Wikipedia的 [Internet Protocol Suite](https://en.wikipedia.org/wiki/Internet_protocol_suite) 上看看，这是一个很不错的网络协议的词条汇集地。顺着这些协议，你可以找到很多有用的东西。
 
 # 小结
+
 好了，总结一下今天的内容。这是程序员练级攻略2018版第五篇章——高手成长篇的第一篇文章。前面的内容先介绍了一些这一系列内容的总体构成，及每一部分的学习重点。后面是这一篇章第一个主题系统底层知识中的部分内容，即Linux系统、内存和计算机网络，并给出了相应的学习资料。
 
 我认为，学习到一定程度，就是要从书本中走出去，到社区里和大家一起学习，而且还需要自己找食吃了。所以，这篇文章中，我罗列了各种文章和资源，并给出了简短的推荐语言，就是在为你梳理信息源，而不是喂你吃饭。我更希望看到你自趋势地成长。
 
 下篇文章中，我们分享的内容为系统底层知识中的异步I/O模型、Lock-Free编程以及其他一些相关的知识点和学习资源。敬请期待。
-
-下面是《程序员练级攻略》系列文章的目录。
-
-- [开篇词](https://time.geekbang.org/column/article/8136)
-
-- 入门篇
-
-[零基础启蒙](https://time.geekbang.org/column/article/8216)
-
-- [正式入门](https://time.geekbang.org/column/article/8217)
-
-- 修养篇
-
-[程序员修养](https://time.geekbang.org/column/article/8700)
-
-- 专业基础篇
-
-[编程语言](https://time.geekbang.org/column/article/8701)
-
-- [理论学科](https://time.geekbang.org/column/article/8887)
-
-- [系统知识](https://time.geekbang.org/column/article/8888)
-
-- 软件设计篇
-
-[软件设计](https://time.geekbang.org/column/article/9369)
-
-- 高手成长篇
-
-[Linux系统、内存和网络（系统底层知识）](https://time.geekbang.org/column/article/9759)
-
-- [异步I/O模型和Lock-Free编程（系统底层知识）](https://time.geekbang.org/column/article/9851)
-
-- [Java底层知识](https://time.geekbang.org/column/article/10216)
-
-- [数据库](https://time.geekbang.org/column/article/10301)
-
-- [分布式架构入门（分布式架构）](https://time.geekbang.org/column/article/10603)
-
-- [分布式架构经典图书和论文（分布式架构）](https://time.geekbang.org/column/article/10604)
-
-- [分布式架构工程设计(分布式架构)](https://time.geekbang.org/column/article/11232)
-
-- [微服务](https://time.geekbang.org/column/article/11116)
-
-- [容器化和自动化运维](https://time.geekbang.org/column/article/11665)
-
-- [机器学习和人工智能](https://time.geekbang.org/column/article/11669)
-
-- [前端基础和底层原理（前端方向）](https://time.geekbang.org/column/article/12271)
-
-- [前端性能优化和框架（前端方向）](https://time.geekbang.org/column/article/12389)
-
-- [UI/UX设计（前端方向）](https://time.geekbang.org/column/article/12486)
-
-- [技术资源集散地](https://time.geekbang.org/column/article/12561)
