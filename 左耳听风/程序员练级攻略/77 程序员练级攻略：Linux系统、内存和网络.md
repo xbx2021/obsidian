@@ -55,6 +55,7 @@
 - [Optimizing web servers for high throughput and low latency](https://blogs.dropbox.com/tech/2017/09/optimizing-web-servers-for-high-throughput-and-low-latency/) ，这是一篇非常底层的系统调优的文章，来自DropBox，从中你可以学到很多底层的性能调优的经验和知识。
 
 # 内存相关
+
 计算机内存管理是每一个底层程序员需要了解的非常重要的事儿。当然，这里我们重点还是Linux操作系统相关的内存管理上的知识。
 
 首先，LWN.net上有一系列的 “**What every programmer should know about memory**” 文章你需要读一下。当然，你可以直接访问一个完整的 [PDF文档](http://futuretech.blinkenlights.nl/misc/cpumemory.pdf)。下面是这个系列文章的网页版列表。读完这个列表的内容，你基本上就对内存有了一个比较好的知识体系了。
@@ -76,6 +77,7 @@
 - [Part 8 (Future technologies)](https://lwn.net/Articles/258154/)
 
 - [Part 9 (Appendices and bibliography)](https://lwn.net/Articles/258188/)
+
 然后是几篇和内存相关的论文。下面这三篇论文是我个人觉得能对你非常有帮助的文章，尤其是你要做一些程序的性能优化方面。
 
 - [Memory Barriers: a Hardware View for Software Hackers](http://irl.cs.ucla.edu/~yingdi/web/paperreading/whymb.2010.06.07c.pdf)。内存的读写屏障是线程并发访问共享的内存数据时，从程序本身、编译器到CPU都必须遵循的一个规范。有了这个规范，才能保证访问共享的内存数据时，一个线程对该数据的更新能被另一个线程以正确的顺序感知到。在SMP（对称多处理）这种类型的多处理器系统（包括多核系统）上，这种读写屏障还包含了复杂的缓存一致性策略。这篇文章做了详细解释。
