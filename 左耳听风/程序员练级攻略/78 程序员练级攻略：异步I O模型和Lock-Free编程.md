@@ -142,62 +142,7 @@ Lock-Free - 无锁技术越来越被开发人员重视，因为锁对于性能�
 注明一下，Jim Gray是关系型数据库领域的大师。因在数据库和事务处理研究和实现方面的开创性贡献而获得1998年图灵奖。美国科学院、工程院两院院士，ACM和IEEE两会会士。他25岁成为加州大学伯克利分校计算机科学学院第一位博士。在IBM工作期间参与和主持了IMS、System R、SQL／DS、DB2等项目的开发。后任职于微软研究院，主要关注应用数据库技术来处理各学科的海量信息。
 
 # 小结
+
 好了，总结一下今天的内容。异步I/O模型是我个人觉得所有程序员都必需要学习的一门技术或是编程方法，这其中的设计模式或是解决方法可以借鉴到分布式架构上来。而且我认为，学习这些模型非常重要，你千万要认真学习。
 
 接下来是Lock-Free方面的内容，由于锁对于性能的影响实在是太大了，所以它越来越被开发人员所重视。如果想开发出一个高性能的程序，你非常有必要学习 Lock-Free的编程方式。随后，我给出系统底层方面的其它一些重要知识，如64位编程、提高OpenSSL的执行性能、压缩、SSD硬盘性能测试等。最后介绍了几篇我认为对学习和巩固这些知识非常有帮助的论文，都很经典，推荐你务必看看。
-
-下面是《程序员练级攻略》系列文章的目录。
-
-- [开篇词](https://time.geekbang.org/column/article/8136)
-
-- 入门篇
-
-[零基础启蒙](https://time.geekbang.org/column/article/8216)
-
-- [正式入门](https://time.geekbang.org/column/article/8217)
-
-- 修养篇
-
-[程序员修养](https://time.geekbang.org/column/article/8700)
-
-- 专业基础篇
-
-[编程语言](https://time.geekbang.org/column/article/8701)
-
-- [理论学科](https://time.geekbang.org/column/article/8887)
-
-- [系统知识](https://time.geekbang.org/column/article/8888)
-
-- 软件设计篇
-
-[软件设计](https://time.geekbang.org/column/article/9369)
-
-- 高手成长篇
-
-[Linux系统、内存和网络（系统底层知识）](https://time.geekbang.org/column/article/9759)
-
-- [异步I/O模型和Lock-Free编程（系统底层知识）](https://time.geekbang.org/column/article/9851)
-
-- [Java底层知识](https://time.geekbang.org/column/article/10216)
-
-- [数据库](https://time.geekbang.org/column/article/10301)
-
-- [分布式架构入门（分布式架构）](https://time.geekbang.org/column/article/10603)
-
-- [分布式架构经典图书和论文（分布式架构）](https://time.geekbang.org/column/article/10604)
-
-- [分布式架构工程设计(分布式架构)](https://time.geekbang.org/column/article/11232)
-
-- [微服务](https://time.geekbang.org/column/article/11116)
-
-- [容器化和自动化运维](https://time.geekbang.org/column/article/11665)
-
-- [机器学习和人工智能](https://time.geekbang.org/column/article/11669)
-
-- [前端基础和底层原理（前端方向）](https://time.geekbang.org/column/article/12271)
-
-- [前端性能优化和框架（前端方向）](https://time.geekbang.org/column/article/12389)
-
-- [UI/UX设计（前端方向）](https://time.geekbang.org/column/article/12486)
-
-- [技术资源集散地](https://time.geekbang.org/column/article/12561)
