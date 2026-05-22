@@ -174,6 +174,7 @@
 - [RFC 2988 - Computing TCP’s Retransmission Timer](https://tools.ietf.org/html/rfc2988) - 讨论与TCP重传计时器设置相关的话题，重传计时器控制报文在重传前应等待多长时间。也就是经典的TCP Karn/Partridge重传算法。
 
 - [RFC 6298 - Computing TCP’s Retransmission Timer](https://tools.ietf.org/html/rfc6298) - TCP Jacobson/Karels Algorithm重传算法。
+
 我个人觉得TCP最牛的不是不丢包，而是拥塞控制。对此，如果你感兴趣，可以读一下经典论文《[Congestion Avoidance and Control](http://ee.lbl.gov/papers/congavoid.pdf)》。
 
 关于Linux下的TCP参数，你需要仔仔细细地读一下[TCP的man page](http://man7.org/linux/man-pages/man7/tcp.7.html) 。
@@ -195,6 +196,7 @@ HTTP 1.1的原始RFC是1999年6月的 [RFC 2616](https://tools.ietf.org/html/rfc
 - [RFC 7234 - Hypertext Transfer Protocol (HTTP/1.1): Caching](https://tools.ietf.org/html/rfc7234)
 
 - [RFC 7235 - Hypertext Transfer Protocol (HTTP/1.1): Authentication](https://tools.ietf.org/html/rfc7235)
+
 关于[HTTP/2](https://en.wikipedia.org/wiki/HTTP/2)，这是HTTP的一个比较新的协议，它于2015年被批准通过，现在基本上所有的主流浏览器都默认启用这个协议。所以，你有必要学习一下这个协议。下面是相关的学习资源。
 
 - [Gitbook - HTTP/2详解](https://legacy.gitbook.com/book/ye11ow/http2-explained/details)
