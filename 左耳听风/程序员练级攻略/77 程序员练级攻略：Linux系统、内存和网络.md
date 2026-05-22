@@ -85,6 +85,7 @@
 - [A Tutorial Introduction to the ARM and POWER Relaxed Memory Models](http://www.cl.cam.ac.uk/~pes20/ppc-supplemental/test7.pdf)，对ARM和POWER的宽松内存模型的一个教程式的简介。本篇文章的焦点是ARM和POWER体系结构下多处理器系统内存并发访问一致性的设计思路和使用方法。与支持较强的TSO模型的x86体系结构不同，ARM和POWER这两种体系结构出于对功耗和性能的考虑，使用了一种更为宽松的内存模型。本文详细讨论了ARM和POWER的模型。
 
 - [x86-TSO: A Rigorous and Usable Programmer’s Model for x86 Multiprocessors](http://www.cl.cam.ac.uk/~pes20/weakmemory/cacm.pdf)，介绍x86的多处理器内存并发访问的一致性模型TSO。
+
 接下来是开发者最关心的内存管理方面的lib库。通常来说，我们有三种内存分配管理模块。就目前而言，BSD的jemalloc有很大的影响力。后面我们可以看到不同公司的实践性文章。
 
 - [ptmalloc](http://www.malloc.de/en/) 是glibc的内存分配管理。
@@ -92,6 +93,7 @@
 - [tcmalloc](https://github.com/gperftools/gperftools) 是Google的内存分配管理模块，全称是Thread-Caching malloc，基本上来说比glibc的ptmalloc快两倍以上。
 
 - [jemalloc](http://jemalloc.net/) 是BSD提供的内存分配管理。其论文为 [A Scalable Concurrent malloc(3) Implementation for FreeBSD](https://people.freebsd.org/~jasone/jemalloc/bsdcan2006/jemalloc.pdf)，这是一个可以并行处理的内存分配管理器。
+
 关于 C 的这些内存分配器，你可以参看Wikipedia的 “[C Dynamic Memory Allocation](https://en.wikipedia.org/wiki/C_dynamic_memory_allocation#Thread-caching_malloc_(tcmalloc))”这个词条。
 
 下面是几篇不错的文章，让你感觉一下上面那三种内存分配器的一些比较和工程实践。
@@ -107,6 +109,7 @@
 # 计算机网络
 
 ## 网络学习
+
 首先，推荐一本书——《[计算机网络（第五版）](https://book.douban.com/subject/10510747/)》，这本“计算机网络”和前面推荐的那本计算机网络不一样，前面那本偏扫盲，这本中有很多细节。这本书是国内外使用最广泛、最权威的计算机网络经典教材。全书按照网络协议模型自下而上（物理层、数据链路层、介质访问控制层、网络层、传输层和应用层）有系统地介绍了计算机网络的基本原理，并结合Internet给出了大量的协议实例。
 
 这本书还与时俱进地引入了最新的网络技术，包括无线网络、3G蜂窝网络、RFID与传感器网络、内容分发与P2P网络、流媒体传输与IP语音，以及延迟容忍网络等。另外，本书针对当前网络应用中日益突出的安全问题，用了一整章的篇幅对计算机网络的安全性进行了深入讨论，而且把相关内容与最新网络技术结合起来阐述。这本书读起来并不枯燥，因为其中有很多小故事和小段子。
