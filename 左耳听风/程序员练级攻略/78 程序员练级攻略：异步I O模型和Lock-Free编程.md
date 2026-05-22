@@ -34,7 +34,7 @@
 
 - 再接下来是 Libuv。你可以看一下其官网的 [Libuv Design Overview](http://docs.libuv.org/en/v1.x/design.html) 了解一下。
 
-我简单总结一下，基本上来说，异步I/O模型的发展技术是： select -&gt; poll -&gt; epoll -&gt; aio -&gt; libevent -&gt; libuv。Unix/Linux用了好几十年走过这些技术的变迁，然而，都不如Windows I/O Completion Port 设计得好（免责声明：这个观点纯属个人观点。相信你仔细研究这些I/O模型后，你会有自己的判断）。
+我简单总结一下，基本上来说，异步I/O模型的发展技术是： select -> poll -> epoll -> aio -> libevent -> libuv。Unix/Linux用了好几十年走过这些技术的变迁，然而，都不如Windows I/O Completion Port 设计得好（免责声明：这个观点纯属个人观点。相信你仔细研究这些I/O模型后，你会有自己的判断）。
 
 看过这些各种异步I/O模式的实现以后，相信你会看到一个编程模式——Reactor模式。下面是这个模式的相关文章（读这三篇就够了）。
 
@@ -43,6 +43,7 @@
 - [Reactor Pattern](https://www.dre.vanderbilt.edu/~schmidt/PDF/Reactor2-93.pdf)
 
 - [The reactor pattern and non-blocking IO](https://www.celum.com/en/blog/technology/the-reactor-pattern-and-non-blocking-io)
+
 然后是几篇有意思的延伸阅读文章。
 
 - [The Secret To 10 Million Concurrent Connections -The Kernel Is The Problem, Not The Solution](http://highscalability.com/blog/2013/5/13/the-secret-to-10-million-concurrent-connections-the-kernel-i.html) - C10M问题来了……
@@ -56,6 +57,7 @@
 - [Epoll is fundamentally broken 2/2](https://idea.popcount.org/2017-03-20-epoll-is-fundamentally-broken-22/)
 
 # Lock-Free编程相关
+
 Lock-Free - 无锁技术越来越被开发人员重视，因为锁对于性能的影响实在是太大了，所以如果想开发出一个高性能的程序，你就非常有必要学习 Lock-Free的编程方式。
 
 关于无锁的数据结构，有几篇教程你可以看一下。
@@ -63,6 +65,7 @@ Lock-Free - 无锁技术越来越被开发人员重视，因为锁对于性能�
 - [Dr.Dobb’s: Lock-Free Data Structures](http://www.drdobbs.com/lock-free-data-structures/184401865)
 
 - [Andrei Alexandrescu: Lock-Free Data Structures](https://erdani.com/publications/cuj-2004-10.pdf)
+
 然后强烈推荐一本免费的电子书：[Is Parallel Programming Hard, And, If So, What Can You Do About It?](https://www.kernel.org/pub/linux/kernel/people/paulmck/perfbook/perfbook.html) ，这是大牛 [保罗·麦肯尼（Paul E. McKenney）](https://www.linkedin.com/in/paulmckenney/) 写的书。这本书堪称并行编程的经典书，必看。
 
 此时，Wikipedia上有三个词条你要看一下，以此了解并发编程中的一些概念：[Non-blocking algorithm](https://en.wikipedia.org/wiki/Non-blocking_algorithm) 、[Read-copy-update](https://en.wikipedia.org/wiki/Read-copy-update) 和 [Seqlock](https://en.wikipedia.org/wiki/Seqlock)。
@@ -72,6 +75,7 @@ Lock-Free - 无锁技术越来越被开发人员重视，因为锁对于性能�
 - [Implementing Lock-Free Queues](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.53.8674&rep=rep1&type=pdf)， 这也是一篇很不错的论文，我把它介绍在了我的网站上 ，文章为“[无锁队列的实现](https://coolshell.cn/articles/8239.html)”。
 
 - [Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms](http://www.cs.rochester.edu/~scott/papers/1996_PODC_queues.pdf) ，这篇论文给出了一个无阻塞和阻塞的并发队列算法。
+
 最后，有几个博客你要订阅一下。
 
 - [1024cores](http://www.1024cores.net/) - 德米特里·伐由科夫（Dmitry Vyukov）的和 lock-free 编程相关的网站。
@@ -85,6 +89,7 @@ Lock-Free - 无锁技术越来越被开发人员重视，因为锁对于性能�
 - [Sutter’s Mill](http://herbsutter.com/) - 赫布·萨特（Herb Sutter）是一位杰出的C++专家，曾担任ISO C++标准委员会秘书和召集人超过10年。他的博客有关于C++语言标准最新进展的信息，其中也有他的演讲视频。博客中还讨论了其他技术和C++的差异，如C#和JavaScript，它们的性能特点、怎样避免引入性能方面的缺陷等。
 
 - [Mechanical Sympathy](http://mechanical-sympathy.blogspot.com/) - 博主是马丁·汤普森（Martin Thompson），他是一名英国的技术极客，探索现代硬件的功能，并提供开发、培训、性能调优和咨询服务。他的博客主题是Hardware and software working together in harmony，里面探讨了如何设计和编写软件使得它在硬件上能高性能地运行。非常值得一看。
+
 接下来，是一些编程相关的一些C/C++的类库，这样你就不用从头再造轮子了（对于Java的，请参看JDK里的Concurrent开头的一系列的类）。
 
 - [Boost.Lockfree](http://www.boost.org/doc/libs/1_60_0/doc/html/lockfree.html) - Boost库中的无锁数据结构。
@@ -112,15 +117,15 @@ Lock-Free - 无锁技术越来越被开发人员重视，因为锁对于性能�
 - 关于64位系统编程，只要去一个地方就行了： [All about 64-bit programming in one place](https://software.intel.com/en-us/blogs/2011/07/07/all-about-64-bit-programming-in-one-place/)，这是一个关于64位编程相关的收集页面，其中包括相关的文章、28节课程，还有知识库和相关的blog。
 
 - [What Scalable Programs Need from Transactional Memory](https://dl.acm.org/citation.cfm?id=3037750) ，事务性内存（TM）一直是许多研究的重点，它在诸如IBM Blue Gene/Q和Intel Haswell等处理器中得到了支持。许多研究都使用STAMP基准测试套件来评估其设计。然而，我们所知的所有TM系统上的STAMP基准测试所获得的加速比较有限。
+
 例如，在IBM Blue Gene/Q上有64个线程，我们观察到使用Blue Gene/Q硬件事务内存（HTM）的中值加速比为1.4倍，使用软件事务内存（STM）的中值加速比为4.1倍。什么限制了这些TM基准的性能？在本论文中，作者认为问题在于用于编写它们的编程模型和数据结构上，只要使用合适的模型和数据结构，程序的性能可以有10多倍的提升。
 
 - [Improving OpenSSL Performance](https://software.intel.com/en-us/articles/improving-openssl-performance) ，这篇文章除了教你如何提高OpenSSL的执行性能，还讲了一些底层的性能调优知识。
 
 - 关于压缩的内容。为了避免枯燥，主要推荐下面这两篇实践性很强的文章。
-
-[How eBay’s Shopping Cart used compression techniques to solve network I/O bottlenecks](https://www.ebayinc.com/stories/blogs/tech/how-ebays-shopping-cart-used-compression-techniques-to-solve-network-io-bottlenecks/) ，这是一篇很好的文章，讲述了eBay是如何通过压缩数据来提高整体服务性能的，其中有几个比较好的压缩算法。除了可以让你学到相关的技术知识，还可以让你看到一种比较严谨的工程师文化。
-
-- [Linkedin: Boosting Site Speed Using Brotli Compression](https://engineering.linkedin.com/blog/2017/05/boosting-site-speed-using-brotli-compression) ，LinkedIn在2017年早些时候开始使用 [Brotli](https://en.wikipedia.org/wiki/Brotli) 来替换 gzip，以此带来更快的访问，这篇文章讲述了什么是Brotli以及与其它压缩程序的比较和所带来的性能提升。
+	- [How eBay’s Shopping Cart used compression techniques to solve network I/O bottlenecks](https://www.ebayinc.com/stories/blogs/tech/how-ebays-shopping-cart-used-compression-techniques-to-solve-network-io-bottlenecks/) ，这是一篇很好的文章，讲述了eBay是如何通过压缩数据来提高整体服务性能的，其中有几个比较好的压缩算法。除了可以让你学到相关的技术知识，还可以让你看到一种比较严谨的工程师文化。
+	
+	- [Linkedin: Boosting Site Speed Using Brotli Compression](https://engineering.linkedin.com/blog/2017/05/boosting-site-speed-using-brotli-compression) ，LinkedIn在2017年早些时候开始使用 [Brotli](https://en.wikipedia.org/wiki/Brotli) 来替换 gzip，以此带来更快的访问，这篇文章讲述了什么是Brotli以及与其它压缩程序的比较和所带来的性能提升。
 
 - 这里有两篇关于SSD硬盘性能测试的文章。[Performance Testing with SSDs, Part 1](https://devs.mailchimp.com/blog/performance-testing-with-ssds-part-1/) 和 [Performance Testing with SSDs Part 2](https://devs.mailchimp.com/blog/performance-testing-with-ssds-pt-2/) ，这两篇文章介绍了测试SSD硬盘性能以及相关的操作系统调优方法。
 

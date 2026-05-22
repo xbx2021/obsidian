@@ -2,9 +2,11 @@ import urllib.request
 import json
 import re
 import sys
+import html
 
 def html_to_markdown(html_content):
     result = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
+    result = html.unescape(result)
     result = re.sub(r'<h1>(.*?)</h1>', r'\n# \1\n', result, flags=re.DOTALL)
     result = re.sub(r'<h2>(.*?)</h2>', r'\n## \1\n', result, flags=re.DOTALL)
     result = re.sub(r'<h3>(.*?)</h3>', r'\n### \1\n', result, flags=re.DOTALL)
