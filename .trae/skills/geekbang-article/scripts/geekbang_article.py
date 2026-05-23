@@ -17,6 +17,12 @@ def html_to_markdown(html_content):
     result = re.sub(r'<p>(.*?)</p>', r'\1\n\n', result, flags=re.DOTALL)
     result = re.sub(r'</?(ul|ol)>', '', result)
     result = re.sub(r'</?br\s*/?>', '\n', result)
+    # 处理图片标签，提取src和alt
+    result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?>', r'![](\1)', result, flags=re.DOTALL)
+    # 处理带有alt的图片标签
+    result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?alt\s*=\s*["\']([^"\']*)["\'][^>]*?>', r'![\2](\1)', result, flags=re.DOTALL)
+    # 处理alt在前面的图片标签
+    result = re.sub(r'<img\s+[^>]*?alt\s*=\s*["\']([^"\']*)["\'][^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?>', r'![\1](\2)', result, flags=re.DOTALL)
     result = re.sub(r'<a\s+([^>]*?)href\s*=\s*["\']([^"\']*)["\']([^>]*?)>(.*?)</a>', r'[\4](\2)', result, flags=re.DOTALL)
     result = re.sub(r'<[^>]+>', '', result)
     result = re.sub(r'\n{3,}', '\n\n', result)
