@@ -4,13 +4,31 @@ import re
 import sys
 import html
 
+def detect_language(code):
+    if re.search(r'\bstd::\b|\bclass\s+\w+\s*\{|\bpublic:\b|\bprivate:\b|\b~[A-Za-z_]+\s*\(|std::mutex', code):
+        return 'cpp'
+    elif re.search(r'\bfunc\s+\w+\s*\(|\bpackage\s+\w+|\bimport\s+\(|bdefer\s+|\bnil\b|\bmake\s*\(', code):
+        return 'go'
+    elif re.search(r'\b#include\s*<|\bmalloc\s*\(|\bfree\s*\(|\bfprintf\s*\(|\bFILE\s*\*|\berrno\b', code):
+        return 'c'
+    elif re.search(r'\bpublic\s+class\s+|\bpublic\s+static\s+void\s+main|\bSystem\.out\.', code):
+        return 'java'
+    elif re.search(r'\bdef\s+\w+\s*\(|\bimport\s+\w+|\bprint\s*\(|\bTrue\b|\bFalse\b|\bNone\b', code):
+        return 'python'
+    else:
+        return ''
+
 def html_to_markdown(html_content):
     result = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
     result = html.unescape(result)
     
-    # 处理代码块 <pre><code>...</code></pre>
-    result = re.sub(r'<pre\s*[^>]*><code\s*[^>]*>(.*?)</code></pre>', r'\n```\n\1\n```\n', result, flags=re.DOTALL)
-    result = re.sub(r'<pre\s*[^>]*>(.*?)</pre>', r'\n```\n\1\n```\n', result, flags=re.DOTALL)
+    def process_code_block(match):
+        code = match.group(1)
+        lang = detect_language(code)
+        return f'\n``` {lang}\n{code}\n```\n'
+    
+    result = re.sub(r'<pre\s*[^>]*><code\s*[^>]*>(.*?)</code></pre>', process_code_block, result, flags=re.DOTALL)
+    result = re.sub(r'<pre\s*[^>]*>(.*?)</pre>', process_code_block, result, flags=re.DOTALL)
     result = re.sub(r'<code\s*[^>]*>(.*?)</code>', r'`\1`', result, flags=re.DOTALL)
     
     result = re.sub(r'<h1>(.*?)</h1>', r'\n# \1\n', result, flags=re.DOTALL)
