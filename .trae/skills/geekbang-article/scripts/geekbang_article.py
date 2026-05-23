@@ -7,6 +7,12 @@ import html
 def html_to_markdown(html_content):
     result = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
     result = html.unescape(result)
+    
+    # 处理代码块 <pre><code>...</code></pre>
+    result = re.sub(r'<pre\s*[^>]*><code\s*[^>]*>(.*?)</code></pre>', r'\n```\n\1\n```\n', result, flags=re.DOTALL)
+    result = re.sub(r'<pre\s*[^>]*>(.*?)</pre>', r'\n```\n\1\n```\n', result, flags=re.DOTALL)
+    result = re.sub(r'<code\s*[^>]*>(.*?)</code>', r'`\1`', result, flags=re.DOTALL)
+    
     result = re.sub(r'<h1>(.*?)</h1>', r'\n# \1\n', result, flags=re.DOTALL)
     result = re.sub(r'<h2>(.*?)</h2>', r'\n## \1\n', result, flags=re.DOTALL)
     result = re.sub(r'<h3>(.*?)</h3>', r'\n### \1\n', result, flags=re.DOTALL)
@@ -17,11 +23,8 @@ def html_to_markdown(html_content):
     result = re.sub(r'<p>(.*?)</p>', r'\1\n\n', result, flags=re.DOTALL)
     result = re.sub(r'</?(ul|ol)>', '', result)
     result = re.sub(r'</?br\s*/?>', '\n', result)
-    # 处理图片标签，提取src和alt
     result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?>', r'![](\1)', result, flags=re.DOTALL)
-    # 处理带有alt的图片标签
     result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?alt\s*=\s*["\']([^"\']*)["\'][^>]*?>', r'![\2](\1)', result, flags=re.DOTALL)
-    # 处理alt在前面的图片标签
     result = re.sub(r'<img\s+[^>]*?alt\s*=\s*["\']([^"\']*)["\'][^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?>', r'![\1](\2)', result, flags=re.DOTALL)
     result = re.sub(r'<a\s+([^>]*?)href\s*=\s*["\']([^"\']*)["\']([^>]*?)>(.*?)</a>', r'[\4](\2)', result, flags=re.DOTALL)
     result = re.sub(r'<[^>]+>', '', result)
