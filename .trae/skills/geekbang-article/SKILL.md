@@ -29,7 +29,7 @@ When user provides a GeekBang article URL (e.g., `https://time.geekbang.org/colu
 
 ### User Cookie
 
-get cookie from file /cookie
+get cookie from file .trae\skills\geekbang-article\cookie
 
 ### Required Headers
 - `Accept: application/json, text/plain, */*`
@@ -59,4 +59,4 @@ Generate request to: `https://time.geekbang.org/serv/v1/article`
 
 Output file: `92 程序员面试攻略：面试前的准备.md` (based on article title)
 
-file destination direction: 左耳听风\程序员练级攻略\
+file destination direction: 左耳听风\技术基础\
