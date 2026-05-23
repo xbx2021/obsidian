@@ -44,6 +44,10 @@ get cookie from file .trae\skills\geekbang-article\cookie
 
 python scripts/geekbang_article.py <url> <cookie>
 
+## File Destination Direction
+
+\左耳听风\分布式架构
+
 ## Error Handling
 
 If the API returns a permission error:
@@ -58,5 +62,3 @@ Extract article ID: `13067`
 Generate request to: `https://time.geekbang.org/serv/v1/article`
 
 Output file: `92 程序员面试攻略：面试前的准备.md` (based on article title)
-
-file destination direction: 左耳听风\技术基础\
