@@ -85,6 +85,7 @@ GitHub/GitLab这样工具的出现，让我们的工作可以呈现在一个工�
 传统的项目分支开得太久，时间越长就越合不回去。这种玩法其实就是让我们把一个大项目切分成若干个小项目来执行（最好是一个小功能一个项目）。这样才是互联网式的快速迭代式的开发流程。
 
 # GitFlow协同工作流
+
 在真实的生产过程中，前面的协同工作流还是不能满足工作的要求。这主要因为我们的生产过程是比较复杂的，软件生产中会有各式各样的问题，并要面对不同的环境。我们要在不停地开发新代码的同时，维护线上的代码，于是，就有了下面这些需求。
 
 - 希望有一个分支是非常干净的，上面是可以发布的代码，上面的改动永远都是可以发布到生产环境中的。这个分支上不能有中间开发过程中不可以上生产线的代码提交。
@@ -92,6 +93,7 @@ GitHub/GitLab这样工具的出现，让我们的工作可以呈现在一个工�
 - 希望当代码达到可以上线的状态时，也就是在alpha/beta release时，在测试和交付的过程中，依然可以开发下一个版本的代码。
 
 - 最后，对于已经发布的代码，也会有一些Bug-fix的改动，不会将正在开发的代码提交到生产线上去。
+
 你看，面对这些需求，前面的那些协同方式就都不行了。因为我们不仅是要在整个团队中共享代码，我们要的更是管理好不同环境下的代码不互相干扰。说得技术一点儿就是，要管理好代码与环境的一致性。
 
 为了解决这些问题，GitFlow协同工作流就出来了。
@@ -111,9 +113,11 @@ GitFlow协同工作流是由Vincent Driessen于2010年在A successful Git branch
 - Developer分支。是开发分支，一旦功能开发完成，就向Developer分支合并，合并完成后，删除功能分支。这个分支对应的是集成测试环境。
 
 - Release分支。当Developer分支测试达到可以发布状态时，开出一个Release分支来，然后做发布前的准备工作。这个分支对应的是预发环境。之所以需要这个Release分支，是我们的开发可以继续向前，不会因为要发布而被block住而不能提交。
+
 一旦Release分支上的代码达到可以上线的状态，那么需要把Release分支向Master分支和Developer分支同时合并，以保证代码的一致性。然后再把Release分支删除掉。
 
 - Hotfix分支。是用于处理生产线上代码的Bug-fix，每个线上代码的Bug-fix都需要开一个Hotfix分支，完成后，向Developer分支和Master分支上合并。合并完成后，删除Hotfix分支。
+
 这就是整个GitFlow协同工作流的工作过程。我们可以看到：
 
 - 我们需要长期维护Master和Developer两个分支。
@@ -125,11 +129,13 @@ GitFlow协同工作流是由Vincent Driessen于2010年在A successful Git branch
 # GitHub/GitLab 协同工作流
 
 ## GitFlow的问题
+
 对于GitFlow来说，虽然可以解决我们的问题，但是也有很多问题。在GitFlow流行了一段时间后，圈内出现了一些不同的声音。参看下面两篇吐槽文章。
 
 - [GitFlow considered harmful](http://endoflineblog.com/gitflow-considered-harmful)
 
 - [Why git flow does not work for us](http://luci.criosweb.ro/a-real-life-git-workflow-why-git-flow-does-not-work-for-us/)
+
 其中有个问题就是因为分支太多，所以会出现git log混乱的局面。具体来说，主要是git-flow使用`git merge --no-ff`来合并分支，在git-flow这样多个分支的环境下会让你的分支管理的log变得很难看。如下所示，左边是使用–no-ff参数在多个分支下的问题。
 
 ![](https://static001.geekbang.org/resource/image/13/b8/13a78e9d493ba2737c3d6b8431be47b8.png?wh=865*315)
@@ -145,6 +151,7 @@ GitFlow协同工作流是由Vincent Driessen于2010年在A successful Git branch
 GitLab一开始是GitFlow的坚定支持者，后来因为这些吐槽，以及Hacker News和Reddit上大量的讨论，GitLab也开始不玩了。他们写了[一篇blog](https://about.gitlab.com/2014/09/29/gitlab-flow/)来创造了一个新的Workflow——GitLab Flow，这个GitLab Flow是基于GitHub Flow来做的（参看：[ GitHub Flow](http://scottchacon.com/2011/08/31/github-flow.html) ）。
 
 ## GitHub Flow
+
 所谓GitHub Flow，其实也叫Forking flow，也就是GitHub上的那个开发方式。
 
 - 每个开发人员都把“官方库”的代码fork到自己的代码仓库中。
@@ -167,6 +174,7 @@ GitLab一开始是GitFlow的坚定支持者，后来因为这些吐槽，以及H
 这是一种非常Geek的玩法。这需要一个自动化的CI/CD工具做辅助。是的，CI/CD应该是开发中的标配了。
 
 ## GitLab Flow
+
 然而，GitHub Flow这种玩法依然会有好多问题，因为其虽然变得很简单，但是没有把我们的代码和我们的运行环境给联系在一起。所以，GitLab提出了几个优化点。
 
 其中一个是引入环境分支，如下图所示，其包含了预发布（Pre-Production）和生产（Production）分支。
@@ -182,9 +190,11 @@ GitLab一开始是GitFlow的坚定支持者，后来因为这些吐槽，以及H
 - 环境和代码分支对应的问题；
 
 - 版本和代码分支对应的问题。
+
 老实说，对于互联网公司来说，环境和代码分支对应这个事，只要有个比较好的CI/CD生产线，这种环境分支应该也是没有必要的。而对于版本和代码分支的问题，我觉得这应该是有意义的，但是，最好不要维护太多的版本，版本应该是短暂的，等新的版本发布时，老的版本就应该删除掉了。
 
 # 协同工作流的本质
+
 对于上面这些各式各样的工作流的比较和思考，虽然，我个人非常喜欢GitHub Flow，在必要的时候使用上GitLab中的版本或环境分支。不过，我们现实生活中，还是有一些开发工作不是以功能为主，而是以项目为主的。也就是说，项目的改动量可能比较大，时间和周期可能也比较长。
 
 我在想，是否有一种工作流，可以面对我们现实工作中的各种情况。但是，我想这个世界太复杂了，应该不存在一种一招鲜吃遍天的放之四海皆准的银弹方案。所以，我们还要根据自己的实际情况来挑选适合我们的协同工作的方式。
@@ -200,6 +210,7 @@ GitLab一开始是GitFlow的坚定支持者，后来因为这些吐槽，以及H
 - 不同环境和代码的一致性。
 
 - 代码总是会在稳定和不稳定间交替。我们希望生产线上的代码总是能对应到稳定的代码上来。
+
 基本在上述的四个事儿中，上述的工作流大都是在以建立不同的分支，来做到开发并行、代码和环境版本一致，以及稳定的代码。
 
 要选择适合自己的协同工作流，我们就不得不谈一下软件开发的工作模式。
