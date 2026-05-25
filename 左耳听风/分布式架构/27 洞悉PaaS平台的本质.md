@@ -145,23 +145,3 @@
 你已经看到，解决分布式服务的吞吐量和可用性问题不是件容易的事，以及目前的主流技术是怎么办到的。衍生出来的许多子问题，每一个都值得去细化、去研究其解决方案。这已经超出本节课的篇幅所能及的了，但的确都是值得我们做技术的人去深入思考的。
 
 在这里，我想邀请你来讨论一下，你在分布式系统的哪个领域研究得比较深？有什么独特的心得能与我们分享？期待你的留言。
-
-这一讲的最后给出了《分布式系统架构的本质》系列课程的目录，方便你查找自己关注的内容。
-
-- [分布式系统架构的冰与火](https://time.geekbang.org/column/article/1411)
-
-- [从亚马逊的实践，谈分布式系统的难点](https://time.geekbang.org/column/article/1505)
-
-- [分布式系统的技术栈](https://time.geekbang.org/column/article/1512)
-
-- [分布式系统关键技术：全栈监控](https://time.geekbang.org/column/article/1513)
-
-- [分布式系统关键技术：服务调度](https://time.geekbang.org/column/article/1604)
-
-- [分布式系统关键技术：流量与数据调度](https://time.geekbang.org/column/article/1609)
-
-- [洞悉PaaS平台的本质](https://time.geekbang.org/column/article/1610)
-
-- [推荐阅读：分布式系统架构经典资料](https://time.geekbang.org/column/article/2080)
-
-- [推荐阅读：分布式数据调度相关论文](https://time.geekbang.org/column/article/2421)
