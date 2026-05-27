@@ -44,9 +44,9 @@ get cookie from file .trae\skills\geekbang-article\cookie
 
 python scripts/geekbang_article.py <url> <cookie>
 
-<!-- ## File Destination Direction
+## File Destination Direction
 
-\左耳听风\分布式架构 -->
+\数据结构与算法\入门篇
 
 ## Error Handling
 
