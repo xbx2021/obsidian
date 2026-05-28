@@ -5,53 +5,116 @@ import sys
 import html
 
 def detect_language(code):
-    if re.search(r'\bstd::\b|\bclass\s+\w+\s*\{|\bpublic:\b|\bprivate:\b|\b~[A-Za-z_]+\s*\(|std::mutex', code):
+    """Detect programming language from code content."""
+    code_clean = code.strip()
+    if re.search(r'\bstd::\b|\bclass\s+\w+\s*\{|\bpublic:\b|\bprivate:\b|\b~[A-Za-z_]+\s*\(|std::mutex', code_clean):
         return 'cpp'
-    elif re.search(r'\bfunc\s+\w+\s*\(|\bpackage\s+\w+|\bimport\s+\(|bdefer\s+|\bnil\b|\bmake\s*\(', code):
+    elif re.search(r'\bfunc\s+\w+\s*\(|\bpackage\s+\w+|\bimport\s+\(|bdefer\s+|\bnil\b|\bmake\s*\(', code_clean):
         return 'go'
-    elif re.search(r'\b#include\s*<|\bmalloc\s*\(|\bfree\s*\(|\bfprintf\s*\(|\bFILE\s*\*|\berrno\b', code):
+    elif re.search(r'\b#include\s*<|\bmalloc\s*\(|\bfree\s*\(|\bfprintf\s*\(|\bFILE\s*\*|\berrno\b', code_clean):
         return 'c'
-    elif re.search(r'\bpublic\s+class\s+|\bpublic\s+static\s+void\s+main|\bSystem\.out\.', code):
+    elif re.search(r'\bpublic\s+class\s+|\bpublic\s+static\s+void\s+main|\bSystem\.out\.', code_clean):
         return 'java'
-    elif re.search(r'\bdef\s+\w+\s*\(|\bimport\s+\w+|\bprint\s*\(|\bTrue\b|\bFalse\b|\bNone\b', code):
+    elif re.search(r'\bdef\s+\w+\s*\(|\bimport\s+\w+|\bprint\s*\(|\bTrue\b|\bFalse\b|\bNone\b', code_clean):
         return 'python'
     else:
         return ''
 
 def html_to_markdown(html_content):
-    result = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
-    result = html.unescape(result)
+    """Convert HTML content to Markdown format."""
+    result = html_content
     
+    # Step 1: Remove HTML comments
+    result = re.sub(r'<!--.*?-->', '', result, flags=re.DOTALL)
+    
+    # Step 2: Process code blocks FIRST (before unescaping HTML entities)
+    # This prevents < and > in code from being mistaken for HTML tags
     def process_code_block(match):
         code = match.group(1)
+        # Unescape HTML entities within code block
+        code = html.unescape(code)
         lang = detect_language(code)
         return f'\n``` {lang}\n{code}\n```\n'
     
-    result = re.sub(r'<pre\s*[^>]*><code\s*[^>]*>(.*?)</code></pre>', process_code_block, result, flags=re.DOTALL)
-    result = re.sub(r'<pre\s*[^>]*>(.*?)</pre>', process_code_block, result, flags=re.DOTALL)
-    result = re.sub(r'<code\s*[^>]*>(.*?)</code>', r'`\1`', result, flags=re.DOTALL)
+    # Handle <pre><code>...</code></pre> blocks
+    result = re.sub(r'<pre\s*[^>]*>\s*<code\s*[^>]*>(.*?)</code>\s*</pre>', 
+                    process_code_block, result, flags=re.DOTALL)
     
+    # Handle <pre>...</pre> blocks (without inner <code>)
+    result = re.sub(r'<pre\s*[^>]*>(.*?)</pre>', 
+                    process_code_block, result, flags=re.DOTALL)
+    
+    # Step 3: Handle inline <code>...</code> (not inside pre blocks)
+    # Use a placeholder approach to protect processed code blocks
+    code_blocks = []
+    def save_code_block(match):
+        code_blocks.append(match.group(0))
+        return f"\x00CODEBLOCK{len(code_blocks)-1}\x00"
+    
+    result = re.sub(r'\n``` [^\n]*\n.*?\n```\n', save_code_block, result, flags=re.DOTALL)
+    
+    # Now process inline code
+    result = re.sub(r'<code\s*[^>]*>(.*?)</code>', 
+                    lambda m: f'`{html.unescape(m.group(1))}`', 
+                    result, flags=re.DOTALL)
+    
+    # Step 4: Unescape remaining HTML entities
+    result = html.unescape(result)
+    
+    # Step 5: Process headings
     result = re.sub(r'<h1[^>]*>(.*?)</h1>', r'\n# \1\n', result, flags=re.DOTALL)
     result = re.sub(r'<h2[^>]*>(.*?)</h2>', r'\n## \1\n', result, flags=re.DOTALL)
     result = re.sub(r'<h3[^>]*>(.*?)</h3>', r'\n### \1\n', result, flags=re.DOTALL)
+    result = re.sub(r'<h4[^>]*>(.*?)</h4>', r'\n#### \1\n', result, flags=re.DOTALL)
+    
+    # Step 6: Process formatting
     result = re.sub(r'<strong[^>]*>(.*?)</strong>', r'**\1**', result, flags=re.DOTALL)
     result = re.sub(r'<b[^>]*>(.*?)</b>', r'**\1**', result, flags=re.DOTALL)
+    result = re.sub(r'<em[^>]*>(.*?)</em>', r'*\1*', result, flags=re.DOTALL)
+    result = re.sub(r'<i[^>]*>(.*?)</i>', r'*\1*', result, flags=re.DOTALL)
     result = re.sub(r'<span[^>]*>(.*?)</span>', r'\1', result, flags=re.DOTALL)
+    
+    # Step 7: Process lists
     result = re.sub(r'<li>\s*<p>(.*?)</p>\s*</li>', r'\n- \1', result, flags=re.DOTALL)
     result = re.sub(r'<li>(.*?)</li>', r'\n- \1', result, flags=re.DOTALL)
-    result = re.sub(r'<p[^>]*>(.*?)</p>', r'\1\n\n', result, flags=re.DOTALL)
     result = re.sub(r'</?(ul|ol)\s*[^>]*>', '', result, flags=re.DOTALL)
-    result = re.sub(r'</?br\s*/?>', '\n', result)
-    result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?>', r'![](\1)', result, flags=re.DOTALL)
-    result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?alt\s*=\s*["\']([^"\']*)["\'][^>]*?>', r'![\2](\1)', result, flags=re.DOTALL)
-    result = re.sub(r'<img\s+[^>]*?alt\s*=\s*["\']([^"\']*)["\'][^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?>', r'![\1](\2)', result, flags=re.DOTALL)
-    result = re.sub(r'<a\s+([^>]*?)href\s*=\s*["\']([^"\']*)["\']([^>]*?)>(.*?)</a>', r'[\4](\2)', result, flags=re.DOTALL)
+    
+    # Step 8: Process paragraphs
+    result = re.sub(r'<p[^>]*>(.*?)</p>', r'\1\n\n', result, flags=re.DOTALL)
+    
+    # Step 9: Process line breaks
+    result = re.sub(r'</?br\s*/?>', '\n', result, flags=re.DOTALL)
+    
+    # Step 10: Process images
+    result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?alt\s*=\s*["\']([^"\']*)["\'][^>]*?>', 
+                    r'![\2](\1)', result, flags=re.DOTALL)
+    result = re.sub(r'<img\s+[^>]*?alt\s*=\s*["\']([^"\']*)["\'][^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?>', 
+                    r'![\1](\2)', result, flags=re.DOTALL)
+    result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?>', 
+                    r'![](\1)', result, flags=re.DOTALL)
+    
+    # Step 11: Process links
+    result = re.sub(r'<a\s+[^>]*?href\s*=\s*["\']([^"\']*)["\'][^>]*?>(.*?)</a>', 
+                    r'[\2](\1)', result, flags=re.DOTALL)
+    
+    # Step 12: Remove any remaining HTML tags
     result = re.sub(r'<[^>]+>', '', result)
+    
+    # Step 13: Restore code blocks
+    def restore_code_block(match):
+        idx = int(match.group(1))
+        return code_blocks[idx] if idx < len(code_blocks) else match.group(0)
+    
+    result = re.sub(r'\x00CODEBLOCK(\d+)\x00', restore_code_block, result)
+    
+    # Step 14: Clean up whitespace
     result = re.sub(r'\n{3,}', '\n\n', result)
     result = re.sub(r'-\s+', '- ', result)
+    
     return result.strip()
 
 def extract_article(url, cookie):
+    """Extract article from GeekBang and save as Markdown."""
     article_id = url.split('/')[-1]
     api_url = "https://time.geekbang.org/serv/v1/article"
     
@@ -82,6 +145,7 @@ def extract_article(url, cookie):
             
             markdown_content = html_to_markdown(article_content)
             
+            # Clean filename
             filename = article_title.replace('|', ' ').replace(':', ' ').replace('\\', ' ').replace('/', ' ').strip()
             filename = re.sub(r'^(\d+)\s+', r'\1 ', filename)
             filename = f"{filename}.md"
