@@ -31,15 +31,16 @@ def html_to_markdown(html_content):
     result = re.sub(r'<pre\s*[^>]*>(.*?)</pre>', process_code_block, result, flags=re.DOTALL)
     result = re.sub(r'<code\s*[^>]*>(.*?)</code>', r'`\1`', result, flags=re.DOTALL)
     
-    result = re.sub(r'<h1>(.*?)</h1>', r'\n# \1\n', result, flags=re.DOTALL)
-    result = re.sub(r'<h2>(.*?)</h2>', r'\n## \1\n', result, flags=re.DOTALL)
-    result = re.sub(r'<h3>(.*?)</h3>', r'\n### \1\n', result, flags=re.DOTALL)
-    result = re.sub(r'<strong>(.*?)</strong>', r'**\1**', result, flags=re.DOTALL)
-    result = re.sub(r'<b>(.*?)</b>', r'**\1**', result, flags=re.DOTALL)
+    result = re.sub(r'<h1[^>]*>(.*?)</h1>', r'\n# \1\n', result, flags=re.DOTALL)
+    result = re.sub(r'<h2[^>]*>(.*?)</h2>', r'\n## \1\n', result, flags=re.DOTALL)
+    result = re.sub(r'<h3[^>]*>(.*?)</h3>', r'\n### \1\n', result, flags=re.DOTALL)
+    result = re.sub(r'<strong[^>]*>(.*?)</strong>', r'**\1**', result, flags=re.DOTALL)
+    result = re.sub(r'<b[^>]*>(.*?)</b>', r'**\1**', result, flags=re.DOTALL)
+    result = re.sub(r'<span[^>]*>(.*?)</span>', r'\1', result, flags=re.DOTALL)
     result = re.sub(r'<li>\s*<p>(.*?)</p>\s*</li>', r'\n- \1', result, flags=re.DOTALL)
     result = re.sub(r'<li>(.*?)</li>', r'\n- \1', result, flags=re.DOTALL)
-    result = re.sub(r'<p>(.*?)</p>', r'\1\n\n', result, flags=re.DOTALL)
-    result = re.sub(r'</?(ul|ol)>', '', result)
+    result = re.sub(r'<p[^>]*>(.*?)</p>', r'\1\n\n', result, flags=re.DOTALL)
+    result = re.sub(r'</?(ul|ol)\s*[^>]*>', '', result, flags=re.DOTALL)
     result = re.sub(r'</?br\s*/?>', '\n', result)
     result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?>', r'![](\1)', result, flags=re.DOTALL)
     result = re.sub(r'<img\s+[^>]*?src\s*=\s*["\']([^"\']+)["\'][^>]*?alt\s*=\s*["\']([^"\']*)["\'][^>]*?>', r'![\2](\1)', result, flags=re.DOTALL)
@@ -89,6 +90,7 @@ def extract_article(url, cookie):
                 f.write(markdown_content)
             
             print(f"Markdown file saved as: {filename}")
+            print(f"Content length: {len(markdown_content)} chars")
             return True
         else:
             error_msg = json_data.get('error', {}).get('msg', 'Unknown error')
