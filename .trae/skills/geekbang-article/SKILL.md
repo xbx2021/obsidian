@@ -46,7 +46,7 @@ python scripts/geekbang_article.py <url> <cookie>
 
 ## File Destination Direction
 
-\数据结构与算法\入门篇
+\数据结构与算法\基础篇
 
 ## Error Handling
 
