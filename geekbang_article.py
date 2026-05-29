@@ -174,18 +174,6 @@ def analyze_content_integrity(html_content, markdown_content):
             f"转换率异常：{issues['conversion_ratio']:.1f}%（正常范围：40%-90%）"
         )
         issues['is_complete'] = False
-    elif issues['conversion_ratio'] > 90:
-        issues['info'].append(
-            f"转换率较高：{issues['conversion_ratio']:.1f}%"
-        )
-
-    # Check for suspicious content loss patterns
-    # If HTML has "ArrayList<object>" pattern, it might cause issues
-    if 'ArrayList<object>' in html_content and 'ArrayList' not in markdown_content:
-        issues['warnings'].append(
-            "检测到HTML中有 'ArrayList<object>' 模式，可能导致内容丢失"
-        )
-        issues['is_complete'] = False
 
     # Check for empty sections
     if len(markdown_content) < 100:
@@ -307,8 +295,8 @@ def extract_article(url, cookie, output_dir=None):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("用法：python geekbang_article_optimized.py <url> <cookie> [output_dir]")
-        print("示例：python geekbang_article_optimized.py \"https://time.geekbang.org/column/article/40961\" \"cookie内容\"")
+        print("用法：python geekbang_article.py <url> <cookie> [output_dir]")
+        print("示例：python geekbang_article.py \"https://time.geekbang.org/column/article/40961\" \"cookie内容\"")
         sys.exit(1)
 
     url = sys.argv[1]
