@@ -260,8 +260,13 @@ def extract_article(url, cookie, output_dir=None):
                 # Analyze content integrity
                 issues = analyze_content_integrity(article_content, markdown_content)
 
-                # Clean filename
-                filename = article_title.replace('|', ' ').replace(':', ' ').replace('\\', ' ').replace('/', ' ').strip()
+                # Clean filename - remove all Windows-invalid characters
+                invalid_chars = '<>:\"/\\|?*'
+                filename = article_title
+                for char in invalid_chars:
+                    filename = filename.replace(char, ' ')
+                filename = filename.strip()
+                filename = re.sub(r'\s+', ' ', filename)
                 filename = re.sub(r'^(\d+)\s+', r'\1 ', filename)
                 filename = f"{filename}.md"
 
