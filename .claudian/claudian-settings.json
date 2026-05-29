@@ -19,6 +19,7 @@
     "scrollDownKey": "s",
     "focusInputKey": "i"
   },
+  "requireCommandOrControlEnterToSend": false,
   "locale": "zh-CN",
   "providerConfigs": {
     "claude": {
@@ -45,9 +46,21 @@
       "environmentVariables": "",
       "environmentHash": "",
       "installationMethodsByHost": {
-        "LAPTOP-18DC0G6V": "native-windows"
+        "device:91ea6266-41d1-4858-ad63-3915759cdce6": "native-windows"
       },
       "wslDistroOverridesByHost": {}
+    },
+    "opencode": {
+      "cliPath": "",
+      "cliPathsByHost": {},
+      "enabled": false,
+      "environmentHash": "",
+      "environmentVariables": "",
+      "modelAliases": {},
+      "preferredThinkingByModel": {},
+      "selectedMode": "",
+      "thinkingOptionsByModel": {},
+      "visibleModels": []
     }
   },
   "settingsProvider": "claude",
