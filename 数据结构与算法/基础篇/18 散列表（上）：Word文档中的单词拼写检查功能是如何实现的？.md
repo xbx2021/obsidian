@@ -34,7 +34,7 @@ Word这种文本编辑器你平时应该经常用吧，那你有没有留意过�
 
 那第一个例子中，编号就是数组下标，所以hash(key)就等于key。改造后的例子，写成散列函数稍微有点复杂。我用伪代码将它写成函数就是下面这样：
 
-``` 
+``` java
 int hash(String key) {
   // 获取后两位字符
   string lastTwoChars = key.substr(length-2, length);
@@ -51,6 +51,7 @@ int hash(String key) {
 - 如果key1 = key2，那hash(key1) == hash(key2)；
 
 - 如果key1 ≠ key2，那hash(key1) ≠ hash(key2)。
+
 我来解释一下这三点。其中，第一点理解起来应该没有任何问题。因为数组下标是从0开始的，所以散列函数生成的散列值也要是非负整数。第二点也很好理解。相同的key，经过散列函数得到的散列值也应该是相同的。
 
 第三点理解起来可能会有问题，我着重说一下。这个要求看起来合情合理，但是在真实的情况下，要想找到一个不同的key对应的散列值都不一样的散列函数，几乎是不可能的。即便像业界著名的[MD5](https://zh.wikipedia.org/wiki/MD5)、[SHA](https://zh.wikipedia.org/wiki/SHA%E5%AE%B6%E6%97%8F)、[CRC](https://zh.wikipedia.org/wiki/%E5%BE%AA%E7%92%B0%E5%86%97%E9%A4%98%E6%A0%A1%E9%A9%97)等哈希算法，也无法完全避免这种**散列冲突**。而且，因为数组的存储空间有限，也会加大散列冲突的概率。
