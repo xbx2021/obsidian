@@ -42,7 +42,7 @@ Trie树，也叫“字典树”。顾名思义，它是一个树形结构。它�
 
 从前面的图中，我们可以看出，Trie树是一个多叉树。我们知道，二叉树中，一个节点的左右子节点是通过两个指针来存储的，如下所示Java代码。那对于多叉树来说，我们怎么存储一个节点的所有子节点的指针呢？
 
-``` cpp
+``` java
 class BinaryTreeNode {
   char data;
   BinaryTreeNode left;
