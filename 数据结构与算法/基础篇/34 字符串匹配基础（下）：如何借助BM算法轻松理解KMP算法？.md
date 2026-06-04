@@ -37,7 +37,7 @@ KMP算法就是在试图寻找一种规律：在模式串和主串匹配的过�
 
 有了next数组，我们很容易就可以实现KMP算法了。我先假设next数组已经计算好了，先给出KMP算法的框架代码。
 
-``` 
+``` java
 // a, b分别是主串和模式串；n, m分别是主串和模式串的长度。
 public static int kmp(char[] a, int n, char[] b, int m) {
   int[] next = getNexts(b, m);
@@ -85,7 +85,7 @@ KMP算法的基本原理讲完了，我们现在来看最复杂的部分，也�
 
 前面我已经给出KMP算法的框架代码了，现在我把这部分的代码也写出来了。这两部分代码合在一起，就是整个KMP算法的代码实现。
 
-``` 
+``` java
 // b表示模式串，m表示模式串的长度
 private static int[] getNexts(char[] b, int m) {
   int[] next = new int[m];
