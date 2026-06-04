@@ -67,7 +67,7 @@ class TrieNode {
 
 描述了这么多，有可能你还是有点懵，我把上面的描述翻译成了代码，你可以结合着一块看下，应该有助于你理解。
 
-``` cpp
+``` java
 public class Trie {
   private TrieNode root = new TrieNode('/'); // 存储无意义字符
 
