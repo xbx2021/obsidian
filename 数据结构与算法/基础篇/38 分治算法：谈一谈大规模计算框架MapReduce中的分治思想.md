@@ -50,7 +50,7 @@ MapReduce是Google大数据处理的三驾马车之一，另外两个是GFS和Bi
 
 尽管我画了张图来解释，但是我个人觉得，对于工程师来说，看代码肯定更好理解一些，所以我们把这个过程翻译成了代码，你可以结合着图和文字描述一起看下。
 
-``` 
+``` java
 private int num = 0; // 全局变量或者成员变量
 
 public int count(int[] a, int n) {
