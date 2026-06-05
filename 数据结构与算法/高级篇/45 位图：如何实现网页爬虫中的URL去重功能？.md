@@ -43,7 +43,7 @@
 
 这里就要用到位运算了。我们可以借助编程语言中提供的数据类型，比如int、long、char等类型，通过位运算，用其中的某个位表示某个数字。文字描述起来有点儿不好理解，我把位图的代码实现写了出来，你可以对照着代码看下，应该就能看懂了。
 
-``` cpp
+``` java
 public class BitMap { // Java中char类型占16bit，也即是2个字节
   private char[] bytes;
   private int nbits;
