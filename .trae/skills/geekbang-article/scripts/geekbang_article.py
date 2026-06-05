@@ -245,7 +245,14 @@ def extract_article(url, cookie, output_dir=None):
     }).encode('utf-8')
 
     try:
-        req = urllib.request.Request(api_url, data=data, headers=headers, method='POST')
+        encoded_headers = {}
+        for key, value in headers.items():
+            if isinstance(value, str):
+                encoded_headers[key] = value.encode('utf-8').decode('latin-1')
+            else:
+                encoded_headers[key] = value
+        
+        req = urllib.request.Request(api_url, data=data, headers=encoded_headers, method='POST')
         with urllib.request.urlopen(req) as response:
             response_text = response.read().decode('utf-8')
             json_data = json.loads(response_text)
