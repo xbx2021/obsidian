@@ -64,7 +64,7 @@ public class BitMap { // Java中char类型占16bit，也即是2个字节
     if (k > nbits) return false;
     int byteIndex = k / 16;
     int bitIndex = k % 16;
-    return (bytes[byteIndex] &amp; (1 << bitIndex)) != 0;
+    return (bytes[byteIndex] & (1 << bitIndex)) != 0;
   }
 }
 
