@@ -59,6 +59,6 @@ Generate request to: `https://time.geekbang.org/serv/v1/article`
 
 Output file: `92 程序员面试攻略：面试前的准备.md` (based on article title)
 
-# File Destination Direction
+<!-- # File Destination Direction
 
-数据结构与算法\实战篇
+数据结构与算法\实战篇 -->
