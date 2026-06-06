@@ -61,4 +61,4 @@ Output file: `92 程序员面试攻略：面试前的准备.md` (based on articl
 
 # File Destination Direction
 
-数据结构与算法\高级篇
+数据结构与算法\实战篇
