@@ -42,7 +42,7 @@ Redis中，键的数据类型是字符串，但是为了丰富数据存储的方
 
 Redis的这种双向链表的实现方式，非常值得借鉴。它额外定义一个list结构体，来组织链表的首、尾指针，还有长度等信息。这样，在使用的时候就会非常方便。
 
-``` 
+``` c
 // 以下是C语言代码，因为Redis是用C语言实现的。
 typedef struct listnode {
   struct listNode *prev;
