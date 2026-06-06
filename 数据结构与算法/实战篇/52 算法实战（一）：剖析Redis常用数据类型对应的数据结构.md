@@ -67,6 +67,7 @@ typedef struct list {
 - 字典中保存的键和值的大小都要小于64字节；
 
 - 字典中键值对的个数要小于512个。
+
 当不能同时满足上面两个条件的时候，Redis就使用散列表来实现字典类型。Redis使用[MurmurHash2](https://zh.wikipedia.org/wiki/Murmur%E5%93%88%E5%B8%8C)这种运行速度快、随机性好的哈希算法作为哈希函数。对于哈希冲突问题，Redis使用链表法来解决。除此之外，Redis还支持散列表的动态扩容、缩容。
 
 当数据动态增加之后，散列表的装载因子会不停地变大。为了避免散列表性能的下降，当装载因子大于1的时候，Redis会触发扩容，将散列表扩大为原来大小的2倍左右（具体值需要计算才能得到，如果感兴趣，你可以去阅读[源码](https://github.com/antirez/redis/blob/unstable/src/dict.c)）。
