@@ -306,13 +306,23 @@ def extract_article(url, cookie, output_dir=None):
         return False, None
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("用法：python geekbang_article.py <url> <cookie> [output_dir]")
-        print("示例：python geekbang_article.py \"https://time.geekbang.org/column/article/40961\" \"cookie内容\"")
+    if len(sys.argv) < 2:
+        print("用法：python geekbang_article.py <url> [output_dir]")
+        print("示例：python geekbang_article.py \"https://time.geekbang.org/column/article/40961\"")
         sys.exit(1)
 
     url = sys.argv[1]
-    cookie = sys.argv[2]
-    output_dir = sys.argv[3] if len(sys.argv) > 3 else None
+    output_dir = sys.argv[2] if len(sys.argv) > 2 else None
+
+    # 从cookie文件读取cookie
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    cookie_file = os.path.join(script_dir, '..', 'cookie')
+    
+    if not os.path.exists(cookie_file):
+        print("[ERROR] Cookie文件不存在: " + cookie_file)
+        sys.exit(1)
+    
+    with open(cookie_file, 'r', encoding='utf-8') as f:
+        cookie = f.read().strip()  # 使用strip()移除换行符和空白
 
     extract_article(url, cookie, output_dir)
