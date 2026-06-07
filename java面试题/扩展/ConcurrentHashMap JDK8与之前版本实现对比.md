@@ -5,14 +5,14 @@ JDK 8 的 ConcurrentHashMap 是对 JDK 7（及更早）版本的**彻底重构**
 **结构**：`Segment 数组 + HashEntry 数组 + 链表`
 - **Segment**：继承自 `ReentrantLock`，是一个**分段锁**。默认 16 个 Segment，并发度固定为 16。
 - **HashEntry**：每个 Segment 内部维护一个 `HashEntry[]`，冲突时用**链表**解决。
-![](assets/ConcurrentHashMap%20JDK8与之前版本实现对比/file-20260513110805771.png)
+![](assets/__temp__ConcurrentHashMap%20JDK8与之前版本实现对比/file-20260607190013817.png)
 
 #### JDK 8+
 **结构**：`Node 数组 + 链表 / 红黑树`
 - 直接使用**一维 Node 数组**作为存储，取消 Segment 分层。
 - 冲突链表长度 **≥ 8 且数组长度 ≥ 64** 时，**链表转为红黑树**（查询从 O(n) → O(log n)）。
 - 树节点数 **≤ 6** 时，退化为链表。
-![](assets/ConcurrentHashMap%20JDK8与之前版本实现对比/file-20260513110820163.png)
+![](assets/__temp__ConcurrentHashMap%20JDK8与之前版本实现对比/file-20260607190013803.png)
 
 ### 二、并发控制机制对比
 #### JDK 7：分段锁 (Segment + ReentrantLock)
