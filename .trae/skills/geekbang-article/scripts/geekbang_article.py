@@ -39,6 +39,9 @@ def html_to_markdown(html_content):
         code = match.group(1)
         # Restore angle brackets in code blocks
         code = code.replace('\x00LT\x00', '<').replace('\x00GT\x00', '>')
+        # Convert HTML quotation entities in code blocks
+        code = code.replace('&quot;', '"').replace('&#34;', '"')
+        code = code.replace('&apos;', "'").replace('&#39;', "'")
         lang = detect_language(code)
         return f'\n``` {lang}\n{code}\n```\n'
 
@@ -63,6 +66,9 @@ def html_to_markdown(html_content):
         code = match.group(1)
         # Restore angle brackets in inline code
         code = code.replace('\x00LT\x00', '<').replace('\x00GT\x00', '>')
+        # Convert HTML quotation entities in inline code
+        code = code.replace('&quot;', '"').replace('&#34;', '"')
+        code = code.replace('&apos;', "'").replace('&#39;', "'")
         return f'`{code}`'
 
     result = re.sub(r'<code\s*[^>]*>(.*?)</code>',
@@ -120,6 +126,16 @@ def html_to_markdown(html_content):
     # Step 15: Clean up whitespace
     result = re.sub(r'\n{3,}', '\n\n', result)
     result = re.sub(r'-\s+', '- ', result)
+
+    # Step 16: Convert Chinese quotation marks to ASCII
+    result = result.replace('\u201c', '"').replace('\u201d', '"')  # " " → "
+    result = result.replace('\u2018', "'").replace('\u2019', "'")  # ' ' → '
+
+    # Step 17: Convert HTML quotation entities to ASCII
+    result = result.replace('&quot;', '"')
+    result = result.replace('&#34;', '"')
+    result = result.replace('&apos;', "'")
+    result = result.replace('&#39;', "'")
 
     return result.strip()
 
