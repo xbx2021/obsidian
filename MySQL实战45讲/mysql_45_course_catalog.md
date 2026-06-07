@@ -56,14 +56,14 @@
 - [44 | 答疑文章（三）：说一说这些好问题](https://time.geekbang.org/column/article/82865)
 - [45 | 自增id用完怎么办？](https://time.geekbang.org/column/article/83183)
 
-## 03特别放送
+## 03 特别放送
 
 - [直播回顾 | 林晓斌：我的 MySQL 心路历程](https://time.geekbang.org/column/article/73370)
 
-## 结束语
+## 04 结束语
 
 - [结束语 | 点线网面，一起构建MySQL知识网络](https://time.geekbang.org/column/article/83556)
 
-## 结课测试
+## 05 结课测试
 
 - [结课测试｜这些MySQL知识你都掌握了吗？](https://time.geekbang.org/column/article/225554)
