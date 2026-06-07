@@ -1,4 +1,4 @@
-![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260514155140303.png)
+![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260607190049786.png)
 
 通过前面的学习，我们一起回顾了线程、锁等各种并发编程的基本元素，也逐步涉及了 Java 并发包中的部分内容，相信经过前面的热身，我们能够更快地理解 Java 并发包。
 
@@ -138,7 +138,7 @@ class MyWorker implements Runnable {
 
 ## CountDownLatch 和 CyclicBarrier
 
-下面，来看看 CountDownLatch 和 CyclicBarrier，它们的行为有一定的相似度，经常会被考察二者有什么区别，我来简单总结一下。[__temp__CountDownLatch 和 CyclicBarrier 区别](../扩展/__temp__CountDownLatch%20和%20CyclicBarrier%20区别.md)
+下面，来看看 CountDownLatch 和 CyclicBarrier，它们的行为有一定的相似度，经常会被考察二者有什么区别，我来简单总结一下。[CountDownLatch 和 CyclicBarrier 区别](../扩展/CountDownLatch%20和%20CyclicBarrier%20区别.md)
 
 - CountDownLatch 是不可以重置的，所以无法重用；而 CyclicBarrier 则没有这种限制，可以重用。
 
@@ -197,7 +197,7 @@ class SecondBatchWorker implements Runnable {
 ```
 
 CountDownLatch 的调度方式相对简单，后一批次的线程进行 await，等待前一批 countDown 足够多次。这个例子也从侧面体现出了它的局限性，虽然它也能够支持 10 个人排队的情况，但是因为不能重用，如果要支持更多人排队，就不能依赖一个 CountDownLatch 进行了。其编译运行输出如下：
-![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260514163034136.png)
+![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260607190049788.png)
 
 在实际应用中的条件依赖，往往没有这么别扭，CountDownLatch 用于线程间等待操作结束是非常简单普遍的用法。通过 countDown/await 组合进行通信是很高效的，通常不建议使用例子里那个循环等待方式。
 
@@ -241,7 +241,7 @@ public class CyclicBarrierSample {
 ```
 
 为了让输出更能表达运行时序，我使用了 CyclicBarrier 特有的 barrierAction，当屏障被触发时，Java 会自动调度该动作。因为 CyclicBarrier 会自动进行重置，所以这个逻辑其实可以非常自然的支持更多排队人数。其编译输出如下：
-![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260514163948287.png)
+![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260607190049791.png)
 
 ## Phaser
 
@@ -250,13 +250,13 @@ Java 并发类库还提供了[Phaser](https://docs.oracle.com/javase/9/docs/api/
 ## ConcurrentSkipListMap
 
 接下来，我来梳理下并发包里提供的线程安全 Map、List 和 Set。首先，请参考下面的类图。
-![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260514165309744.png)
+![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260607190049793.png)
 你可以看到，总体上种类和结构还是比较简单的，如果我们的应用侧重于 Map 放入或者获取的速度，而不在乎顺序，大多推荐使用 ConcurrentHashMap，反之则使用 ConcurrentSkipListMap；如果我们需要对大量数据进行非常频繁地修改，ConcurrentSkipListMap 也可能表现出优势。
 
 我在前面的专栏，谈到了普通无顺序场景选择 HashMap，有顺序场景则可以选择类似 TreeMap 等，但是为什么并发容器里面没有 ConcurrentTreeMap 呢？
 
 这是因为 TreeMap 要实现高效的线程安全是非常困难的，它的实现基于复杂的红黑树。为保证访问效率，当我们插入或删除节点时，会移动节点进行平衡操作，这导致在并发场景中难以进行合理粒度的同步。而 SkipList 结构则要相对简单很多，通过层次结构提高访问速度，虽然不够紧凑，空间使用有一定提高（O(nlogn)），但是在增删元素时线程安全的开销要好很多。为了方便你理解 SkipList 的内部结构，我画了一个示意图。
-![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260514170646505.png)
+![](assets/第19讲%20Java并发包提供了哪些并发工具类？/file-20260607190049795.png)
 ## CopyOnWrite
 
 关于两个 CopyOnWrite 容器，其实 CopyOnWriteArraySet 是通过包装了 CopyOnWriteArrayList 来实现的，所以在学习时，我们可以专注于理解一种。

@@ -1,4 +1,4 @@
-![](assets/第16讲%20synchronized底层如何实现？什么是锁的升级、降级？/file-20260514102451632.png)
+![](assets/第16讲%20synchronized底层如何实现？什么是锁的升级、降级？/file-20260607190048825.png)
 
 我在上一讲对比和分析了 synchronized 和 ReentrantLock，算是专栏进入并发编程阶段的热身，相信你已经对线程安全，以及如何使用基本的同步机制有了基础，今天我们将深入了解 synchronize 底层机制，分析其他锁实现和应用场景。
 
@@ -106,7 +106,7 @@ void ObjectSynchronizer::fast_enter(Handle obj, BasicLock* lock,
 另外，如果你仔细查看[synchronizer.cpp](https://hg.openjdk.org/jdk/jdk/file/896e80158d35/src/hotspot/share/runtime/synchronizer.cpp)里，会发现不仅仅是 synchronized 的逻辑，包括从本地代码，也就是 JNI，触发的 Monitor 动作，全都可以在里面找到（jni_enter/jni_exit）。
 
 关于biasedLocking的更多细节我就不展开了，明白它是通过 CAS 设置 Mark Word 就完全够用了，对象头中 Mark Word 的结构，可以参考下图：
-![](assets/第16讲%20synchronized底层如何实现？什么是锁的升级、降级？/file-20260514110637986.png)
+![](assets/第16讲%20synchronized底层如何实现？什么是锁的升级、降级？/file-20260607190048821.png)
 顺着锁升降级的过程分析下去，偏斜锁到轻量级锁的过程是如何实现的呢？
 
 我们来看看 slow_enter 到底做了什么。
@@ -151,7 +151,7 @@ void ObjectSynchronizer::slow_enter(Handle obj, BasicLock* lock, TRAPS) {
 ## 其他类型的锁
 
 前面分析了 synchronized 的底层实现，理解起来有一定难度，下面我们来看一些相对轻松的内容。 我在上一讲对比了 synchronized 和 ReentrantLock，Java 核心类库中还有其他一些特别的锁类型，具体请参考下面的图。
-![](assets/第16讲%20synchronized底层如何实现？什么是锁的升级、降级？/file-20260514110950380.png)
+![](assets/第16讲%20synchronized底层如何实现？什么是锁的升级、降级？/file-20260607190048827.png)
 你可能注意到了，这些锁竟然不都是实现了 Lock 接口，**ReadWriteLock** 是一个单独的接口，它通常是代表了一对儿锁，分别对应只读和写操作，标准类库中提供了再入版本的读写锁实现（ReentrantReadWriteLock），对应的语义和 ReentrantLock 比较相似。
 
 **StampedLock** 竟然也是个单独的类型，从类图结构可以看出它是不支持再入性的语义的，也就是它不是以持有锁的线程为单位。

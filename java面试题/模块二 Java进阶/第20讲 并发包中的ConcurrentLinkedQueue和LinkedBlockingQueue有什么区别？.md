@@ -1,7 +1,7 @@
-![](assets/第20讲%20并发包中的ConcurrentLinkedQueue和LinkedBlockingQueue有什么区别？/file-20260515102812594.png)
+![](assets/第20讲%20并发包中的ConcurrentLinkedQueue和LinkedBlockingQueue有什么区别？/file-20260607190050183.png)
 在上一讲中，我分析了 Java 并发包中的部分内容，今天我来介绍一下线程安全队列。Java 标准库提供了非常多的线程安全队列，很容易混淆。
 
-今天我要问你的问题是，**并发包中的 ConcurrentLinkedQueue 和 LinkedBlockingQueue 有什么区别？**[__temp__Java8并发包（java.util.concurrent）队列整理](../扩展/__temp__Java8并发包（java.util.concurrent）队列整理.md)
+今天我要问你的问题是，**并发包中的 ConcurrentLinkedQueue 和 LinkedBlockingQueue 有什么区别？**[Java8并发包（java.util.concurrent）队列整理](../扩展/Java8并发包（java.util.concurrent）队列整理.md)
 
 # 典型回答
 
@@ -39,7 +39,7 @@
 ## 线程安全队列一览
 
 我在专栏第 8 讲中介绍过，常见的集合中如 LinkedList 是个 Deque，只不过不是线程安全的。下面这张图是 Java 并发类库提供的各种各样的线程安全队列实现，注意，图中并未将非线程安全部分包含进来。
-![](assets/第20讲%20并发包中的ConcurrentLinkedQueue和LinkedBlockingQueue有什么区别？/file-20260515104304557.png)
+![](assets/第20讲%20并发包中的ConcurrentLinkedQueue和LinkedBlockingQueue有什么区别？/file-20260607190050179.png)
 ### **数据结构**
 
 我们可以从不同的角度进行分类，从基本的数据结构的角度分析，有两个特别的Deque实现，ConcurrentLinkedDeque 和 LinkedBlockingDeque。**Deque 的侧重点是支持对队列头尾都进行插入和删除**，所以提供了特定的方法，如:

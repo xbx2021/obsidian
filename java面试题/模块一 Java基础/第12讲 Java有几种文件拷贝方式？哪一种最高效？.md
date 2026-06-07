@@ -1,4 +1,4 @@
-![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260513151434941.png)
+![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260607190042117.png)
 
 我在专栏上一讲提到，NIO 不止是多路复用，NIO 2 也不只是异步 IO，今天我们来看看 Java IO 体系中，其他不可忽略的部分。
 
@@ -68,13 +68,13 @@ public static void copyFileByChannel(File source, File dest) throws
 当我们使用输入输出流进行读写时，实际上是进行了多次上下文切换，比如应用读取数据时，先在内核态将数据从磁盘读取到内核缓存，再切换到用户态将数据从内核缓存读取到用户缓存。
 
 写入操作也是类似，仅仅是步骤相反，你可以参考下面这张图。
-![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260513153955851.png)
+![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260607190042119.png)
 所以，这种方式会带来一定的额外开销，可能会降低 IO 效率。
 
 而基于 NIO transferTo 的实现方式，在 Linux 和 Unix 上，则会使用到**零拷贝技术**，数据传输并**不需要用户态参与**，省去了上下文切换的开销和不必要的内存拷贝，进而可能提高应用拷贝性能。注意，transferTo 不仅仅是可以用在文件拷贝中，与其类似的，例如读取磁盘文件，然后进行 Socket 发送，同样可以享受这种机制带来的性能和扩展性提高。
 
 transferTo 的传输过程是：
-![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260513154102576.png)
+![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260607190042122.png)
 ## 2.Java IO/NIO 源码结构
 
 前面我在典型回答中提了第三种方式，即 Java 标准库也提供了文件拷贝方法（java.nio.file.Files.copy）。如果你这样回答，就一定要小心了，因为很少有问题的答案是仅仅调用某个方法。从面试的角度，面试官往往会追问：既然你提到了标准库，那么它是怎么实现的呢？有的公司面试官以喜欢追问而出名，直到追问到你说不知道。
@@ -118,7 +118,7 @@ public static Path copy(Path source, Path target, CopyOption... options)
 
 - 首先，直接跟踪，发现 FileSystemProvider 只是个抽象类，阅读它的[源码](http://hg.openjdk.java.net/jdk/jdk/file/f84ae8aa5d88/src/java.base/share/classes/java/nio/file/spi/FileSystemProvider.java)能够理解到，原来文件系统实际逻辑存在于 JDK 内部实现里，公共 API 其实是通过 ServiceLoader 机制加载一系列文件系统实现，然后提供服务。
 - 我们可以在 JDK 源码里搜索 FileSystemProvider 和 nio，可以定位到[sun/nio/fs](https://hg.openjdk.org/jdk/jdk/file/f84ae8aa5d88/src/java.base/share/classes/sun/nio/fs)，我们知道 NIO 底层是和操作系统紧密相关的，所以每个平台都有自己的部分特有文件系统逻辑。
-![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260513155244524.png)
+![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260607190042125.png)
 - 省略掉一些细节，最后我们一步步定位到 UnixFileSystemProvider → UnixCopyFile.Transfer，发现这是个本地方法。
 - 最后，明确定位到[UnixCopyFile.c](https://hg.openjdk.org/jdk/jdk/file/f84ae8aa5d88/src/java.base/unix/native/libnio/fs/UnixCopyFile.c)，其内部实现清楚说明竟然只是简单的用户态空间拷贝！
 
@@ -133,7 +133,7 @@ public static Path copy(Path source, Path target, CopyOption... options)
 ## 3. 掌握 NIO Buffer
 
 我在上一讲提到 Buffer 是 NIO 操作数据的基本工具，Java 为每种原始数据类型都提供了相应的 Buffer 实现（布尔除外），所以掌握和使用 Buffer 是十分必要的，尤其是涉及 Direct Buffer 等使用，因为其在垃圾收集等方面的特殊性，更要重点掌握。
-![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260513160126131.png)
+![](assets/第12讲%20Java有几种文件拷贝方式？哪一种最高效？/file-20260607190042127.png)
 Buffer 有几个基本属性：
 
 - **capacity**，它反映这个 Buffer 到底有多大，也就是数组的长度。

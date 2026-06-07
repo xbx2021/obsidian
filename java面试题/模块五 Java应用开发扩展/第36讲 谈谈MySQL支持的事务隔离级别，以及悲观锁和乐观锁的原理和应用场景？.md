@@ -1,4 +1,4 @@
-![](assets/第36讲%20谈谈MySQL支持的事务隔离级别，以及悲观锁和乐观锁的原理和应用场景？/file-20260518170652004.png)
+![](assets/第36讲%20谈谈MySQL支持的事务隔离级别，以及悲观锁和乐观锁的原理和应用场景？/file-20260607190057446.png)
 
 在日常开发中，尤其是业务开发，少不了利用 Java 对数据库进行基本的增删改查等数据操作，这也是 Java 工程师的必备技能之一。做好数据操作，不仅仅需要对 Java 语言相关框架的掌握，更需要对各种数据库自身体系结构的理解。今天这一讲，作为补充 Java 面试考察知识点的完整性，关于数据库的应用和细节还需要在实践中深入学习。
 
@@ -8,7 +8,7 @@
 
 所谓隔离级别（[Isolation Level](https://en.wikipedia.org/wiki/Isolation_(database_systems)#Isolation_levels)），就是在数据库事务中，为保证并发数据读写的正确性而提出的定义，它并不是 MySQL 专有的概念，而是源于[ANSI](https://en.wikipedia.org/wiki/American_National_Standards_Institute)/[ISO](https://en.wikipedia.org/wiki/International_Organization_for_Standardization)制定的[SQL-92](https://en.wikipedia.org/wiki/SQL-92)标准。
 
-每种关系型数据库都提供了各自特色的隔离级别实现，虽然在通常的[定义](https://en.wikipedia.org/wiki/Isolation_(database_systems)#Isolation_levels)中是以锁为实现单元，但实际的实现千差万别。以最常见的 MySQL InnoDB 引擎为例，它是基于 [MVCC](https://dev.mysql.com/doc/refman/8.0/en/innodb-multi-versioning.html)（Multi-Versioning Concurrency Control）和锁的复合实现，按照隔离程度从低到高，MySQL 事务隔离级别分为四个不同层次：[__temp__事务隔离级别](../扩展/__temp__事务隔离级别.md)
+每种关系型数据库都提供了各自特色的隔离级别实现，虽然在通常的[定义](https://en.wikipedia.org/wiki/Isolation_(database_systems)#Isolation_levels)中是以锁为实现单元，但实际的实现千差万别。以最常见的 MySQL InnoDB 引擎为例，它是基于 [MVCC](https://dev.mysql.com/doc/refman/8.0/en/innodb-multi-versioning.html)（Multi-Versioning Concurrency Control）和锁的复合实现，按照隔离程度从低到高，MySQL 事务隔离级别分为四个不同层次：[事务隔离级别](../扩展/事务隔离级别.md)
 
 - **读未提交**（Read uncommitted），就是一个事务能够看到其他事务尚未提交的修改，这是最低的隔离水平，**允许[脏读](https://en.wikipedia.org/wiki/Isolation_(database_systems)#Dirty_reads)出现**。
 
@@ -55,7 +55,7 @@
 - 常见的 SQL 语句，掌握基础的 SQL 调优技巧，至少要了解基本思路是怎样的，例如 SQL 怎样写才能更好利用索引、知道如何分析[SQL 执行计划](https://dev.mysql.com/doc/workbench/en/wb-performance-explain.html)等。
 
 - 更进一步，至少需要了解针对高并发等特定场景中的解决方案，例如读写分离、分库分表，或者如何利用缓存机制等，目前的数据存储也远不止传统的关系型数据库了。
-![](assets/第36讲%20谈谈MySQL支持的事务隔离级别，以及悲观锁和乐观锁的原理和应用场景？/file-20260518174103392.png)
+![](assets/第36讲%20谈谈MySQL支持的事务隔离级别，以及悲观锁和乐观锁的原理和应用场景？/file-20260607190057450.png)
 
 上面的示意图简单总结了我对数据库领域的理解，希望可以给你进行准备时提供个借鉴。当然在准备面试时并不是一味找一堆书闷头苦读，我还是建议从实际工作中使用的数据库出发，侧重于结合实践，完善和深化自己的知识体系。
 

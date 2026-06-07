@@ -1,4 +1,4 @@
-![](assets/第38讲%20对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？/file-20260519105534752.png)
+![](assets/第38讲%20对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？/file-20260607190058271.png)
 
 今天我会对 NIO 进行一些补充，在专栏第 11 讲中，我们初步接触了 Java 提供的几种 IO 机制，作为语言基础类库，Java 自身的 NIO 设计更偏底层，这本无可厚非，但是对于一线的应用开发者，其复杂性、扩展性等方面，就存在一定的局限了。在基础 NIO 之上，Netty 构建了更加易用、高性能的网络框架，广泛应用于互联网、游戏、电信等各种领域。
 
@@ -45,7 +45,7 @@ Netty 的设计强调了 “**Separation Of Concerns**”，通过精巧设计�
 另外，**Netty > java.nio + java. net**！
 
 从 API 能力范围来看，Netty 完全是 Java NIO 框架的一个大大的超集，你可以参考 Netty 官方的模块划分。
-![](assets/第38讲%20对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？/file-20260519110713151.png)
+![](assets/第38讲%20对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？/file-20260607190058275.png)
 
 除了核心的事件机制等，Netty 还额外提供了很多功能，例如：
 
@@ -63,7 +63,7 @@ Netty 的设计强调了 “**Separation Of Concerns**”，通过精巧设计�
 
 与第 11 讲类似，同样是以简化的 Echo Server 为例，下图是 Netty 官方提供的 Server 部分，完整用例请点击[链接](https://netty.io/4.1/xref/io/netty/example/echo/package-summary.html)。
 
-![](assets/第38讲%20对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？/file-20260519111045415.png)
+![](assets/第38讲%20对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？/file-20260607190058273.png)
 
 上面的例子，虽然代码很短，但已经足够体现出 Netty 的几个核心概念，请注意我用红框标记出的部分：
 
@@ -79,8 +79,8 @@ Netty 的设计强调了 “**Separation Of Concerns**”，通过精巧设计�
 
 - [ChannelPipeline](https://github.com/netty/netty/blob/2c13f71c733c5778cd359c9148f50e63d1878f7f/transport/src/main/java/io/netty/channel/ChannelPipeline.java)，它是 ChannelHandler 链条的容器，每个 Channel 在创建后，自动被分配一个 ChannelPipeline。在上面的示例中，我们通过 ServerBootstrap 注册了 ChannelInitializer，并且实现了 initChannel 方法，而在该方法中则承担了向 ChannelPipleline 安装其他 Handler 的任务。
 
-你可以参考下面的简化示意图，忽略 Inbound/OutBound Handler 的细节，理解这几个基本单元之间的操作流程和对应关系。[__temp__Netty示例代码和使用场景](../扩展/__temp__Netty示例代码和使用场景.md)
-![](assets/第38讲%20对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？/file-20260519111751653.png)
+你可以参考下面的简化示意图，忽略 Inbound/OutBound Handler 的细节，理解这几个基本单元之间的操作流程和对应关系。[Netty示例代码和使用场景](../扩展/Netty示例代码和使用场景.md)
+![](assets/第38讲%20对比Java标准NIO类库，你知道Netty是如何实现更高性能的吗？/file-20260607190058277.png)
 
 对比 Java 标准 NIO 的代码，Netty 提供的相对高层次的封装，减少了对 Selector 等细节的操纵，而 EventLoop、Pipeline 等机制则简化了编程模型，开发者不用担心并发等问题，在一定程度上简化了应用代码的开发。最难能可贵的是，这一切并没有以可靠性、可扩展性为代价，反而将其大幅度提高。
 

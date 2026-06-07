@@ -1,4 +1,4 @@
-![](assets/第9讲%20对比Hashtable、HashMap、TreeMap有什么不同？/file-20260512151603636.png)
+![](assets/第9讲%20对比Hashtable、HashMap、TreeMap有什么不同？/file-20260607190047568.png)
 
 Map 是广义 Java 集合框架中的另外一部分，HashMap 作为框架中使用频率最高的类型之一，它本身以及相关类型自然也是面试考察的热点。
 
@@ -35,7 +35,7 @@ Hashtable、HashMap、TreeMap 都是最常见的一些 Map 实现，是以**键�
 ## 1.Map 整体结构
 
 首先，我们先对 Map 相关类型有个整体了解，Map 虽然通常被包括在 Java 集合框架里，但是其本身并不是狭义上的集合类型（Collection），具体你可以参考下面这个简单类图。
-![](assets/第9讲%20对比Hashtable、HashMap、TreeMap有什么不同？/file-20260512153044404.png)
+![](assets/第9讲%20对比Hashtable、HashMap、TreeMap有什么不同？/file-20260607190047571.png)
 **Hashtable** 比较特别，作为类似 Vector、Stack 的早期集合相关类型，它是扩展了 Dictionary 类的，类结构上与 HashMap 之类明显不同。
 
 **HashMap** 等其他 Map 实现则是都扩展了 AbstractMap，里面包含了通用方法抽象。不同 Map 的用途，从类图结构就能体现出来，设计目的已经体现在不同接口上。
@@ -43,7 +43,7 @@ Hashtable、HashMap、TreeMap 都是最常见的一些 Map 实现，是以**键�
 大部分使用 Map 的场景，通常就是放入、访问或者删除，而对顺序没有特别要求，HashMap 在这种情况下基本是最好的选择。**HashMap 的性能表现非常依赖于哈希码的有效性，请务必掌握 hashCode 和 equals 的一些基本约定**，比如：
 
 - equals 相等，hashCode 一定要相等。
-- 重写了 hashCode 也要重写 equals[__temp__为什么重写了 hashCode 也要重写 equals。](../扩展/__temp__为什么重写了%20hashCode%20也要重写%20equals。.md)。
+- 重写了 hashCode 也要重写 equals[为什么重写了 hashCode 也要重写 equals。](../扩展/为什么重写了%20hashCode%20也要重写%20equals。.md)。
 - hashCode 需要保持一致性，状态改变返回的哈希值仍然要一致。
 - equals 的对称、反射、传递等特性。
 
@@ -122,7 +122,7 @@ public V put(K key, V value) {
 - 树化 。
 
 首先，我们来一起看看 HashMap 内部的结构，它可以看作是数组（Node[] table）和链表结合组成的复合结构，数组被分为一个个桶（bucket），通过哈希值决定了键值对在这个数组的寻址；哈希值相同的键值对，则以链表形式存储，你可以参考下面的示意图。这里需要注意的是，如果链表大小超过阈值（TREEIFY_THRESHOLD, 8）（**还需要桶数量超过 MIN_TREEIFY_CAPACITY 64 才会树化,否则只是扩容 resize()** ），图中的链表就会被改造为树形结构。
-![](assets/第9讲%20对比Hashtable、HashMap、TreeMap有什么不同？/file-20260512170924798.png)
+![](assets/第9讲%20对比Hashtable、HashMap、TreeMap有什么不同？/file-20260607190047572.png)
 从非拷贝构造函数的实现来看，这个表格（数组）似乎并没有在最初就初始化好，仅仅设置了一些初始值而已。
 ```java
 public HashMap(int initialCapacity, float loadFactor){  

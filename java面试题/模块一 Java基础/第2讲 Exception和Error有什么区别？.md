@@ -1,4 +1,4 @@
-![](assets/第2讲%20Exception和Error有什么区别？/file-20260511141119896.png)
+![](assets/第2讲%20Exception和Error有什么区别？/file-20260607190043728.png)
 世界上存在永远不会出错的程序吗？也许这只会出现在程序员的梦中。随着编程语言和软件的诞生，异常情况就如影随形地纠缠着我们，只有正确处理好意外情况，才能保证程序的可靠性。
 
 Java 语言在设计之初就提供了相对完善的异常处理机制，这也是 Java 得以大行其道的原因之一，因为这种机制大大降低了编写和维护可靠程序的门槛。如今，异常处理机制已经成为现代编程语言的标配。
@@ -29,7 +29,7 @@ Exception 又分为**可检查**（checked）异常和**不检查**（unchecked�
 比如，掌握那些应用最为广泛的子类，以及如何自定义异常等。
 
 很多面试官会进一步追问一些细节，比如，你了解哪些 Error、Exception 或者 RuntimeException？我画了一个简单的类图，并列出来典型例子，可以给你作为参考，至少做到基本心里有数。
-![](assets/第2讲%20Exception和Error有什么区别？/file-20260511143043715.png)
+![](assets/第2讲%20Exception和Error有什么区别？/file-20260607190043730.png)
 其中有些子类型，最好重点理解一下，比如 NoClassDefFoundError 和 ClassNotFoundException 有什么区别，这也是个经典的入门题目。
 
 ### **NoClassDefFoundError 和 ClassNotFoundException 区别**

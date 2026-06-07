@@ -1,4 +1,4 @@
-![](assets/第3讲%20谈谈final、finally、%20finalize有什么不同？/file-20260511151354987.png)
+![](assets/第3讲%20谈谈final、finally、%20finalize有什么不同？/file-20260607190044427.png)
 
 Java 语言有很多看起来很相似，但是用途却完全不同的语言要素，这些内容往往容易成为面试官考察你知识掌握程度的切入点。
 

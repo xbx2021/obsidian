@@ -1,4 +1,4 @@
-![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260519091625600.png)
+![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260607190058871.png)
 
 在企业应用软件开发中，Java 是毫无争议的主流语言，开放的 Java EE 规范和强大的开源框架功不可没，其中 Spring 毫无疑问已经成为企业软件开发的事实标准之一。今天这一讲，我将补充 Spring 相关的典型面试问题，并谈谈其部分设计细节。
 
@@ -20,7 +20,7 @@ Spring Bean 生命周期比较复杂，可以分为创建和销毁两个过程�
 - 创建过程完毕。
 
 你可以参考下面示意图理解这个具体过程和先后顺序。
-![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260519091926368.png)
+![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260607190058873.png)
 
 第二，Spring Bean 的销毁过程会依次调用 DisposableBean 的 destroy 方法和 Bean 自身定制的 destroy 方法。
 
@@ -100,16 +100,16 @@ Spring AOP 引入了其他几个关键概念：
 Java 核心类库中同样存在类似代码，例如 Java 9 中引入的 Flow API 就是 Reactive Stream 规范的最小子集，通过这种方式，可以保证不同产品直接的无缝沟通，促进了良好实践的推广。
 
 具体的 Spring Advice 结构请参考下面的示意图。
-![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260519101059673.png)
+![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260607190058875.png)
 其中，BeforeAdvice 和 AfterAdvice 包括它们的子接口是最简单的实现。而 Interceptor 则是所谓的拦截器，用于拦截住方法（也包括构造器）调用事件，进而采取相应动作，所以 Interceptor 是覆盖住整个方法调用过程的 Advice。通常将拦截器类型的 Advice 叫作 Around，在代码中可以使用“@Around”来标记，或者在配置中使用“”。
 
 如果从时序上来看，则可以参考下图，理解具体发生的时机。
-![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260519101335761.png)
+![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260607190058879.png)
 
 - **Pointcut，它负责具体定义 Aspect 被应用在哪些 Join Point**，可以通过指定具体的类名和方法名来实现，或者也可以使用正则表达式来定义条件。
 
-你可以参看下面的示意图，来进一步理解上面这些抽象在逻辑上的意义。[__temp__SpringAOP示例代码](../扩展/__temp__SpringAOP示例代码.md)
-![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260519101433865.png)
+你可以参看下面的示意图，来进一步理解上面这些抽象在逻辑上的意义。[SpringAOP示例代码](../扩展/SpringAOP示例代码.md)
+![](assets/第37讲%20谈谈Spring%20Bean的生命周期和作用域？/file-20260607190058877.png)
 
 - Join Point 仅仅是可利用的机会。
 - Pointcut 是解决了切面编程中的 Where 问题，让程序可以知道哪些机会点可以应用某个切面动作。

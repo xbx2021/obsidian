@@ -1,4 +1,4 @@
-![](assets/第15讲%20synchronized和ReentrantLock有什么区别呢？/file-20260514092933499.png)
+![](assets/第15讲%20synchronized和ReentrantLock有什么区别呢？/file-20260607190048196.png)
 从今天开始，我们将进入 Java 并发学习阶段。软件并发已经成为现代软件开发的基础能力，而 Java 精心设计的高效并发机制，正是构建大规模应用的基础之一，所以考察并发基本功也成为各个公司面试 Java 工程师的必选项。
 
 今天我要问你的问题是， **synchronized 和 ReentrantLock 有什么区别？有人说 synchronized 最慢，这话靠谱吗？**
