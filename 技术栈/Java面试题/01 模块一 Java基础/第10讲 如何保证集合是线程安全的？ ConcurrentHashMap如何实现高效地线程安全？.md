@@ -1,7 +1,7 @@
 ![](assets/第10讲%20如何保证集合是线程安全的？%20ConcurrentHashMap如何实现高效地线程安全？/file-20260607190041314.png)
 我在之前两讲介绍了 Java 集合框架的典型容器类，它们绝大部分都不是线程安全的，仅有的线程安全实现，比如 Vector、Stack，在性能方面也远不尽如人意。幸好 Java 语言提供了并发包（java.util.concurrent），为高度并发需求提供了更加全面的工具支持。
 
-今天我要问你的问题是，**如何保证容器是线程安全的？ConcurrentHashMap 如何实现高效地线程安全？**[ConcurrentHashMap JDK8与之前版本实现对比](../扩展/ConcurrentHashMap%20JDK8与之前版本实现对比.md)
+今天我要问你的问题是，**如何保证容器是线程安全的？ConcurrentHashMap 如何实现高效地线程安全？**[ConcurrentHashMap JDK8与之前版本实现对比](../06%20扩展/ConcurrentHashMap%20JDK8与之前版本实现对比.md)
 
 # 典型回答
 
