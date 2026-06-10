@@ -28,17 +28,19 @@ def html_to_markdown(html_content):
     # Step 1: Remove HTML comments
     result = re.sub(r'<!--.*?-->', '', result, flags=re.DOTALL)
 
-    # Step 2: Protect &lt; and &gt; in text (not in actual HTML tags)
+    # Step 2: Protect &lt;, &gt;, and &nbsp; in text (not in actual HTML tags)
     # Replace them with placeholders before unescaping
     # This prevents <object> in ArrayList<object> from being treated as HTML tag
     result = result.replace('&lt;', '\x00LT\x00')
     result = result.replace('&gt;', '\x00GT\x00')
+    result = result.replace('&nbsp;', '\x00NBSP\x00')
 
     # Step 3: Process code blocks FIRST
     def process_code_block(match):
         code = match.group(1)
-        # Restore angle brackets in code blocks
+        # Restore angle brackets and nbsp in code blocks
         code = code.replace('\x00LT\x00', '<').replace('\x00GT\x00', '>')
+        code = code.replace('\x00NBSP\x00', ' ')
         # Convert HTML quotation entities in code blocks
         code = code.replace('&quot;', '"').replace('&#34;', '"')
         code = code.replace('&apos;', "'").replace('&#39;', "'")
@@ -53,15 +55,34 @@ def html_to_markdown(html_content):
     result = re.sub(r'<pre\s*[^>]*>(.*?)</pre>',
                     process_code_block, result, flags=re.DOTALL)
 
-    # Step 4: Handle inline <code>...</code>
+    # Handle <code class="language-xxx">...</code> blocks (code blocks without <pre>)
+    def process_language_code(match):
+        code = match.group(2)
+        lang = match.group(1) if match.group(1) else ''
+        # Restore angle brackets and nbsp in code blocks
+        code = code.replace('\x00LT\x00', '<').replace('\x00GT\x00', '>')
+        code = code.replace('\x00NBSP\x00', ' ')
+        # Convert HTML quotation entities in code blocks
+        code = code.replace('&quot;', '"').replace('&#34;', '"')
+        code = code.replace('&apos;', "'").replace('&#39;', "'")
+        # Use language from class if available
+        if lang:
+            lang = lang.replace('language-', '').replace('hljs-', '')
+        return f'\n``` {lang}\n{code}\n```\n'
+
+    result = re.sub(r'<code\s+class\s*=\s*["\'](?:language-|hljs-)?(\w*)["\'][^>]*>(.*?)</code>',
+                    process_language_code, result, flags=re.DOTALL)
+
+    # Step 4: Handle inline <code>...</code> (without class attribute)
     code_blocks = []
     def save_code_block(match):
-        code_blocks.append(match.group(0))
+        code = match.group(0)
+        code_blocks.append(code)
         return f"\x00CODEBLOCK{len(code_blocks)-1}\x00"
 
     result = re.sub(r'\n``` [^\n]*\n.*?\n```\n', save_code_block, result, flags=re.DOTALL)
 
-    # Process inline code
+    # Process inline code (only <code> without class attribute)
     def process_inline_code(match):
         code = match.group(1)
         # Restore angle brackets in inline code
@@ -71,7 +92,8 @@ def html_to_markdown(html_content):
         code = code.replace('&apos;', "'").replace('&#39;', "'")
         return f'`{code}`'
 
-    result = re.sub(r'<code\s*[^>]*>(.*?)</code>',
+    # Only match <code> tags without class attribute
+    result = re.sub(r'<code(?!\s+class\s*=)[^>]*>(.*?)</code>',
                     process_inline_code, result, flags=re.DOTALL)
 
     # Step 5: Process headings
@@ -113,8 +135,9 @@ def html_to_markdown(html_content):
     # Step 12: Remove any remaining HTML tags
     result = re.sub(r'<[^>]+>', '', result)
 
-    # Step 13: Restore angle brackets
+    # Step 13: Restore angle brackets and nbsp
     result = result.replace('\x00LT\x00', '<').replace('\x00GT\x00', '>')
+    result = result.replace('\x00NBSP\x00', ' ')
 
     # Step 14: Restore code blocks
     def restore_code_block(match):
