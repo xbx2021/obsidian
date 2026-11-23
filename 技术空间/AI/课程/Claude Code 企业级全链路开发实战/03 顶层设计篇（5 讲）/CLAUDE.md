@@ -30,28 +30,6 @@ Hify 是一个简化版内部 AI Agent 平台，基于 Dify 思路设计。
 
 ### 包结构
 
-com.hify
-├── common/
-│   ├── config/          # MybatisPlusConfig, JacksonConfig, AsyncConfig, ThreadPoolConfig
-│   ├── exception/       # BizException, ErrorCode, GlobalExceptionHandler
-│   ├── web/             # Result<T>, PageResult<T>
-│   └── util/            # JsonUtil, DateUtil
-├── modules/
-│   ├── model/           # LLM 提供商管理
-│   ├── agent/           # Agent 配置
-│   ├── conversation/    # 对话引擎
-│   ├── knowledge/       # 知识库 RAG
-│   ├── workflow/        # 简版工作流
-│   └── mcp/             # MCP 工具接入
-└── HifyApplication.java
-
-每个模块内部四层结构：
-
-modules/{module}/
-├── api/       # 对外暴露的接口（interface），供其他模块调用
-├── domain/    # 业务逻辑：Service 实现、领域对象、Factory、Repository 接口
-├── infra/     # 基础设施：Mapper、RepositoryImpl、外部 API 客户端、config
-└── web/       # Controller，只处理 HTTP 层
 
 ### 各层职责边界
 
