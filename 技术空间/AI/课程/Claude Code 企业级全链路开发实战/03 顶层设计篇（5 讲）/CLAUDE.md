@@ -1,4 +1,4 @@
-````markdown
+
 # Hify 项目开发规范
 
 ## 项目概览
@@ -339,5 +339,4 @@ ORDER BY sum_no_index_used DESC LIMIT 20;
 | 延后 | 静态资源未压缩 | Nginx gzip，流量大时处理 |
 | 延后 | JVM GC 停顿 | G1GC 已启用，暂不调优 |
 
-````
 
