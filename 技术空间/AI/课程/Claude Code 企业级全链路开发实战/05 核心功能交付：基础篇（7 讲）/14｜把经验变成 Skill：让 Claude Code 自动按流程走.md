@@ -120,6 +120,7 @@ review完让Claude Code改，改完就是你的第一个正式Skill。生成的S
 
 provider-adapter.md完整内容如下：
 
+[Skill 新增 Provider Adapter](Skill%20新增%20Provider%20Adapter.md)
 
 在我们写了两个Skill后，你就会发现：
 
