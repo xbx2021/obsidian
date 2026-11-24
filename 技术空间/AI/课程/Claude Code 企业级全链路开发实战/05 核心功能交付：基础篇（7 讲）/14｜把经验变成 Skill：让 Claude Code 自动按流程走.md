@@ -157,19 +157,17 @@ Skill和CLAUDE.md一样是活文档。02讲说的SDD闭环——定规范→AI�
 
 重构本身不复杂，用策略模式替代if-else：
 
-重构Provider模块的连通性测试。当前是if-else按type分发，改成策略模式：
-
- 
-
-- 定义ProviderAdapter接口：testConnection(provider)、listModels(provider)
-
-- 实现四个适配器：OpenAiAdapter、AnthropicAdapter、OllamaAdapter、OpenAiCompatibleAdapter（和OpenAiAdapter共用逻辑）
-
-- 创建ProviderAdapterFactory：根据provider.type返回对应的Adapter实例
-
-- ProviderService里的if-else替换为factory.getAdapter(provider.getType()).testConnection(provider)
-
-- OpenAiCompatibleAdapter直接继承OpenAiAdapter，不需要额外代码
+	重构Provider模块的连通性测试。当前是if-else按type分发，改成策略模式：
+	
+	1.定义ProviderAdapter接口：testConnection(provider)、listModels(provider)
+	
+	2.实现四个适配器：OpenAiAdapter、AnthropicAdapter、OllamaAdapter、OpenAiCompatibleAdapter（和OpenAiAdapter共用逻辑）
+	
+	3.创建ProviderAdapterFactory：根据provider.type返回对应的Adapter实例
+	
+	4.ProviderService里的if-else替换为factory.getAdapter(provider.getType()).testConnection(provider)
+	
+	5.OpenAiCompatibleAdapter直接继承OpenAiAdapter，不需要额外代码
 
 这个指令我就不分析输出了，因为重要的是这个问题和指令本身。
 
