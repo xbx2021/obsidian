@@ -82,7 +82,9 @@ Claude Code给的回答会打开你的视野，原来Skill不只能写开发流�
 
 这些你不需要现在全做，但知道别人怎么用，你对Skill的理解会**从"一个功能"变成"一种工作方式"**。Skill的本质是**把经验编码化——你踩过的坑、总结的流程、做过的判断，全部固化成文字，让Claude Code以后自动按你的经验走**。
 
-### **第三步：让Claude Code帮你写Skill知道了Skill是什么、别人怎么用，现在让Claude Code帮你写。**
+### **第三步：让Claude Code帮你写Skill**
+
+知道了Skill是什么、别人怎么用，现在让Claude Code帮你写。
 
 	我刚完成了Hify项目Provider模块的开发，流程是这样的：
 	
@@ -112,7 +114,6 @@ review完让Claude Code改，改完就是你的第一个正式Skill。生成的S
 
 [Skill 业务模块全流程交付](Skill%20业务模块全流程交付.md)
 
-
 然后用同样的方式让它写第二个Skill，供应商适配：
 
 	13讲的连通性测试里，不同供应商的API差异用了if-else，后来我用策略模式重构了。以后加新供应商的流程是固定的：分析API → 实现Adapter → 注册到Factory → 验证。帮我把这个流程也写成Skill，放在 .claude/skills/provider-adapter.md。
@@ -129,7 +130,7 @@ provider-adapter.md完整内容如下：
 
 接下来我们实际跑一遍Skill，看一下它的用途。
 
-### 实际跑一遍：用Skill启动Agent模块Skill写好了，当场验证。给Claude Code：
+### **实际跑一遍：用Skill启动Agent模块Skill写好了，当场验证。给Claude Code：**
 
 	按模块交付Skill的流程，帮我做Agent管理模块。先从第一步开始，梳理Agent模块的需求和数据模型。
 
@@ -141,7 +142,7 @@ Claude Code读到Skill后，自动按流程走。它会问你Agent模块的核�
 
 我不会在这一讲展开Agent模块的具体实现（那是下一讲的内容），但你已经看到了Skill驱动开发的效果：你的经验在Skill里积累，Claude Code按你的经验走，你只需要在关键决策点拍板。
 
-### Skill也需要迭代
+### **Skill也需要迭代**
 
 最后提一点：第一版Skill不会完美。
 
