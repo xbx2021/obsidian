@@ -42,7 +42,7 @@
 
 Claude Code有一个Skill机制，专门解决这个问题。但与其我来讲概念，不如让Claude Code自己教你。
 
-### 第一步：让Claude Code教你Skill是什么
+### **第一步：让Claude Code教你Skill是什么**
 
 提示词是：
 
@@ -62,7 +62,7 @@ CLAUDE.md是**全局规范，即"什么规矩要遵守"，每次对话自动加�
 
 看，你不需要去翻文档学Skill的用法，问Claude Code它就教你了。这和10讲的咨询模式一模一样，不懂就问，它见过的项目比你多。所以，把AI当做工具，把AI当作老师。
 
-### 第二步：让Claude Code告诉你别人怎么用Skill提示词是：
+### **第二步：让Claude Code告诉你别人怎么用Skill提示词是：**
 
 业界用Claude Code Skill的最佳实践有哪些？大家一般用Skill解决什么问题？给我列举一些常见的Skill类型和使用场景。
 
@@ -82,35 +82,34 @@ Claude Code给的回答会打开你的视野，原来Skill不只能写开发流�
 
 这些你不需要现在全做，但知道别人怎么用，你对Skill的理解会**从"一个功能"变成"一种工作方式"**。Skill的本质是**把经验编码化——你踩过的坑、总结的流程、做过的判断，全部固化成文字，让Claude Code以后自动按你的经验走**。
 
-### 第三步：让Claude Code帮你写Skill知道了Skill是什么、别人怎么用，现在让Claude Code帮你写。
+### **第三步：让Claude Code帮你写Skill知道了Skill是什么、别人怎么用，现在让Claude Code帮你写。**
 
-我刚完成了Hify项目Provider模块的开发，流程是这样的：
-
- 
-
-- 先用咨询模式梳理了供应商选型、数据模型设计、边界问题
-
-- 数据模型确定后更新了schema.sql
-
-- 后端按MVC分层拆解：Entity+Mapper → DTO → Service（CRUD+连通性测试+模型同步+健康检查）→ Controller
-
-- 每步编译或curl验证通过再进下一步
-
-- 前端对接：创建API文件，把mock数据源换成真实API
-
-- 完整验收：后端curl + 浏览器全流程
-
-帮我把这个流程沉淀成一个Skill文件，放在 .claude/skills/module-delivery.md。要求：每一步有明确的产出物和验证方式，关键决策点标注"等待用户确认"，把我踩过的坑写成注意事项。
+	我刚完成了Hify项目Provider模块的开发，流程是这样的：
+	
+	1.先用咨询模式梳理了供应商选型、数据模型设计、边界问题
+	
+	2.数据模型确定后更新了schema.sql
+	
+	3.后端按MVC分层拆解：Entity+Mapper → DTO → Service（CRUD+连通性测试+模型同步+健康检查）→ Controller
+	
+	4.每步编译或curl验证通过再进下一步
+	
+	5.前端对接：创建API文件，把mock数据源换成真实API
+	
+	6.完整验收：后端curl + 浏览器全流程
+	
+	帮我把这个流程沉淀成一个Skill文件，放在 .claude/skills/module-delivery.md。要求：每一步有明确的产出物和验证方式，关键决策点标注"等待用户确认"，把我踩过的坑写成注意事项。
 
 Claude Code生成第一版，你review。我的review重点：
 
-- 产出物是否明确？不是"做需求分析"就完了，而是"产出需求分析文档，包含功能范围、数据模型DDL、设计决策及理由"。Claude Code需要知道做到什么程度算完。
+1. 产出物是否明确？不是"做需求分析"就完了，而是"产出需求分析文档，包含功能范围、数据模型DDL、设计决策及理由"。Claude Code需要知道做到什么程度算完。
 
-- 决策点是否标注？数据模型设计完、后端做完准备做前端之前——这些是你要拍板的地方，Skill里要写"等待用户确认后再进入下一步"。
+2. 决策点是否标注？数据模型设计完、后端做完准备做前端之前——这些是你要拍板的地方，Skill里要写"等待用户确认后再进入下一步"。
 
-- 踩过的坑有没有写进去？比如，Entity的JSON字段必须用TypeHandler、schema.sql要同步更新、前端对接时要更新路由配置。这些是13讲实际踩过的，写进Skill下次就不会重复踩。
+3. 踩过的坑有没有写进去？比如，Entity的JSON字段必须用TypeHandler、schema.sql要同步更新、前端对接时要更新路由配置。这些是13讲实际踩过的，写进Skill下次就不会重复踩。
 
 review完让Claude Code改，改完就是你的第一个正式Skill。生成的Skill如下，就不展开说明了，你可以拿着这个Skill内容去问AI是什么意思：
+
 [Skill 业务模块全流程交付](Skill%20业务模块全流程交付.md)
 
 
