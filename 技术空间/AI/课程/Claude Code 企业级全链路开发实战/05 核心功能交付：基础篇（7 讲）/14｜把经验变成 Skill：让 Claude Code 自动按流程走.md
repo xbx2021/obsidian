@@ -111,7 +111,7 @@ Claude Code生成第一版，你review。我的review重点：
 - 踩过的坑有没有写进去？比如，Entity的JSON字段必须用TypeHandler、schema.sql要同步更新、前端对接时要更新路由配置。这些是13讲实际踩过的，写进Skill下次就不会重复踩。
 
 review完让Claude Code改，改完就是你的第一个正式Skill。生成的Skill如下，就不展开说明了，你可以拿着这个Skill内容去问AI是什么意思：
-
+[Skill 业务模块全流程交付](Skill%20业务模块全流程交付.md)
 
 
 然后用同样的方式让它写第二个Skill，供应商适配：
