@@ -165,11 +165,11 @@ curl -N -X POST http://localhost:8080/api/v1/chat/sessions/{sessionId}/messages 
 
 会话管理：
 
-1. 左侧列表出现这个对话，显示Agent名称和消息摘要
-
-2. 新建第二个对话，列表有两条，点击切换，右侧记录对应切换
-
-3. 刷新页面，两个对话都还在（MySQL持久化正常）
+	1.左侧列表出现这个对话，显示Agent名称和消息摘要
+	
+	2.新建第二个对话，列表有两条，点击切换，右侧记录对应切换
+	
+	3.刷新页面，两个对话都还在（MySQL持久化正常）
 
 ![](https://static001.geekbang.org/resource/image/a0/e9/a0749cd7ebb722d9eb0c0d2d3c3315e9.png?wh=3306x1940)
 
