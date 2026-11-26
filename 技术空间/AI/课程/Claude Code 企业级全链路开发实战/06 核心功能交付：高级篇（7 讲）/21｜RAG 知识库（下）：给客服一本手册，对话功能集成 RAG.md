@@ -183,7 +183,7 @@ ALTER TABLE agent
 
 NULL表示不启用RAG，有值表示启用。对话链路里判断这个字段决定要不要走检索，加一列，对已有功能零侵入。
 
-### 关系图
+### **关系图**
 
 ![](https://static001.geekbang.org/resource/image/a0/3d/a0762503e9f2d086b1b145f9aa77a33d.png?wh=1440x1016)
 
