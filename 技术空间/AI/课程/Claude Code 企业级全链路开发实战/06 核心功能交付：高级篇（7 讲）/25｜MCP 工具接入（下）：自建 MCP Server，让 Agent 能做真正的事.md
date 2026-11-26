@@ -106,11 +106,11 @@ Claude Code还帮我们拆解一次完整退款对话会用哪些工具（真的
 
 工具确定了，让Claude Code帮我拆实现步骤：
 
-我要开发一个退款 MCP Server，独立的 Spring Boot 应用，用 Java MCP SDK。
-
-提供四个工具：check_refund_eligibility、submit_refund、get_refund_status、cancel_refund，操作 refund_application 表。
-
-帮我拆解实现步骤，从建项目到能被 Hify 调用，每步给出验证方式。
+	我要开发一个退款 MCP Server，独立的 Spring Boot 应用，用 Java MCP SDK。
+	
+	提供四个工具：check_refund_eligibility、submit_refund、get_refund_status、cancel_refund，操作 refund_application 表。
+	
+	帮我拆解实现步骤，从建项目到能被 Hify 调用，每步给出验证方式。
 
 Claude Code给的拆解，这里就不细讲了，跟之前的流程差不多：
 
