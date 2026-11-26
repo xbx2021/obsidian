@@ -134,15 +134,15 @@ LIMIT 3;
 
 ```
 
-`` 是pgvector的余弦距离运算符。用 `1 - 距离` 转成相似度分数，越接近1越相似。这个运算符是pgvector扩展引入的，标准SQL里没有。
+`<=>` 是pgvector的余弦距离运算符。用 `1 - 距离` 转成相似度分数，越接近1越相似。这个运算符是pgvector扩展引入的，标准SQL里没有。
 
-到这里，如果你对pgvector不熟，也不知道 `` 是什么。那没关系。你可以按照我们这节课的思路去学pgvector。这块就不展开了。
+到这里，如果你对pgvector不熟，也不知道 `<=>` 是什么。那没关系。你可以按照我们这节课的思路去学pgvector。这块就不展开了。
 
 在本地PostgreSQL上跑了一遍，建表、插入几条测试数据、查询相似度，结果符合预期：语义相近的条目排在前面，不相关的排在后面。
 
 然后问Java集成：
 
-pgvector在Java里怎么用？MyBatis-Plus能直接操作vector类型吗？
+	pgvector在Java里怎么用？MyBatis-Plus能直接操作vector类型吗？
 
 Claude Code的回答点出了一个我没想到的坑：MyBatis-Plus不原生支持vector类型，直接用会报类型转换错误。解法是自定义TypeHandler，告诉MyBatis怎么把Java的 `float[]` 和pgvector的 `vector` 类型互转——插入时 `float[]` 转向量字符串，查询时向量字符串转 `float[]`。
 
