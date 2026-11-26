@@ -187,7 +187,7 @@ NULL表示不启用RAG，有值表示启用。对话链路里判断这个字段�
 
 ![](https://static001.geekbang.org/resource/image/a0/3d/a0762503e9f2d086b1b145f9aa77a33d.png?wh=1440x1016)
 
-### mock profile处理
+### **mock profile处理**
 
 H2不支持vector类型。`schema-h2.sql` 里把 `document_chunk` 的embedding列改成TEXT，相似度查询在mock profile下返回空列表，不影响其他功能的验证。
 
