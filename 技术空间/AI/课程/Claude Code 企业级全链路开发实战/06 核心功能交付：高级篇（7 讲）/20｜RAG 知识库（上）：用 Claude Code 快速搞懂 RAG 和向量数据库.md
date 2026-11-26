@@ -156,7 +156,7 @@ Claude Code的回答点出了一个我没想到的坑：MyBatis-Plus不原生支
 
 向量数据库搞定了。接下来是Embedding模型，它是**把文本变成向量的工具**。
 
-我要调用OpenAI的Embedding API。接口怎么调？和Chat Completion有什么区别？有哪些模型可以选？有什么限制？
+	我要调用OpenAI的Embedding API。接口怎么调？和Chat Completion有什么区别？有哪些模型可以选？有什么限制？
 
 问这个问题是因为：**Embedding接口虽然也是调OpenAI，但它和Chat Completion是完全不同的接口，返回结构也不一样，Chat Completion返回文本，Embedding返回向量数组**。把差异搞清楚，才不会用错。
 
