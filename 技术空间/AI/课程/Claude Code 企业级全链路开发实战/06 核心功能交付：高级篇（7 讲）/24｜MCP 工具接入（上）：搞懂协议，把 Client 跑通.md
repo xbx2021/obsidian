@@ -166,11 +166,11 @@ Claude Code还说了一个重要的边界：循环次数由LLM决定，不是固
 
 ## MCP Client选型
 
-Java 生态有哪些 MCP Client 的 SDK？
-
-帮我调研主流选项，从成熟度、文档质量、和 Spring 生态兼容性几个维度对比。
-
-最后给出建议，Hify 应该选哪个。
+	Java 生态有哪些 MCP Client 的 SDK？
+	
+	帮我调研主流选项，从成熟度、文档质量、和 Spring 生态兼容性几个维度对比。
+	
+	最后给出建议，Hify 应该选哪个。
 
 Claude Code先把hify-mcp模块和主pom.xml都读了，基于现有代码给建议。Java 17、Spring Boot 3.2.3，hify-mcp目前只有骨架还没实现。
 
