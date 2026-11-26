@@ -82,7 +82,7 @@ Claude Code按数据流向拆出了两个阶段、六个组件。
 
 和12讲选不引入LangChain4j一样的方法，给约束让Claude Code分析，你来判断。
 
-向量数据库有哪些主流选项？我的约束是：Java技术栈、已有PostgreSQL、一期数据量不大（几千到几万条分块）、基本的相似度检索够用。帮我对比pgvector、Milvus、Qdrant、Elasticsearch的优缺点。
+	向量数据库有哪些主流选项？我的约束是：Java技术栈、已有PostgreSQL、一期数据量不大（几千到几万条分块）、基本的相似度检索够用。帮我对比pgvector、Milvus、Qdrant、Elasticsearch的优缺点。
 
 为什么问题里要列出约束？因为没有约束的选型问题，答案只能是各有优缺点。把你的实际约束给出来，Claude Code才能给出有判断立场的分析，而不是中立的百科全书。
 
