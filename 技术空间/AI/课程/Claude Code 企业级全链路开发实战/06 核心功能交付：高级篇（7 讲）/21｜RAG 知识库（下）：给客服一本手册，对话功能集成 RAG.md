@@ -462,7 +462,7 @@ curl http://localhost:8080/api/v1/documents/1/chunks
 
 这个答案，其实我们这节课一直在强调，**从小到大，你来指导**。如果你想当甩手掌柜，那肯定是不可能的。至少目前不行。
 
-### 写精确的指令，把改动范围圈死
+### **写精确的指令，把改动范围圈死**
 
 先想清楚要改什么。sendMessage九步链路里，RAG插在第6.5步——用户消息向量化、检索相关chunk、注入system prompt。对应到代码，就是 `ChatService` 里的 `buildMessages` 方法。
 
@@ -501,7 +501,7 @@ curl http://localhost:8080/api/v1/documents/1/chunks
 
 - **没有绑知识库的Agent，行为和之前完全一致**。`knowledgeBaseId` 为空时，`buildMessages` 直接走原来的路径，零影响。开关在Agent维度，不影响全局。
 
-### 改完先跑旧用例
+### **改完先跑旧用例**
 
 代码改完，第一件事不是测新功能，是确认旧的还没坏：
 
@@ -517,7 +517,7 @@ curl -N -X POST http://localhost:8080/api/v1/chat/sessions/1/messages \
 
 如果这里出了问题，先回滚再排查，不要在旧功能已经坏掉的状态下继续往下走。两件事同时出错，定位会乱。
 
-### 跑新用例，看检索是否命中
+### **跑新用例，看检索是否命中**
 
 旧功能确认没坏，再给Agent绑上知识库，测新功能：
 
