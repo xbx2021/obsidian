@@ -328,7 +328,7 @@ Spec Coding的适用场景：复杂功能（超过3个文件改动）、有不�
 
 ![](https://static001.geekbang.org/resource/image/2d/0a/2dc1afd52160241b42c17b42a5d6b30a.png?wh=1492x1141)
 
-### 编码助手层：日常怎么用
+### **编码助手层：日常怎么用**
 
 **Claude Code**：Terminal原生，最强的Agent能力，能读写整个代码库，适合需要跨多个文件的复杂任务，搭骨架、重构、生成测试、分析依赖关系。代价是没有IDE集成，Tab补全体验比Cursor差。
 
@@ -336,17 +336,17 @@ Spec Coding的适用场景：复杂功能（超过3个文件改动）、有不�
 
 **GitHub Copilot**：和GitHub生态深度集成，企业SSO、审计日志、策略管理都很成熟。如果你的团队已经在用GitHub Enterprise，Copilot的管理成本最低。
 
-Windsurf：轻量IDE，不需要配置复杂环境，适合快速原型或者不想折腾工具链的个人项目。
+**Windsurf**：轻量IDE，不需要配置复杂环境，适合快速原型或者不想折腾工具链的个人项目。
 
 我的实际使用方式：Claude Code和Cursor两个其实买一个就行。Claude Code的能力更全，但是Cursor编码够用了，主要是内置的多模型切换让双模型review变得很自然。这个是我强推的。
 
-### 规范/流程层：选轻还是选重
+### **规范/流程层：选轻还是选重**
 
 本讲第一部分已经详细说了四个层次。这里补充一个判断标准：
 
 团队人数是最关键的变量。1人开发或3人以内用CLAUDE.md + Skills完全够。3-15人加Spec-Kit解决规范同步问题。15人以上才需要考虑Kiro这种强制流程工具。**人少的时候用重工具，大量时间消耗在走流程上，得不偿失**。
 
-### 交付流水线层：GitHub Actions vs Harness
+### **交付流水线层：GitHub Actions vs Harness**
 
 很多人在这里纠结，说清楚区别：
 
